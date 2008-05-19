@@ -11,13 +11,14 @@ import org.pojomatic.annotations.Property;
  */
 public class AccountNumberFormatter implements PropertyFormatter {
 
-  public void format(Object value, Appendable appendable) {
-    // TODO Auto-generated method stub
-  }
-
   public void initialize(AnnotatedElement element) {
     // TODO Auto-generated method stub
 
+  }
+
+  public String format(Object value) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

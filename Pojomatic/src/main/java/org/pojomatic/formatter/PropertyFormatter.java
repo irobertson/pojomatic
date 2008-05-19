@@ -18,7 +18,7 @@ public interface PropertyFormatter {
   /**
    * Format a given value.  This method must be thread safe.
    * @param value the value to format
-   * @param appendable where to format the value to
+   * @return the value, formatted (must not be null)
    */
-  public void format(Object value, Appendable appendable);
+  public String format(Object value);
 }
