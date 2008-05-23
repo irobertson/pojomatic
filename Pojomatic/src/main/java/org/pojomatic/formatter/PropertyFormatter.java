@@ -9,7 +9,7 @@ import java.lang.reflect.AnnotatedElement;
 public interface PropertyFormatter {
   /**
    * Initialize the formatter for use; this method will be called exactly once on an instance, prior
-   * to any calls to {@link #format(Object, Appendable)}.  This method does not need to be
+   * to any calls to {@link #format(Object)}.  This method does not need to be
    * thread-safe.
    * @param element
    */
