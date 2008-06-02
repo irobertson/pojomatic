@@ -4,8 +4,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
 public class DefaultPropertyFormatter implements PropertyFormatter {
-  public void initialize(AnnotatedElement element) {
-    // TODO Auto-generated method stub
+  public void initialize(@SuppressWarnings("unused") AnnotatedElement element) {
+    //Not applicable
   }
 
 
@@ -16,19 +16,6 @@ public class DefaultPropertyFormatter implements PropertyFormatter {
     else if (value.getClass().isArray()) {
       Class<?> baseClass = value.getClass().getComponentType();
       if (baseClass.isPrimitive()) {
-        /*
-         *      *
-     * @see     java.lang.Boolean#TYPE
-     * @see     java.lang.Character#TYPE
-     * @see     java.lang.Byte#TYPE
-     * @see     java.lang.Short#TYPE
-     * @see     java.lang.Integer#TYPE
-     * @see     java.lang.Long#TYPE
-     * @see     java.lang.Float#TYPE
-     * @see     java.lang.Double#TYPE
-     * @see     java.lang.Void#TYPE
-
-         */
         if (Boolean.TYPE == baseClass) {
           return Arrays.toString((boolean[]) value);
         }
