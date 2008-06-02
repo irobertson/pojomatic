@@ -1,16 +1,16 @@
 package org.pojomatic;
 
-import org.pojomatic.formatter.PojomaticFormatter;
-import org.pojomatic.formatter.DefaultPojomaticFormatter;
+import org.pojomatic.formatter.PojoFormatter;
+import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PropertyFormatter;
 
 public class Pojomatic<T> {
   private static final PropertyFormatter DEFAULT_PROPERTY_FORMATTER = new DefaultPropertyFormatter();
-  private static final PojomaticFormatter DEFAULT_FORMATTER = new DefaultPojomaticFormatter();
+  private static final PojoFormatter DEFAULT_FORMATTER = new DefaultPojoFormatter();
 
   private final Class<T> pojoClass;
-  private final PojomaticFormatter classFormatter;
+  private final PojoFormatter classFormatter;
   private final PropertyFormatter propertyFormatter;
   private final Iterable< PropertyElement<T> > propertyElements;
 
@@ -18,7 +18,7 @@ public class Pojomatic<T> {
     this(pojoClass, DEFAULT_FORMATTER, DEFAULT_PROPERTY_FORMATTER);
   }
 
-  public Pojomatic(Class<T> pojoClass, PojomaticFormatter classFormatter, PropertyFormatter propertyFormatter) {
+  public Pojomatic(Class<T> pojoClass, PojoFormatter classFormatter, PropertyFormatter propertyFormatter) {
     this.pojoClass = pojoClass;
     this.classFormatter = classFormatter;
     this.propertyFormatter = propertyFormatter;

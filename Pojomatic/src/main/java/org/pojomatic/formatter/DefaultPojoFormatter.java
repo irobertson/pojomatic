@@ -7,5 +7,5 @@ import org.pojomatic.Pojomatic;
  * For example,
  * TODO provide an example
  */
-public class DefaultPojomaticFormatter implements PojomaticFormatter {
+public class DefaultPojoFormatter implements PojoFormatter {
 }
