@@ -12,7 +12,7 @@ import org.pojomatic.annotations.Property;
  * For example, a 16 character {@code String} representing a credit card number would
  * be formatted as "************1234".
  */
-public class AccountNumberFormatter implements PropertyFormatter {
+public class AccountNumberFormatter extends DefaultPropertyFormatter {
   private static final int DEFAULT_PLAINTEXT_CHARS = 4;
   private static final int DEFAULT_FILL_CHAR = '*';
 
@@ -24,11 +24,7 @@ public class AccountNumberFormatter implements PropertyFormatter {
   }
 
   public String format(Object value) {
-    if (value == null) {
-      return "null";
-    }
-
-    String rep = value.toString(); //TODO reuse primitive formatting from DefaultPropertyFormatter: util class or abstract parent class? StringUtils?
+    String rep = super.format(value);
     int repLength = rep.length();
     if (repLength <= getPlaintextChars()) {
       return rep;
