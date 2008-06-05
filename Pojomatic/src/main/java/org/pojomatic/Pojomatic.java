@@ -1,8 +1,8 @@
 package org.pojomatic;
 
-import org.pojomatic.formatter.PojoFormatter;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
+import org.pojomatic.formatter.PojoFormatter;
 import org.pojomatic.formatter.PropertyFormatter;
 
 public class Pojomatic<T> {
@@ -43,14 +43,6 @@ public class Pojomatic<T> {
   }
 
   public Iterable< PropertyElement<T> > getProperties() {
-    if (propertyElements == null) {
-      //lazily initialize
-      synchronized (this) {
-        if (propertyElements == null) {
-          //TODO initialize properties
-        }
-      }
-    }
     return propertyElements;
   }
 }
