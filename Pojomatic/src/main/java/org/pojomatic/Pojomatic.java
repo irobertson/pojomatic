@@ -1,5 +1,7 @@
 package org.pojomatic;
 
+import java.util.List;
+
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PojoFormatter;
