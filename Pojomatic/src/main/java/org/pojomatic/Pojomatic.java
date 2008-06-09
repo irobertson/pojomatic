@@ -12,7 +12,6 @@ public class Pojomatic<T> {
   private final Class<T> pojoClass;
   private final PojoFormatter classFormatter;
   private final PropertyFormatter propertyFormatter;
-  private final Iterable< PropertyElement<T> > propertyElements;
 
   public Pojomatic(Class<T> pojoClass) {
     this(pojoClass, DEFAULT_FORMATTER, DEFAULT_PROPERTY_FORMATTER);
@@ -24,7 +23,6 @@ public class Pojomatic<T> {
     this.propertyFormatter = propertyFormatter;
 
     //TODO initialize PropertyElements
-    this.propertyElements = null;
   }
 
   public int hashCode(T instance) {
@@ -40,9 +38,5 @@ public class Pojomatic<T> {
   public boolean equals(T instance, Object other) {
     //TODO implement equals
     return false;
-  }
-
-  public Iterable< PropertyElement<T> > getProperties() {
-    return propertyElements;
   }
 }
