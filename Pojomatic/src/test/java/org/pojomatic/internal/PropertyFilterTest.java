@@ -1,5 +1,6 @@
 package org.pojomatic.internal;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import org.junit.Test;
@@ -44,8 +45,9 @@ public class PropertyFilterTest {
     }
   }
 
-  @Test(expected=IllegalArgumentException.class) public void testGetRolesWithNoPolicy() {
-    PropertyFilter.getRoles(null, null);
+  @Test
+  public void testGetRolesWithNoPolicy() {
+    assertEquals(Collections.EMPTY_SET, PropertyFilter.getRoles(null, null));
   }
 
 }

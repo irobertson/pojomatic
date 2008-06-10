@@ -1,5 +1,6 @@
 package org.pojomatic.internal;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.pojomatic.annotations.PojomaticDefaultPolicy;
@@ -30,8 +31,7 @@ public class PropertyFilter {
       return classPolicy.getRoles();
     }
     else {
-      throw new IllegalArgumentException(
-        "at least one of elementPolicy or classPolicy must be non-null");
+      return Collections.emptySet();
     }
   }
 }

@@ -40,4 +40,26 @@ implements PropertyElement<T> {
   public AnnotatedElement getElement() {
     return this.element;
   }
+
+  @Override
+  public int hashCode() {
+    return element.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    final AbstractPropertyElement<?, ?> other = (AbstractPropertyElement<?, ?>) obj;
+    return element.equals(other.element);
+  }
+
+  @Override
+  public String toString() {
+    return element.toString();
+  }
 }
