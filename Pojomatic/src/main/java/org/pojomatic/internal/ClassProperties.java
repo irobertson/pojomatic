@@ -13,13 +13,13 @@ import org.pojomatic.annotations.PojomaticDefaultPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 
-public class ClassProperties<T> {
-  private final Map<PropertyRole, Collection<PropertyElement<T>>> properties =
-    new EnumMap<PropertyRole, Collection<PropertyElement<T>>>(PropertyRole.class);
+public class ClassProperties {
+  private final Map<PropertyRole, Collection<PropertyElement>> properties =
+    new EnumMap<PropertyRole, Collection<PropertyElement>>(PropertyRole.class);
 
-  public ClassProperties(Class<T> pojoClass) {
+  public ClassProperties(Class<?> pojoClass) {
     for (PropertyRole role : PropertyRole.values()) {
-      properties.put(role, new HashSet<PropertyElement<T>>());
+      properties.put(role, new HashSet<PropertyElement>());
     }
 
     AutoProperty autoProperty = pojoClass.getAnnotation(AutoProperty.class);
@@ -36,24 +36,24 @@ public class ClassProperties<T> {
       }
 
       for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-        properties.get(role).add(new PropertyField<T>(field));
+        properties.get(role).add(new PropertyField(field));
       }
     }
   }
 
-  public Collection<PropertyElement<T>> getEqualsProperties() {
+  public Collection<PropertyElement> getEqualsProperties() {
     return properties.get(PropertyRole.EQUALS);
   }
 
-  public Collection<PropertyElement<T>> getHashCodeProperties() {
+  public Collection<PropertyElement> getHashCodeProperties() {
     return properties.get(PropertyRole.HASH_CODE);
   }
 
-  public Collection<PropertyElement<T>> getToStringProperties() {
+  public Collection<PropertyElement> getToStringProperties() {
     return properties.get(PropertyRole.TO_STRING);
   }
 
-  public static <T> ClassProperties<T> createInstance(Class<T> pojoClass) {
-    return new ClassProperties<T>(pojoClass);
+  public static <T> ClassProperties createInstance(Class<T> pojoClass) {
+    return new ClassProperties(pojoClass);
   }
 }

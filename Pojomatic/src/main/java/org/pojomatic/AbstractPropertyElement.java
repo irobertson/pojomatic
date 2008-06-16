@@ -3,8 +3,8 @@ package org.pojomatic;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 
-public abstract class AbstractPropertyElement<T, E extends AccessibleObject>
-implements PropertyElement<T> {
+public abstract class AbstractPropertyElement<E extends AccessibleObject>
+implements PropertyElement {
   protected final E element;
 
   protected AbstractPropertyElement(E element) {
@@ -15,7 +15,7 @@ implements PropertyElement<T> {
   /* (non-Javadoc)
    * @see org.pojomatic.PropertyElement#getValue(T)
    */
-  public Object getValue(T instance) {
+  public Object getValue(Object instance) {
     if (instance == null) {
       throw new NullPointerException("Instance is null: cannot get property value");
     }
@@ -32,7 +32,8 @@ implements PropertyElement<T> {
     }
   }
 
-  protected abstract Object accessValue(T instance) throws IllegalAccessException, IllegalArgumentException;
+  protected abstract Object accessValue(Object instance)
+  throws IllegalAccessException, IllegalArgumentException;
 
   /* (non-Javadoc)
    * @see org.pojomatic.PropertyElement#getElement()
@@ -54,7 +55,7 @@ implements PropertyElement<T> {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    final AbstractPropertyElement<?, ?> other = (AbstractPropertyElement<?, ?>) obj;
+    final AbstractPropertyElement<?> other = (AbstractPropertyElement<?>) obj;
     return element.equals(other.element);
   }
 

@@ -11,29 +11,26 @@ public class PropertyElementTest {
 
   @Test(expected=NullPointerException.class)
   public void testGetValueNullField() throws Exception {
-    PropertyElement<PropertyElementTest> propertyElement =
-      new PropertyField<PropertyElementTest>(getTestField());
+    PropertyElement propertyElement = new PropertyField(getTestField());
     propertyElement.getValue(null);
   }
 
   @Test(expected=NullPointerException.class)
   public void testGetValueNullMethod() throws Exception {
-    PropertyElement<PropertyElementTest> propertyElement =
-      new PropertyAccessor<PropertyElementTest>(getTestMethod());
+    PropertyElement propertyElement = new PropertyAccessor(getTestMethod());
     propertyElement.getValue(null);
   }
 
   @Test
   public void testGetValueField() throws Exception {
-    PropertyElement<PropertyElementTest> propertyElement =
-      new PropertyField<PropertyElementTest>(getTestField());
+    PropertyElement propertyElement = new PropertyField(getTestField());
     assertEquals(testField, propertyElement.getValue(this));
   }
 
   @Test
   public void testGetValueMethod() throws Exception {
-    PropertyElement<PropertyElementTest> propertyElement =
-      new PropertyAccessor<PropertyElementTest>(getTestMethod());
+    PropertyElement propertyElement =
+      new PropertyAccessor(getTestMethod());
     assertEquals(testAccessor(), propertyElement.getValue(this));
   }
 

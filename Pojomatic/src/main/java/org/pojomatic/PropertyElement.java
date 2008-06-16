@@ -8,7 +8,7 @@ import java.lang.reflect.AnnotatedElement;
  *
  * @param <T> the type of the instance which holds this property
  */
-public interface PropertyElement<T> {
+public interface PropertyElement {
 
   /**
    * Get the value held by this property from the given instance.
@@ -16,7 +16,7 @@ public interface PropertyElement<T> {
    * @param instance the instance to get the value from
    * @return the value held by the instance
    */
-  Object getValue(T instance);
+  Object getValue(Object instance);
 
   /**
    * Get the original annotated element that this property is derived from.
