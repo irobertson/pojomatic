@@ -10,6 +10,7 @@ import java.util.Map;
 import org.pojomatic.PropertyAccessor;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.PropertyField;
+import org.pojomatic.annotations.AutoDetectType;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.PojomaticDefaultPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
@@ -24,40 +25,51 @@ public class ClassProperties {
       properties.put(role, new HashSet<PropertyElement>());
     }
 
-    AutoProperty autoProperty = pojoClass.getAnnotation(AutoProperty.class);
-    PojomaticDefaultPolicy classPolicy = null;
-    if (autoProperty != null) {
-      classPolicy = autoProperty.policy();
-    }
-
-    for (Field field : pojoClass.getDeclaredFields()) {
-      Property property = field.getAnnotation(Property.class);
-      PojomaticPolicy propertyPolicy = null;
-      if (property != null) {
-        propertyPolicy = property.policy();
+    for (Class<?> clazz = pojoClass; clazz != Object.class; clazz = clazz.getSuperclass()) {
+      AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
+      PojomaticDefaultPolicy classPolicy = null;
+      if (autoProperty != null) {
+        classPolicy = autoProperty.policy();
       }
 
-      for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-        properties.get(role).add(new PropertyField(field));
-      }
-    }
-
-    for (Method method : pojoClass.getDeclaredMethods()) {
-      Property property = method.getAnnotation(Property.class);
-      PojomaticPolicy propertyPolicy = null;
-      if (property != null) {
-        if (!methodSignatureIsAccessor(method)) {
-          throw new IllegalArgumentException(
-            "Method " + method +
-            " is annotated with @Property but either takes arguments or returns void");
+      for (Field field : clazz.getDeclaredFields()) {
+        Property property = field.getAnnotation(Property.class);
+        PojomaticPolicy propertyPolicy = null;
+        if (property != null) {
+          propertyPolicy = property.policy();
         }
-        propertyPolicy = property.policy();
+
+        /* add all fields that are explicitly annotated or auto-detected */
+        if (propertyPolicy != null ||
+            (autoProperty != null && AutoDetectType.FIELD == autoProperty.autoDetect())) {
+          for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
+            properties.get(role).add(new PropertyField(field));
+          }
+        }
       }
-      else if (!methodIsAccessor(method)) {
-        continue;
-      }
-      for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-        properties.get(role).add(new PropertyAccessor(method));
+
+      for (Method method : clazz.getDeclaredMethods()) {
+        Property property = method.getAnnotation(Property.class);
+        PojomaticPolicy propertyPolicy = null;
+        if (property != null) {
+          if (!methodSignatureIsAccessor(method)) {
+            throw new IllegalArgumentException(
+              "Method " + method +
+              " is annotated with @Property but either takes arguments or returns void");
+          }
+          propertyPolicy = property.policy();
+        }
+        else if (!methodIsAccessor(method)) {
+          continue;
+        }
+
+        /* add all methods that are explicitly annotated or auto-detected */
+        if (propertyPolicy != null ||
+            (autoProperty != null && AutoDetectType.METHOD == autoProperty.autoDetect())) {
+          for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
+            properties.get(role).add(new PropertyAccessor(method));
+          }
+        }
       }
     }
   }

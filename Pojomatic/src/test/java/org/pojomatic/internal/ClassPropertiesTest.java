@@ -3,6 +3,7 @@ package org.pojomatic.internal;
 import static org.junit.Assert.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.pojomatic.PropertyAccessor;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.PropertyField;
+import org.pojomatic.annotations.AutoDetectType;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.PojomaticDefaultPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
@@ -19,7 +21,7 @@ public class ClassPropertiesTest {
 
 
   @Test
-  public void testSimpleFields() throws Exception {
+  public void testAnnotatedFields() throws Exception {
     final PropertyElement privateStringField = field(FieldPojo.class, "privateString");
     final PropertyElement publicIntField = field(FieldPojo.class, "publicInt");
     final PropertyElement onlyForStringField = field(FieldPojo.class, "onlyForToString");
@@ -50,7 +52,7 @@ public class ClassPropertiesTest {
   }
 
   @Test
-  public void testSimpleMethods() throws Exception {
+  public void testAnnotatedMethods() throws Exception {
     final PropertyElement getIntMethod = method(MethodPojo.class, "getInt");
     final PropertyElement privateStringMethod = method(MethodPojo.class, "privateString");
     final PropertyElement onlyForEqualsMethod = method(MethodPojo.class, "onlyForEquals");
@@ -96,6 +98,74 @@ public class ClassPropertiesTest {
       ClassProperties.createInstance(MethodTakesArgsPojo.class);
   }
 
+  @Test
+  public void testAnnotatedInheritance() throws Exception {
+    Set<PropertyElement> expectedParent = asSet(method(ParentPojo.class, "getFoo"));
+    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentPojo.class);
+    assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
+    assertEquals(expectedParent, asSet(parentClassProperties.getHashCodeProperties()));
+    assertEquals(expectedParent, asSet(parentClassProperties.getToStringProperties()));
+
+    ClassProperties childClassProperties = ClassProperties.createInstance(ChildPojo.class);
+    Set<PropertyElement> expectedChild = asSet(method(ParentPojo.class, "getFoo"), field(ChildPojo.class, "other"));
+    assertEquals(expectedChild, asSet(childClassProperties.getEqualsProperties()));
+    assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
+    assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+  }
+
+  @Test
+  public void testAutoInheritanceBothAuto() throws Exception {
+    Set<PropertyElement> expectedParent = asSet(method(ParentAutoPojo.class, "getFoo"));
+    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentAutoPojo.class);
+    assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
+    assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getHashCodeProperties()));
+    assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getToStringProperties()));
+
+    ClassProperties childClassProperties = ClassProperties.createInstance(ChildAutoPojo.class);
+    Set<PropertyElement> expectedChild = asSet(
+      field(ChildAutoPojo.class, "other"));
+    assertEquals(expectedParent, asSet(childClassProperties.getEqualsProperties()));
+    assertEquals(Collections.EMPTY_SET, asSet(childClassProperties.getHashCodeProperties()));
+    assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+  }
+
+  @Test
+  public void testAutoInheritanceAnnotatedParent() throws Exception {
+    Set<PropertyElement> expectedParent = asSet(method(ParentPojo.class, "getFoo"));
+    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentPojo.class);
+    assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
+    assertEquals(expectedParent, asSet(parentClassProperties.getHashCodeProperties()));
+    assertEquals(expectedParent, asSet(parentClassProperties.getToStringProperties()));
+
+    ClassProperties childClassProperties = ClassProperties.createInstance(ChildExtendsAnnotatedPojo.class);
+    Set<PropertyElement> expectedChild = asSet(
+      method(ParentPojo.class, "getFoo"),
+      method(ChildExtendsAnnotatedPojo.class, "getFoo"),
+      method(ChildExtendsAnnotatedPojo.class, "getMyString"));
+    assertEquals(expectedChild, asSet(childClassProperties.getEqualsProperties()));
+    assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
+    assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+  }
+
+  @Test
+  public void testAutoInheritanceAutoParentAnnotatedChild() throws Exception {
+    Set<PropertyElement> expectedParent = asSet(method(ParentAutoPojo.class, "getFoo"));
+    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentAutoPojo.class);
+    assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
+    assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getHashCodeProperties()));
+    assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getToStringProperties()));
+
+    ClassProperties childClassProperties = ClassProperties.createInstance(ChildExtendsAutoPojo.class);
+    Set<PropertyElement> expectedChildEquals = asSet(
+      method(ParentAutoPojo.class, "getFoo"),
+      field(ChildExtendsAutoPojo.class, "other"));
+    assertEquals(expectedChildEquals, asSet(childClassProperties.getEqualsProperties()));
+    Set<PropertyElement> expectedChild = asSet(
+      field(ChildExtendsAutoPojo.class, "other"));
+    assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
+    assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+  }
+
   private static PropertyElement field(Class<?> clazz, String fieldName) throws Exception {
     return new PropertyField(clazz.getDeclaredField(fieldName));
   }
@@ -126,6 +196,9 @@ public class ClassPropertiesTest {
 
     @Property(policy=PojomaticPolicy.ALL)
     public double allInDouble;
+
+    /* Methods are not auto-detected */
+    public float getNotDetected() { return 1f; }
   }
 
   public static class MethodPojo {
@@ -140,8 +213,11 @@ public class ClassPropertiesTest {
     public double onlyForEquals() { return 0.0; }
   }
 
-  @AutoProperty(policy=PojomaticDefaultPolicy.ALL)
+  @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=PojomaticDefaultPolicy.ALL)
   public static class AutoMethodPojo {
+    /* Fields are not auto-detected */
+    int notDetected;
+
     @Property(policy=PojomaticPolicy.NONE)
     public String getIgnored() { return null; }
 
@@ -172,6 +248,46 @@ public class ClassPropertiesTest {
   public static class MethodTakesArgsPojo {
     @Property
     public int takesArgs(String death) { return death.length(); }
+  }
+
+  private static abstract class ParentPojo {
+    @Property
+    public abstract int getFoo();
+  }
+
+  private static class ChildPojo extends ParentPojo {
+    @Property
+    public String other;
+
+    @Override public int getFoo() { return 2; }
+  }
+
+  @AutoProperty(autoDetect=AutoDetectType.METHOD)
+  private static class ChildExtendsAnnotatedPojo extends ParentPojo {
+    public int getFoo() { return 0; }
+
+    public String getMyString() { return "foo"; };
+  }
+
+  @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=PojomaticDefaultPolicy.EQUALS)
+  private static abstract class ParentAutoPojo {
+    public abstract int getFoo();
+  }
+
+  @AutoProperty(autoDetect=AutoDetectType.FIELD, policy=PojomaticDefaultPolicy.TO_STRING)
+  private static class ChildAutoPojo extends ParentAutoPojo {
+    public String other;
+
+    @Override public int getFoo() { return 2; }
+  }
+
+  private static class ChildExtendsAutoPojo extends ParentAutoPojo {
+    @Property
+    public String other;
+
+    @Override public int getFoo() { return 2; }
+
+    public String getBar() { return ""; }
   }
 
   private static Set<PropertyElement> asSet(PropertyElement... elements) {
