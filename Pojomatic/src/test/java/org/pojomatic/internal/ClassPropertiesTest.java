@@ -264,6 +264,7 @@ public class ClassPropertiesTest {
 
   @AutoProperty(autoDetect=AutoDetectType.METHOD)
   private static class ChildExtendsAnnotatedPojo extends ParentPojo {
+    @Override
     public int getFoo() { return 0; }
 
     public String getMyString() { return "foo"; };

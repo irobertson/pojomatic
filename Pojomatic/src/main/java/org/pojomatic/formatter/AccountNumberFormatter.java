@@ -19,10 +19,12 @@ public class AccountNumberFormatter extends DefaultPropertyFormatter {
   private int plaintextChars = DEFAULT_PLAINTEXT_CHARS;
   private char fillChar = DEFAULT_FILL_CHAR;
 
+  @Override
   public void initialize(@SuppressWarnings("unused") AnnotatedElement element) {
     //nothing to initialize
   }
 
+  @Override
   public String format(Object value) {
     String rep = super.format(value);
     int repLength = rep.length();
