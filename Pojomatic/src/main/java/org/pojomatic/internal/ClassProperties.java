@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.pojomatic.PropertyAccessor;
 import org.pojomatic.PropertyElement;
@@ -17,6 +18,8 @@ import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 
 public class ClassProperties {
+  private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
+
   private final Map<PropertyRole, Collection<PropertyElement>> properties =
     new EnumMap<PropertyRole, Collection<PropertyElement>>(PropertyRole.class);
 
@@ -85,8 +88,7 @@ public class ClassProperties {
   }
 
   private static boolean isAccessorName(String name) {
-    //FIXME - compile
-    return name.matches("(get|is)\\P{Ll}.*");
+    return ACCESSOR_PATTERN.matcher(name).matches();
   }
 
   public Collection<PropertyElement> getEqualsProperties() {
