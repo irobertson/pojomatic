@@ -267,7 +267,7 @@ public class ClassPropertiesTest {
     @Override
     public int getFoo() { return 0; }
 
-    public String getMyString() { return "foo"; };
+    public String getMyString() { return "foo"; }
   }
 
   @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=PojomaticDefaultPolicy.EQUALS)
