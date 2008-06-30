@@ -14,12 +14,12 @@ public class DefaultPropertyFormatter implements PropertyFormatter {
       return "null";
     }
     else if (value.getClass().isArray()) {
-      Class<?> baseClass = value.getClass().getComponentType();
-      if (baseClass.isPrimitive()) {
-        if (Boolean.TYPE == baseClass) {
+      Class<?> componentClass = value.getClass().getComponentType();
+      if (componentClass.isPrimitive()) {
+        if (Boolean.TYPE == componentClass) {
           return Arrays.toString((boolean[]) value);
         }
-        if (Character.TYPE == baseClass) {
+        if (Character.TYPE == componentClass) {
           StringBuilder builder = new StringBuilder().append('[');
           boolean seenOne = false;
           for (char c: ((char[]) value)) {
@@ -40,26 +40,26 @@ public class DefaultPropertyFormatter implements PropertyFormatter {
           }
           return builder.append(']').toString();
         }
-        if (Byte.TYPE == baseClass) {
+        if (Byte.TYPE == componentClass) {
           return Arrays.toString((byte[]) value);
         }
-        if (Short.TYPE == baseClass) {
+        if (Short.TYPE == componentClass) {
           return Arrays.toString((short[]) value);
         }
-        if (Integer.TYPE == baseClass) {
+        if (Integer.TYPE == componentClass) {
           return Arrays.toString((int[]) value);
         }
-        if (Long.TYPE == baseClass) {
+        if (Long.TYPE == componentClass) {
           return Arrays.toString((long[]) value);
         }
-        if (Float.TYPE == baseClass) {
+        if (Float.TYPE == componentClass) {
           return Arrays.toString((float[]) value);
         }
-        if (Double.TYPE == baseClass) {
+        if (Double.TYPE == componentClass) {
           return Arrays.toString((double[]) value);
         }
         else {
-          throw new IllegalStateException("unexpected primative array base type: " + baseClass);
+          throw new IllegalStateException("unexpected primative array base type: " + componentClass);
         }
       }
       else {
