@@ -2,14 +2,18 @@ package org.pojomatic.internal;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.Property;
 
 
 public class PojomatorImplTest {
-  private static Pojomator<StringProperty> STRING_PROPERTY_POJOMATOR =
-    makePojomatorImpl(StringProperty.class);
+  private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
+    makePojomatorImpl(ObjectProperty.class);
 
   private static Pojomator<IntProperty> INT_PROPERTY_POJOMATOR =
     makePojomatorImpl(IntProperty.class);
@@ -18,19 +22,19 @@ public class PojomatorImplTest {
     makePojomatorImpl(StringArrayProperty.class);
 
   @Test(expected=NullPointerException.class) public void testNullHashCode() {
-    STRING_PROPERTY_POJOMATOR.doHashCode(null);
+    OBJECT_PROPERTY_POJOMATOR.doHashCode(null);
   }
 
   @Test(expected=NullPointerException.class) public void testToString() {
-    STRING_PROPERTY_POJOMATOR.doToString(null);
+    OBJECT_PROPERTY_POJOMATOR.doToString(null);
   }
 
   @Test(expected=NullPointerException.class) public void testNullInstanceEquals() {
-    STRING_PROPERTY_POJOMATOR.doEquals(null, new StringProperty("e"));
+    OBJECT_PROPERTY_POJOMATOR.doEquals(null, new ObjectProperty("e"));
   }
 
   @Test public void testNullEquals() {
-    assertFalse(STRING_PROPERTY_POJOMATOR.doEquals(new StringProperty(null), null));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty(null), null));
   }
 
   @Test public void testReflexiveEquals() {
@@ -39,23 +43,23 @@ public class PojomatorImplTest {
   }
 
   @Test public void testCastCheckFailureForEquals() {
-    assertFalse(STRING_PROPERTY_POJOMATOR.doEquals(new StringProperty("test"), "differentClass"));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty("test"), "differentClass"));
   }
 
   @Test public void testPropertyEquals() {
     String s1 = "hello";
     String s2 = new String(s1); // ensure we are using .equals, and not ==
 
-    assertTrue(STRING_PROPERTY_POJOMATOR.doEquals(new StringProperty(s1), new StringProperty(s2)));
-    assertFalse(STRING_PROPERTY_POJOMATOR.doEquals(
-      new StringProperty("hello"), new StringProperty("goodbye")));
+    assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty(s1), new ObjectProperty(s2)));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
+      new ObjectProperty("hello"), new ObjectProperty("goodbye")));
   }
 
   @Test public void testNullPropertyEquals() {
-    assertTrue(STRING_PROPERTY_POJOMATOR.doEquals(
-      new StringProperty(null), new StringProperty(null)));
-    assertFalse(STRING_PROPERTY_POJOMATOR.doEquals(
-      new StringProperty(null), new StringProperty("not null over here")));
+    assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(
+      new ObjectProperty(null), new ObjectProperty(null)));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
+      new ObjectProperty(null), new ObjectProperty("not null over here")));
   }
 
   @Test public void testPrimativePropertyEquals() {
@@ -72,18 +76,51 @@ public class PojomatorImplTest {
       new StringArrayProperty(s1, "goodbye"), new StringArrayProperty("goodbye", s1)));
   }
 
-  //tests to write:
-  // primitive arrays (all types)
-  // deep object arrays
-  // object array vs primitive and visa versa
-  // array vs non array and visa versa
-  // array vs null and visa versa
+  @Test public void testPrimitiveArrayEquals() throws Exception {
+    List<Class<?>> primitiveTypes = Arrays.<Class<?>>asList(
+      Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
+      Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE);
 
-  private static class StringProperty {
-    public StringProperty(String s) {
+    final ObjectProperty nullProperty = new ObjectProperty(null);
+    final ObjectProperty objectArrayProperty = new ObjectProperty(new String[] {"foo"});
+    for (Class<?> primitiveType : primitiveTypes) {
+      ObjectProperty main = new ObjectProperty(Array.newInstance(primitiveType, 3));
+      ObjectProperty other = new ObjectProperty(Array.newInstance(primitiveType, 3));
+      assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(main, other));
+      assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, main));
+      assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(main, nullProperty));
+      assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(objectArrayProperty, main));
+      assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(main, objectArrayProperty));
+    }
+  }
+
+  @Test public void testDeepObjectArrayEquals() {
+    //tests array of arrays, and that .equals is being called per element
+    assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(
+      new ObjectProperty(new Object[] { "foo", new String[] {"bar"} }),
+      new ObjectProperty(new Object[] { new String("foo"), new String[] {new String("bar")} })));
+
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
+      new ObjectProperty(new Object[] { "foo", new String[] {"bar"} }),
+      new ObjectProperty(new Object[] { new String("foo"), new String[] {new String("baz")} })));
+  }
+
+  @Test public void testArrayVsNonArrayEquals() {
+    ObjectProperty arrayProperty = new ObjectProperty(new String[] {""});
+    ObjectProperty stringProperty = new ObjectProperty("");
+    ObjectProperty nullProperty = new ObjectProperty(null);
+
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(arrayProperty, stringProperty));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(stringProperty, arrayProperty));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(arrayProperty, nullProperty));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, arrayProperty));
+  }
+
+  private static class ObjectProperty {
+    public ObjectProperty(Object s) {
       this.s = s;
     }
-    @Property public String s;
+    @Property public Object s;
   }
 
   private static class IntProperty {
