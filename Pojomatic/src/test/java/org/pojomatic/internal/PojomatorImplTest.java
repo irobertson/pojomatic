@@ -9,17 +9,25 @@ import java.util.List;
 import org.junit.Test;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.Property;
-
+import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
+import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
 
 public class PojomatorImplTest {
   private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
     makePojomatorImpl(ObjectProperty.class);
+
+  private static Pojomator<ObjectPairProperty> OBJECT_PAIR_PROPERTY_POJOMATOR =
+    makePojomatorImpl(ObjectPairProperty.class);
 
   private static Pojomator<IntProperty> INT_PROPERTY_POJOMATOR =
     makePojomatorImpl(IntProperty.class);
 
   private static Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR =
     makePojomatorImpl(StringArrayProperty.class);
+
+  private static final List<Class<?>> PRIMATIVE_TYPES = Arrays.<Class<?>>asList(
+    Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
+    Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE);
 
   @Test(expected=NullPointerException.class) public void testNullHashCode() {
     OBJECT_PROPERTY_POJOMATOR.doHashCode(null);
@@ -77,13 +85,9 @@ public class PojomatorImplTest {
   }
 
   @Test public void testPrimitiveArrayEquals() throws Exception {
-    List<Class<?>> primitiveTypes = Arrays.<Class<?>>asList(
-      Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
-      Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE);
-
     final ObjectProperty nullProperty = new ObjectProperty(null);
     final ObjectProperty objectArrayProperty = new ObjectProperty(new String[] {"foo"});
-    for (Class<?> primitiveType : primitiveTypes) {
+    for (Class<?> primitiveType : PRIMATIVE_TYPES) {
       ObjectProperty main = new ObjectProperty(Array.newInstance(primitiveType, 3));
       ObjectProperty other = new ObjectProperty(Array.newInstance(primitiveType, 3));
       assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(main, other));
@@ -116,11 +120,67 @@ public class PojomatorImplTest {
     assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, arrayProperty));
   }
 
+  //TODO: test short-circuit equals
+
+  @Test public void testNullValueHashCode() {
+    assertEquals(HASH_CODE_MULTIPLIER * HASH_CODE_SEED,
+      OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty(null)));
+  }
+
+  @Test public void testPropertyHashCode() {
+    assertEquals(
+      HASH_CODE_MULTIPLIER * HASH_CODE_SEED + "foo".hashCode(),
+      OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty("foo")));
+  }
+
+  @Test public void testPropertyPairHashCode() {
+    assertEquals(
+      HASH_CODE_MULTIPLIER * (HASH_CODE_MULTIPLIER * HASH_CODE_SEED + "foo".hashCode())
+      + "bar".hashCode(),
+      OBJECT_PAIR_PROPERTY_POJOMATOR.doHashCode(new ObjectPairProperty("foo", "bar")));
+  }
+
+  @Test public void testPrimativeHashCode() {
+    assertEquals(
+      HASH_CODE_MULTIPLIER * HASH_CODE_SEED + 7,
+      INT_PROPERTY_POJOMATOR.doHashCode(new IntProperty(7)));
+  }
+
+  @Test public void testObjectArrayHashCode() {
+    String[] strings = new String[] {"hello", "world" };
+    assertEquals(
+      HASH_CODE_MULTIPLIER *  HASH_CODE_SEED + Arrays.hashCode(strings),
+      OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty(strings)));
+  }
+
+  @Test public void testPrimativeArrayHashCode() throws Exception {
+    for (Class<?> primitiveType : PRIMATIVE_TYPES) {
+      Object primativeArray = Array.newInstance(primitiveType, 2);
+      int expected = HASH_CODE_MULTIPLIER * HASH_CODE_SEED +
+        (Integer) Arrays.class.getDeclaredMethod("hashCode", primativeArray.getClass())
+        .invoke(null, primativeArray);
+      assertEquals(
+        "primative type " + primitiveType,
+        expected,
+        OBJECT_PROPERTY_POJOMATOR.doHashCode(
+          new ObjectProperty(primativeArray)));
+    }
+  }
+
   private static class ObjectProperty {
     public ObjectProperty(Object s) {
       this.s = s;
     }
     @Property public Object s;
+  }
+
+  private static class ObjectPairProperty {
+    public ObjectPairProperty(Object s, Object t) {
+      this.s = s;
+      this.t = t;
+    }
+    @Property public Object s;
+    @Property public Object t;
   }
 
   private static class IntProperty {

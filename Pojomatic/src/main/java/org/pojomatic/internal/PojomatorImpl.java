@@ -6,6 +6,10 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 
 public class PojomatorImpl<T> implements Pojomator<T>{
+  final static int HASH_CODE_SEED = 1;
+  final static int HASH_CODE_MULTIPLIER = 31;
+
+
   public PojomatorImpl(Class<T> clazz) {
     this.clazz = clazz;
     classProperties = new ClassProperties(clazz);
@@ -109,10 +113,63 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   }
 
   public int doHashCode(T instance) {
+    int hashCode = HASH_CODE_SEED;
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
     }
-    return 0;
+    for (PropertyElement prop: classProperties.getHashCodeProperties()) {
+      Object value = prop.getValue(instance);
+      hashCode = HASH_CODE_MULTIPLIER * hashCode + (hashCodeOfValue(value));
+    }
+    return hashCode;
+  }
+
+  private int hashCodeOfValue(Object value) {
+    if (value == null) {
+      return 0;
+    }
+    else {
+      if (value.getClass().isArray()) {
+        Class<?> instanceComponentClass = value.getClass().getComponentType();
+        if (! instanceComponentClass.isPrimitive()) {
+          return Arrays.hashCode((Object[]) value);
+        }
+        else {
+          if (Boolean.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((boolean[]) value);
+          }
+          else if (Byte.TYPE == instanceComponentClass) {
+            return  Arrays.hashCode((byte[]) value);
+          }
+          else if (Character.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((char[]) value);
+          }
+          else if (Short.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((short[]) value);
+          }
+          else if (Integer.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((int[]) value);
+          }
+          else if (Long.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((long[]) value);
+          }
+          else if (Float.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((float[]) value);
+          }
+          else if (Double.TYPE == instanceComponentClass) {
+            return Arrays.hashCode((double[]) value);
+          }
+          else {
+            // should NEVER happen
+            throw new IllegalStateException(
+              "unknown primative type " + instanceComponentClass.getName());
+          }
+        }
+      }
+      else {
+        return value.hashCode();
+      }
+    }
   }
 
   public String doToString(T instance) {
