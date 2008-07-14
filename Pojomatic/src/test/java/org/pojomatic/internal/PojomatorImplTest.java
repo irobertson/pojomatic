@@ -120,7 +120,27 @@ public class PojomatorImplTest {
     assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, arrayProperty));
   }
 
-  //TODO: test short-circuit equals
+  @Test public void testShortCircuitEquals() {
+    final Pojomator<AccessCheckedProperties> pojomator = makePojomatorImpl(AccessCheckedProperties.class);
+
+    AccessCheckedProperties left = new AccessCheckedProperties(1,1);
+    AccessCheckedProperties right = new AccessCheckedProperties(2,2);
+    assertFalse(pojomator.doEquals(left, right));
+    assertFalse(left.getBCalled);
+    assertFalse(right.getBCalled);
+
+    assertTrue(pojomator.doEquals(left, left));
+    assertFalse(left.getBCalled);
+
+    assertFalse(pojomator.doEquals(left, null));
+    assertFalse(left.getBCalled);
+
+    assertFalse(pojomator.doEquals(left, "hello"));
+    assertFalse(left.getBCalled);
+
+    assertTrue(pojomator.doEquals(left, new AccessCheckedProperties(1,1)));
+    assertTrue(left.getBCalled);
+  }
 
   @Test public void testNullValueHashCode() {
     assertEquals(HASH_CODE_MULTIPLIER * HASH_CODE_SEED,
@@ -202,6 +222,25 @@ public class PojomatorImplTest {
     @Property public int bomb() {
       throw new RuntimeException();
     }
+  }
+
+  public static class AccessCheckedProperties {
+    public AccessCheckedProperties(int a, int b) {
+      this.a = a;
+      this.b = b;
+    }
+
+    @Property public int getA() {
+      return a;
+    }
+
+    @Property public int getB() {
+      getBCalled = true;
+      return b;
+    }
+
+    private int a, b;
+    private boolean getBCalled;
   }
 
   private static <T> Pojomator<T> makePojomatorImpl(Class<T> clazz) {
