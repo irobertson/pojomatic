@@ -2,9 +2,9 @@ package org.pojomatic.internal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -25,7 +25,7 @@ public class ClassProperties {
 
   public ClassProperties(Class<?> pojoClass) {
     for (PropertyRole role : PropertyRole.values()) {
-      properties.put(role, new HashSet<PropertyElement>());
+      properties.put(role, new ArrayList<PropertyElement>());
     }
 
     for (Class<?> clazz = pojoClass; clazz != Object.class; clazz = clazz.getSuperclass()) {
