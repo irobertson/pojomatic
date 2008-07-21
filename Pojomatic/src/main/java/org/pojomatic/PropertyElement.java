@@ -5,8 +5,6 @@ import java.lang.reflect.AnnotatedElement;
 /**
  * A "property" on a class.  In this context, all a property is is a means of obtaining a value from
  * an instance.
- *
- * @param <T> the type of the instance which holds this property
  */
 public interface PropertyElement {
 
