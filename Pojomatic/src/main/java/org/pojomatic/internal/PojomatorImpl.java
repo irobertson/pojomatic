@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.formatter.DefaultPojoFormatter;
+import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PojoFormatter;
 import org.pojomatic.formatter.PropertyFormatter;
 
@@ -180,17 +181,26 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * {@link PojoFormatter} used for the pojo, and the {@link PropertyFormatter} of each property.
    *
    * For example, suppose a class {@code Person} has properties {@code firstName} and
-   * {@code lastName} which are included in its {@code String} representation. No {@code PojoFormatter}
-   * or {@code PropertyFormatter} are specified, so the defaults are used.
+   * {@code lastName} which are included in its {@code String} representation.
+   * No {@code PojoFormatter} or {@code PropertyFormatter} are specified, so the defaults are used.
    * For a non-null {@code Person} instance, the {@code String} representation will be created by:
    * <ul>
    *   <li>creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class</li>
+   *   <li>creating an instance of {@code DefaultPropertyFormatter} if necessary</li>
    *   <li>concatenating the following:</li>
    *   <li>the result of {@link DefaultPojoFormatter#getToStringPrefix()}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for {@code firstName}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for {@code firstName}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for {@code lastName}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for {@code lastName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for the
+   *     {@code firstName} property</li>
+   *   <li>the result of {@link DefaultPropertyFormatter#format(Object)} for value of
+   *     {@code firstName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for the
+   *     {@code firstName} property</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for the
+   *     {@code lastName} property</li>
+   *   <li>the result of {@link DefaultPropertyFormatter#format(Object)} for the value of
+   *     {@code lastName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for the
+   *     {@code lastName} property</li>
    *   <li>the result of {@link DefaultPojoFormatter#getToStringSuffix()}</li>
    * </ul>
    *
