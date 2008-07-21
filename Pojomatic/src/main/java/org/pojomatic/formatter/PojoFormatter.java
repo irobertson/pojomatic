@@ -1,10 +1,46 @@
 package org.pojomatic.formatter;
 
-import org.pojomatic.Pojomatic;
+import org.pojomatic.PropertyElement;
+import org.pojomatic.internal.PojomatorImpl;
 
 /**
- * Determines the class-wide format for {@link Pojomatic#toString(Object)}.
+ * A formatter to aid in creating a {@code String} representation of a Pojo.
+ *
+ * @see PojomatorImpl#doToString(Object)
  */
 public interface PojoFormatter {
-  //TODO determine interface
+
+  /**
+   * Get the {@code String} which should appear at the beginning of the result of
+   * {@code Object#toString()}.
+   * @return    the prefix to appear at the beginning of the result of {@code Object#toString()}
+   * @see {@code Object#toString()}
+   */
+  String getToStringPrefix();
+
+  /**
+   * Get the {@code String} which should appear at the end of the result of
+   * {@code Object#toString()}.
+   * @return    the suffix to appear at the end of the result of {@code Object#toString()}
+   * @see Object#toString()
+   */
+  String getToStringSuffix();
+
+  /**
+   * Get the {@code String} prefix for a given {@code PropertyElement}. This method will be called
+   * once for each property used in the result of {@code Object#toString()}, in the order in which
+   * those properties will appear in that result, and before the call to
+   * {@link PropertyFormatter#format(Object)} for the property's value.
+   * @param property the property for which to generate a prefix
+   * @return the prefix for the given property
+   */
+  String getPropertyPrefix(PropertyElement property);
+
+  /**
+   * Get the {@code String} suffix for a given {@code PropertyElement}. This method will be called
+   * once after each call to {@link PropertyFormatter#format(Object)} for the property's value.
+   * @param property the property for which to generate a suffix
+   * @return the suffix for the given property
+   */
+  String getPropertySuffix(PropertyElement property);
 }
