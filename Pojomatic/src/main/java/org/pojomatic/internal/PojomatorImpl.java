@@ -4,6 +4,9 @@ import java.util.Arrays;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
+import org.pojomatic.formatter.DefaultPojoFormatter;
+import org.pojomatic.formatter.PojoFormatter;
+import org.pojomatic.formatter.PropertyFormatter;
 
 public class PojomatorImpl<T> implements Pojomator<T>{
   final static int HASH_CODE_SEED = 1;
@@ -172,6 +175,29 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     }
   }
 
+  /**
+   * Creates the {@code String} representation of the given instance. The format used depends on the
+   * {@link PojoFormatter} used for the pojo, and the {@link PropertyFormatter} of each property.
+   *
+   * For example, suppose a class {@code Person} has properties {@code firstName} and
+   * {@code lastName} which are included in its {@code String} representation. No {@code PojoFormatter}
+   * or {@code PropertyFormatter} are specified, so the defaults are used.
+   * For a non-null {@code Person} instance, the {@code String} representation will be created by:
+   * <ul>
+   *   <li>creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class</li>
+   *   <li>concatenating the following:</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getToStringPrefix()}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for {@code firstName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for {@code firstName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for {@code lastName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for {@code lastName}</li>
+   *   <li>the result of {@link DefaultPojoFormatter#getToStringSuffix()}</li>
+   * </ul>
+   *
+   * @param instance the instance for which to create a {@code String} representation. Must not be
+   * {@code null}.
+   * @return the {@code String} representation of the given instance
+   */
   public String doToString(T instance) {
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
