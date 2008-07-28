@@ -179,30 +179,31 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   /**
    * Creates the {@code String} representation of the given instance. The format used depends on the
    * {@link PojoFormatter} used for the pojo, and the {@link PropertyFormatter} of each property.
-   *
+   * <p>
    * For example, suppose a class {@code Person} has properties {@code firstName} and
    * {@code lastName} which are included in its {@code String} representation.
    * No {@code PojoFormatter} or {@code PropertyFormatter} are specified, so the defaults are used.
-   * For a non-null {@code Person} instance, the {@code String} representation will be created by:
-   * <ul>
-   *   <li>creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class</li>
-   *   <li>creating an instance of {@code DefaultPropertyFormatter} if necessary</li>
-   *   <li>concatenating the following:</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getToStringPrefix()}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for the
-   *     {@code firstName} property</li>
-   *   <li>the result of {@link DefaultPropertyFormatter#format(Object)} for value of
-   *     {@code firstName}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for the
-   *     {@code firstName} property</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement)} for the
-   *     {@code lastName} property</li>
-   *   <li>the result of {@link DefaultPropertyFormatter#format(Object)} for the value of
-   *     {@code lastName}</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getPropertySuffix(PropertyElement)} for the
-   *     {@code lastName} property</li>
-   *   <li>the result of {@link DefaultPojoFormatter#getToStringSuffix()}</li>
-   * </ul>
+   * In particular, instances of {@code DefaultPropertyFormatter} will be created for
+   * {@code firstName} and {@code lastName} (referred to here as {@code firstNameFormatter} and
+   * {@code lastNameFormatter}, respectively).  Let {@code firstNameProperty} and
+   * {@code lastNameProperty} refer to the instances of {@link PropertyElement} referring to the
+   * properties {@code firstName} and {@code lastName} respectively.
+   * </p>
+   * <p>
+   * For a non-null {@code Person} instance, the {@code String} representation will be created by
+   * creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class (referred to
+   * here as {@code personFormatter}), and then concatenating the results of following:
+   * <ol>
+   *   <li>{@link DefaultPojoFormatter#getToStringPrefix() personFormatter.getToStringPrefix()}</li>
+   *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(firstNameProperty)}</li>
+   *   <li>{@link DefaultPropertyFormatter#format(Object) firstNameFormatter.format(firstName)}</li>
+   *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(firstNameProperty)}</li>
+   *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(lastNameProperty)}</li>
+   *   <li>{@link DefaultPropertyFormatter#format(Object) lastNameFormatter.format(lastName)}</li>
+   *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(lasttNameProperty)}</li>
+   *   <li>{@link DefaultPojoFormatter#getToStringSuffix() personFormatter.getToStringSuffix()}</li>
+   * </ol>
+   * </p>
    *
    * @param instance the instance for which to create a {@code String} representation. Must not be
    * {@code null}.
