@@ -4,7 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
 public class DefaultPropertyFormatter implements PropertyFormatter {
-  public void initialize(@SuppressWarnings("unused") AnnotatedElement element) {
+  public void initialize(AnnotatedElement element) {
     //Not applicable
   }
 
