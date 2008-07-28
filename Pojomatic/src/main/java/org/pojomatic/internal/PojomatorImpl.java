@@ -217,6 +217,12 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * @return the {@code String} representation of the given instance
    */
   public String doToString(T instance) {
+    //TODO: make an annotation for the PojoFormatter; use it.
+    // Use the PropertyFormatter annotations.
+    // test these.
+    // consider replacing propertyFormatter map with a list of
+    // Pair<PropertyElement, PropertyFormatter>.
+
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
     }
