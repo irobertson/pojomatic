@@ -1,20 +1,26 @@
-package org.pojomatic;
+package org.pojomatic.internal;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 
-public abstract class AbstractPropertyElement<E extends AccessibleObject>
+import org.pojomatic.PropertyElement;
+
+public abstract class AbstractPropertyElement<E extends AccessibleObject & Member>
 implements PropertyElement {
   protected final E element;
+  private final String name;
 
   protected AbstractPropertyElement(E element) {
     element.setAccessible(true);
     this.element = element;
+    this.name = element.getName();
   }
 
-  /* (non-Javadoc)
-   * @see org.pojomatic.PropertyElement#getValue(T)
-   */
+  public String getName() {
+    return name;
+  }
+
   public Object getValue(Object instance) {
     if (instance == null) {
       throw new NullPointerException("Instance is null: cannot get property value");

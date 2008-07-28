@@ -9,24 +9,28 @@ import org.pojomatic.PropertyElement;
  * TODO provide an example
  */
 public class DefaultPojoFormatter implements PojoFormatter {
+  private boolean firstPropertyPrinted = false;
 
   public String getPropertyPrefix(PropertyElement property) {
-    // TODO Auto-generated method stub
-    return null;
+    StringBuilder result = new StringBuilder();
+    if (firstPropertyPrinted) {
+      result.append(", ");
+    }
+    else {
+      firstPropertyPrinted = true;
+    }
+    return result.append(property.getName()).append(": {").toString();
   }
 
   public String getPropertySuffix(PropertyElement property) {
-    // TODO Auto-generated method stub
-    return null;
+    return "}";
   }
 
-  public String getToStringPrefix() {
-    // TODO Auto-generated method stub
-    return null;
+  public String getToStringPrefix(Class<?> pojoClass) {
+    return pojoClass.getSimpleName() + "{";
   }
 
-  public String getToStringSuffix() {
-    // TODO Auto-generated method stub
-    return null;
+  public String getToStringSuffix(Class<?> pojoClass) {
+    return "}";
   }
 }

@@ -1,4 +1,4 @@
-package org.pojomatic;
+package org.pojomatic.internal;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.junit.Test;
+import org.pojomatic.PropertyElement;
 
 public class PropertyElementTest {
 

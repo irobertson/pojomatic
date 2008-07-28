@@ -8,9 +8,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.pojomatic.PropertyAccessor;
 import org.pojomatic.PropertyElement;
-import org.pojomatic.PropertyField;
 import org.pojomatic.annotations.AutoDetectType;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.PojomaticDefaultPolicy;

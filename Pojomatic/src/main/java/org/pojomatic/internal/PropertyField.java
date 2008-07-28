@@ -1,4 +1,4 @@
-package org.pojomatic;
+package org.pojomatic.internal;
 
 import java.lang.reflect.Field;
 

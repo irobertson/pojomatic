@@ -9,6 +9,12 @@ import java.lang.reflect.AnnotatedElement;
 public interface PropertyElement {
 
   /**
+   * Get the name of this property.
+   * @return the name of this property.
+   */
+  String getName();
+
+  /**
    * Get the value held by this property from the given instance.
    *
    * @param instance the instance to get the value from
