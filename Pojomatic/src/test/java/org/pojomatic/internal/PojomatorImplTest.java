@@ -33,7 +33,7 @@ public class PojomatorImplTest {
     OBJECT_PROPERTY_POJOMATOR.doHashCode(null);
   }
 
-  @Test(expected=NullPointerException.class) public void testToString() {
+  @Test(expected=NullPointerException.class) public void testToStringOnNull() {
     OBJECT_PROPERTY_POJOMATOR.doToString(null);
   }
 
@@ -185,6 +185,11 @@ public class PojomatorImplTest {
         OBJECT_PROPERTY_POJOMATOR.doHashCode(
           new ObjectProperty(primativeArray)));
     }
+  }
+
+  @Test public void testSimpleToString() {
+    String actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doToString(new ObjectPairProperty("ess", "tee"));
+    assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
   }
 
   private static class ObjectProperty {

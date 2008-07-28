@@ -1,6 +1,8 @@
 package org.pojomatic.internal;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
@@ -17,6 +19,11 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   public PojomatorImpl(Class<T> clazz) {
     this.clazz = clazz;
     classProperties = new ClassProperties(clazz);
+    for (PropertyElement prop: classProperties.getToStringProperties()) {
+      PropertyFormatter propertyFormatter = new DefaultPropertyFormatter(); //BROKEN
+      propertyFormatter.initialize(prop.getElement());
+      propertyFormatters.put(prop, propertyFormatter);
+    }
   }
 
   public boolean doEquals(T instance, Object other) {
@@ -194,14 +201,14 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class (referred to
    * here as {@code personFormatter}), and then concatenating the results of following:
    * <ol>
-   *   <li>{@link DefaultPojoFormatter#getToStringPrefix() personFormatter.getToStringPrefix()}</li>
+   *   <li>{@link DefaultPojoFormatter#getToStringPrefix(Class) personFormatter.getToStringPrefix(Person.class)}</li>
    *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(firstNameProperty)}</li>
    *   <li>{@link DefaultPropertyFormatter#format(Object) firstNameFormatter.format(firstName)}</li>
    *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(firstNameProperty)}</li>
    *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(lastNameProperty)}</li>
    *   <li>{@link DefaultPropertyFormatter#format(Object) lastNameFormatter.format(lastName)}</li>
    *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(lasttNameProperty)}</li>
-   *   <li>{@link DefaultPojoFormatter#getToStringSuffix() personFormatter.getToStringSuffix()}</li>
+   *   <li>{@link DefaultPojoFormatter#getToStringSuffix(Class) personFormatter.getToStringSuffix(Person.class)}</li>
    * </ol>
    * </p>
    *
@@ -213,9 +220,20 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
     }
-    return null;
+    PojoFormatter pojoFormatter = new DefaultPojoFormatter(); //BROKEN
+    StringBuilder result = new StringBuilder();
+    result.append(pojoFormatter.getToStringPrefix(clazz));
+    for (PropertyElement prop: classProperties.getToStringProperties()) {
+      result.append(pojoFormatter.getPropertyPrefix(prop));
+      result.append(propertyFormatters.get(prop).format(prop.getValue(instance)));
+      result.append(pojoFormatter.getPropertySuffix(prop));
+    }
+    result.append(pojoFormatter.getToStringSuffix(clazz));
+    return result.toString();
   }
 
   private final Class<T> clazz;
   private final ClassProperties classProperties;
+  private final Map<PropertyElement, PropertyFormatter> propertyFormatters =
+    new HashMap<PropertyElement, PropertyFormatter>();
 }
