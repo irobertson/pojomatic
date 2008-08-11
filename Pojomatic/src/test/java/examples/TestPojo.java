@@ -2,13 +2,15 @@ package examples;
 
 import org.pojomatic.Pojomatic;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.formatter.AccountNumberFormatter;
 
 public class TestPojo {
   @Property
   private boolean test;
 
-  @Property(formatter=AccountNumberFormatter.class)
+  @Property
+  @PropertyFormat(AccountNumberFormatter.class)
   private String creditCardNumber;
 
   private String ignored;
