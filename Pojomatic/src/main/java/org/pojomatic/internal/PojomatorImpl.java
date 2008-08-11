@@ -1,9 +1,9 @@
 package org.pojomatic.internal;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
@@ -26,7 +26,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     for (PropertyElement prop: classProperties.getToStringProperties()) {
       PropertyFormatter propertyFormatter = findPropertyFormatter(prop.getElement());
       propertyFormatter.initialize(prop.getElement());
-      propertyFormatters.put(prop, propertyFormatter);
+      formattablePropertyElements.add(new FormattablePropertyElement(prop, propertyFormatter));
     }
   }
 
@@ -241,10 +241,6 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * @return the {@code String} representation of the given instance
    */
   public String doToString(T instance) {
-    //TODO:
-    // consider replacing propertyFormatter map with a list of
-    // Pair<PropertyElement, PropertyFormatter>.
-
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
     }
@@ -262,10 +258,11 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
     StringBuilder result = new StringBuilder();
     result.append(pojoFormatter.getToStringPrefix(clazz));
-    for (PropertyElement prop: classProperties.getToStringProperties()) {
-      result.append(pojoFormatter.getPropertyPrefix(prop));
-      result.append(propertyFormatters.get(prop).format(prop.getValue(instance)));
-      result.append(pojoFormatter.getPropertySuffix(prop));
+    for (FormattablePropertyElement formattablePropertyElement: formattablePropertyElements) {
+      result.append(pojoFormatter.getPropertyPrefix(formattablePropertyElement.propertyElement));
+      result.append(formattablePropertyElement.propertyFormatter.format(
+        formattablePropertyElement.propertyElement.getValue(instance)));
+      result.append(pojoFormatter.getPropertySuffix(formattablePropertyElement.propertyElement));
     }
     result.append(pojoFormatter.getToStringSuffix(clazz));
     return result.toString();
@@ -273,7 +270,18 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
   private final Class<T> clazz;
   private final ClassProperties classProperties;
-  private final Map<PropertyElement, PropertyFormatter> propertyFormatters =
-    new HashMap<PropertyElement, PropertyFormatter>();
+  private final List<FormattablePropertyElement> formattablePropertyElements =
+    new ArrayList<FormattablePropertyElement>();
   private final Class<? extends PojoFormatter> pojoFormatterClass;
+
+  private static class FormattablePropertyElement {
+    private PropertyElement propertyElement;
+    private PropertyFormatter propertyFormatter;
+
+    public FormattablePropertyElement(PropertyElement propertyElement,
+        PropertyFormatter propertyFormatter) {
+      this.propertyElement = propertyElement;
+      this.propertyFormatter = propertyFormatter;
+    }
+  }
 }
