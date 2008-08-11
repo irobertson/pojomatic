@@ -1,11 +1,14 @@
 package org.pojomatic.internal;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
+import org.pojomatic.annotations.PojoFormat;
+import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PojoFormatter;
@@ -19,11 +22,32 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   public PojomatorImpl(Class<T> clazz) {
     this.clazz = clazz;
     classProperties = new ClassProperties(clazz);
+    pojoFormatterClass = findPojoFormatterClass(clazz);
     for (PropertyElement prop: classProperties.getToStringProperties()) {
-      PropertyFormatter propertyFormatter = new DefaultPropertyFormatter(); //BROKEN
+      PropertyFormatter propertyFormatter = findPropertyFormatter(prop.getElement());
       propertyFormatter.initialize(prop.getElement());
       propertyFormatters.put(prop, propertyFormatter);
     }
+  }
+
+  private static PropertyFormatter findPropertyFormatter(AnnotatedElement element) {
+    PropertyFormat format = element.getAnnotation(PropertyFormat.class);
+    try {
+      return (format == null ? DefaultPropertyFormatter.class : format.value()).newInstance();
+    }
+    catch (InstantiationException e) {
+      //TODO log this?
+      throw new RuntimeException(e);
+    }
+    catch (IllegalAccessException e) {
+      //TODO log this?
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static Class<? extends PojoFormatter> findPojoFormatterClass(Class<?> clazz) {
+    PojoFormat format = clazz.getAnnotation(PojoFormat.class);
+    return format == null ? DefaultPojoFormatter.class : format.value();
   }
 
   public boolean doEquals(T instance, Object other) {
@@ -217,16 +241,25 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * @return the {@code String} representation of the given instance
    */
   public String doToString(T instance) {
-    //TODO: make an annotation for the PojoFormatter; use it.
-    // Use the PropertyFormatter annotations.
-    // test these.
+    //TODO:
     // consider replacing propertyFormatter map with a list of
     // Pair<PropertyElement, PropertyFormatter>.
 
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
     }
-    PojoFormatter pojoFormatter = new DefaultPojoFormatter(); //BROKEN
+
+    PojoFormatter pojoFormatter;
+    try {
+      pojoFormatter = pojoFormatterClass.newInstance();
+    }
+    catch (InstantiationException e) {
+      throw new RuntimeException(e);
+    }
+    catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+
     StringBuilder result = new StringBuilder();
     result.append(pojoFormatter.getToStringPrefix(clazz));
     for (PropertyElement prop: classProperties.getToStringProperties()) {
@@ -242,4 +275,5 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   private final ClassProperties classProperties;
   private final Map<PropertyElement, PropertyFormatter> propertyFormatters =
     new HashMap<PropertyElement, PropertyFormatter>();
+  private final Class<? extends PojoFormatter> pojoFormatterClass;
 }

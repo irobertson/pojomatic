@@ -23,9 +23,4 @@ public @interface PropertyFormat {
    *	The formatter to use for creating a {@code String} representation.
    */
   public Class<? extends PropertyFormatter> value();
-
-  /**
-   *    An optional label for this property.
-   */
-  public String label() default "";
 }

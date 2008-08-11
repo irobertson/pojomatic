@@ -1,6 +1,10 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
+import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -8,9 +12,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
+import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
-import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
-import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
+import org.pojomatic.annotations.PropertyFormat;
+import org.pojomatic.formatter.DefaultPojoFormatter;
+import org.pojomatic.formatter.DefaultPropertyFormatter;
 
 public class PojomatorImplTest {
   private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
@@ -190,6 +196,36 @@ public class PojomatorImplTest {
   @Test public void testSimpleToString() {
     String actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doToString(new ObjectPairProperty("ess", "tee"));
     assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
+  }
+
+  @Test public void testCustomFormatters() {
+    assertEquals("PREFIXFormattedObject{s: {BEFOREx}}",
+      makePojomatorImpl(FormattedObject.class).doToString(new FormattedObject("x")));
+  }
+
+  @PojoFormat(SimplePojoFormatter.class)
+  private static class FormattedObject {
+    public FormattedObject(Object s) {
+      this.s = s;
+    }
+    @Property
+    @PropertyFormat(SimplePropertyFormatter.class)
+    public Object s;
+  }
+
+  public static class SimplePojoFormatter extends DefaultPojoFormatter {
+
+    @Override
+    public String getToStringPrefix(Class<?> pojoClass) {
+      return "PREFIX" + super.getToStringPrefix(pojoClass);
+    }
+  }
+
+  public static class SimplePropertyFormatter extends DefaultPropertyFormatter {
+    @Override
+    public String format(Object value) {
+      return "BEFORE" + super.format(value);
+    }
   }
 
   private static class ObjectProperty {
