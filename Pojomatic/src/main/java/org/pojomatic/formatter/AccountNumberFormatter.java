@@ -20,7 +20,7 @@ public class AccountNumberFormatter extends DefaultPropertyFormatter {
   private char fillChar = DEFAULT_FILL_CHAR;
 
   @Override
-  public void initialize(@SuppressWarnings("unused") AnnotatedElement element) {
+  public void initialize(AnnotatedElement element) {
     //nothing to initialize
   }
 
