@@ -11,18 +11,16 @@ public class Common {
 
   private int anInt;
 
-  private static final Pojomatic<Common> pojomatic = new Pojomatic<Common>(Common.class);
-
   @Override public int hashCode() {
-    return pojomatic.hashCode(this);
+    return Pojomatic.hashCode(this);
   }
 
   @Override public String toString() {
-    return pojomatic.toString(this);
+    return Pojomatic.toString(this);
   }
 
   @Override public boolean equals(Object o) {
-    return pojomatic.equals(this, o);
+    return Pojomatic.equals(this, o);
   }
 
   public boolean isTest() {

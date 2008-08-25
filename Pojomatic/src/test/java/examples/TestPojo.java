@@ -50,17 +50,15 @@ public class TestPojo {
     this.ignored = ignored;
   }
 
-  private static final Pojomatic<TestPojo> pojomatic = new Pojomatic<TestPojo>(TestPojo.class);
-
   @Override public int hashCode() {
-    return pojomatic.hashCode(this);
+    return Pojomatic.hashCode(this);
   }
 
   @Override public String toString() {
-    return pojomatic.toString(this);
+    return Pojomatic.toString(this);
   }
 
   @Override public boolean equals(Object o) {
-    return pojomatic.equals(this, o);
+    return Pojomatic.equals(this, o);
   }
 }
