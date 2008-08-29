@@ -4,17 +4,65 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic</artifactId>
+  <packaging>jar</packaging>
   <version>0.1-SNAPSHOT</version>
   <name>Pojomatic</name>
   <description>
     Automatically provides configurable implementations of the
     equals(Object), toString() and hashCode() methods inherited from java.lang.Object
   </description>
+  <url>http://www.pojomatic.org</url>
+  <inceptionYear>2008</inceptionYear>
   <scm>
     <connection>scm:svn:https://pojomatic.googlecode.com/svn/trunk/pojomatic</connection>
     <developerConnection>scm:svn:https://pojomatic.googlecode.com/svn/trunk/pojomatic</developerConnection>
     <url>https://pojomatic.googlecode.com/svn/trunk/pojomatic</url>
   </scm>
+  <developers>
+    <developer>
+      <name>Ian Robertson</name>
+      <roles>
+        <role>Lead Developer</role>
+      </roles>
+      <email>ian.b.robertson@gmail.com</email>
+      <id>ian.b.robertson</id>
+      <organization>Overstock.com</organization>
+      <organizationUrl>http://www.overstock.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Chris Hansen</name>
+      <roles>
+        <role>Lead Developer</role>
+      </roles>
+      <email>hansen.chris.w@gmail.com</email>
+      <id>hansen.chris.w</id>
+      <organization>Overstock.com</organization>
+      <organizationUrl>http://www.overstock.com</organizationUrl>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>Apache License 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>Google Code</system>
+    <url>http://code.google.com/p/pojomatic/issues/list</url>
+  </issueManagement>
+  <distributionManagement>
+    <downloadUrl>http://code.google.com/p/pojomatic/downloads/list</downloadUrl>
+  </distributionManagement>
+  <mailingLists>
+    <mailingList>
+      <name>pojomatic-user</name>
+      <subscribe>pojomatic-user+subscribe@googlegroups.com</subscribe>
+      <unsubscribe>pojomatic-user+unsubscribe@googlegroups.com</unsubscribe>
+      <post>pojomatic-user@googlegroups.com</post>
+      <archive>http://groups.google.com/group/pojomatic-user</archive>
+    </mailingList>
+  </mailingLists>
   <build>
     <plugins>
       <plugin>
