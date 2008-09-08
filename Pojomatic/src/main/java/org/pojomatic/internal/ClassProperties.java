@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.AutoDetectType;
 import org.pojomatic.annotations.AutoProperty;
-import org.pojomatic.annotations.PojomaticDefaultPolicy;
+import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 
@@ -28,7 +28,7 @@ public class ClassProperties {
 
     for (Class<?> clazz = pojoClass; clazz != Object.class; clazz = clazz.getSuperclass()) {
       AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
-      PojomaticDefaultPolicy classPolicy = null;
+      DefaultPojomaticPolicy classPolicy = null;
       if (autoProperty != null) {
         classPolicy = autoProperty.policy();
       }

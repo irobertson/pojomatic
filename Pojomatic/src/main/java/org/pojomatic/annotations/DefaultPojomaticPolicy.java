@@ -12,7 +12,7 @@ import org.pojomatic.internal.PropertyRole;
  * This are set class-wide using {@link AutoProperty} and for
  * an individual property using {@link Property}.
  */
-public enum PojomaticDefaultPolicy {
+public enum DefaultPojomaticPolicy {
 
   /**
    * Anything included in {@code public int hashCode()} should also be included in
@@ -55,7 +55,7 @@ public enum PojomaticDefaultPolicy {
     return roles;
   }
 
-  private PojomaticDefaultPolicy(PropertyRole... roles) {
+  private DefaultPojomaticPolicy(PropertyRole... roles) {
     Set<PropertyRole> roleSet = EnumSet.noneOf(PropertyRole.class);
     for (PropertyRole role: roles) {
       roleSet.add(role);

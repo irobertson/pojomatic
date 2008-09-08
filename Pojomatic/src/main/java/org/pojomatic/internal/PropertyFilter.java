@@ -3,7 +3,7 @@ package org.pojomatic.internal;
 import java.util.Collections;
 import java.util.Set;
 
-import org.pojomatic.annotations.PojomaticDefaultPolicy;
+import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 
 public class PropertyFilter {
@@ -18,7 +18,7 @@ public class PropertyFilter {
    * {@code null}.
    */
   public static Set<PropertyRole> getRoles(
-    PojomaticPolicy elementPolicy, PojomaticDefaultPolicy classPolicy) {
+    PojomaticPolicy elementPolicy, DefaultPojomaticPolicy classPolicy) {
     if (elementPolicy != null) {
       if (elementPolicy == PojomaticPolicy.DEFAULT) {
           return classPolicy != null ? classPolicy.getRoles() : PojomaticPolicy.ALL.getRoles();

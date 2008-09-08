@@ -21,7 +21,7 @@ public @interface AutoProperty {
   /**
    *    Include properties in everything by default (unless otherwise stated by {@link Property}).
    */
-  public PojomaticDefaultPolicy policy() default PojomaticDefaultPolicy.ALL;
+  public DefaultPojomaticPolicy policy() default DefaultPojomaticPolicy.ALL;
 
   /**
    *    Specifies whether to auto-detect properties by their fields, getters or not at all.

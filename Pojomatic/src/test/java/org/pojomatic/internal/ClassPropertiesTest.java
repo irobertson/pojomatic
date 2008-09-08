@@ -12,7 +12,7 @@ import org.pojomatic.PropertyElement;
 import org.pojomatic.TestUtils;
 import org.pojomatic.annotations.AutoDetectType;
 import org.pojomatic.annotations.AutoProperty;
-import org.pojomatic.annotations.PojomaticDefaultPolicy;
+import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 
@@ -179,7 +179,7 @@ public class ClassPropertiesTest {
     private int onlyForToString;
   }
 
-  @AutoProperty(policy=PojomaticDefaultPolicy.TO_STRING)
+  @AutoProperty(policy=DefaultPojomaticPolicy.TO_STRING)
   public static class AutoFieldPojo {
     public String string;
 
@@ -205,7 +205,7 @@ public class ClassPropertiesTest {
     public double onlyForEquals() { return 0.0; }
   }
 
-  @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=PojomaticDefaultPolicy.ALL)
+  @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=DefaultPojomaticPolicy.ALL)
   public static class AutoMethodPojo {
     /* Fields are not auto-detected */
     int notDetected;
@@ -262,12 +262,12 @@ public class ClassPropertiesTest {
     public String getMyString() { return "foo"; }
   }
 
-  @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=PojomaticDefaultPolicy.EQUALS)
+  @AutoProperty(autoDetect=AutoDetectType.METHOD, policy=DefaultPojomaticPolicy.EQUALS)
   private static abstract class ParentAutoPojo {
     public abstract int getFoo();
   }
 
-  @AutoProperty(autoDetect=AutoDetectType.FIELD, policy=PojomaticDefaultPolicy.TO_STRING)
+  @AutoProperty(autoDetect=AutoDetectType.FIELD, policy=DefaultPojomaticPolicy.TO_STRING)
   private static class ChildAutoPojo extends ParentAutoPojo {
     public String other;
 

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import org.junit.Test;
-import org.pojomatic.annotations.PojomaticDefaultPolicy;
+import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 
 import static org.junit.Assert.*;
@@ -21,7 +21,7 @@ public class PropertyFilterTest {
 
   @Test public void testGetRolesWithPropertyPolicyAndClassPolicy() {
     for (PojomaticPolicy policy: ALL_BUT_DEFAULT) {
-      for (PojomaticDefaultPolicy defaultPolicy: PojomaticDefaultPolicy.values()) {
+      for (DefaultPojomaticPolicy defaultPolicy: DefaultPojomaticPolicy.values()) {
       assertEquals(policy.getRoles(), PropertyFilter.getRoles(policy, defaultPolicy));
       }
     }
@@ -33,14 +33,14 @@ public class PropertyFilterTest {
   }
 
   @Test public void testGetRolesWithDefaultPropertyPolicyAndClassPolicy() {
-    for (PojomaticDefaultPolicy defaultPolicy: PojomaticDefaultPolicy.values()) {
+    for (DefaultPojomaticPolicy defaultPolicy: DefaultPojomaticPolicy.values()) {
       assertEquals(
         defaultPolicy.getRoles(), PropertyFilter.getRoles(PojomaticPolicy.DEFAULT, defaultPolicy));
     }
   }
 
   @Test public void testGetRolesWithOnlyClassPolicy() {
-    for (PojomaticDefaultPolicy defaultPolicy: PojomaticDefaultPolicy.values()) {
+    for (DefaultPojomaticPolicy defaultPolicy: DefaultPojomaticPolicy.values()) {
       assertEquals(defaultPolicy.getRoles(), PropertyFilter.getRoles(null, defaultPolicy));
     }
   }
