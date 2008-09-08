@@ -20,11 +20,12 @@ public class PropertyFilter {
   public static Set<PropertyRole> getRoles(
     PojomaticPolicy elementPolicy, DefaultPojomaticPolicy classPolicy) {
     if (elementPolicy != null) {
-      if (elementPolicy == PojomaticPolicy.DEFAULT) {
+      Set<PropertyRole> roles = elementPolicy.getRoles();
+      if (roles == null) { // this will be the case for PojomaticPolicy.DEFAULT
           return classPolicy != null ? classPolicy.getRoles() : PojomaticPolicy.ALL.getRoles();
       }
       else {
-        return elementPolicy.getRoles();
+        return roles;
       }
     }
     else if(classPolicy != null) {
