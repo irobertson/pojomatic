@@ -94,11 +94,13 @@ public class PojomatorImplTest {
     for (Class<?> primitiveType : PRIMATIVE_TYPES) {
       ObjectProperty main = new ObjectProperty(Array.newInstance(primitiveType, 3));
       ObjectProperty other = new ObjectProperty(Array.newInstance(primitiveType, 3));
+      ObjectProperty different = new ObjectProperty(Array.newInstance(primitiveType, 4));
       assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(main, other));
       assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, main));
       assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(main, nullProperty));
       assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(objectArrayProperty, main));
       assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(main, objectArrayProperty));
+      assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(main, different));
     }
   }
 

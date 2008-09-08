@@ -43,6 +43,10 @@ public class DefaultPropertyFormatterTest {
     assertEquals("['0x5', 'b']", formatter.format(new char[] {5, 'b'}));
   }
 
+  @Test public void testFormatArrayOfShorts() {
+    assertEquals("[5, 7]", formatter.format(new short[] {5, 7}));
+  }
+
   @Test public void testFormatArrayOfInts() {
     assertEquals("[5, 7]", formatter.format(new int[] {5, 7}));
   }

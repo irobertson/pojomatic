@@ -1,6 +1,6 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -33,6 +33,28 @@ public class PropertyElementTest {
     PropertyElement propertyElement =
       new PropertyAccessor(getTestMethod());
     assertEquals(testAccessor(), propertyElement.getValue(this));
+  }
+
+  @Test
+  public void testEquals() throws Exception {
+    PropertyAccessor testMethodProperty = new PropertyAccessor(getTestMethod());
+    assertEquals(testMethodProperty, testMethodProperty);
+    assertFalse(testMethodProperty.equals(null));
+    assertFalse(testMethodProperty.equals("someOtherClass"));
+    assertEquals(testMethodProperty, new PropertyAccessor(getTestMethod()));
+    final PropertyField testFieldProperty = new PropertyField(getTestField());
+    assertFalse(testMethodProperty.equals(testFieldProperty));
+    assertFalse(testFieldProperty.equals(testMethodProperty));
+  }
+
+  @Test
+  public void testToString() throws Exception {
+    assertEquals(getTestMethod().toString(), new PropertyAccessor(getTestMethod()).toString());
+  }
+
+  @Test
+  public void testHashCode() throws Exception {
+    assertEquals(getTestMethod().hashCode(), new PropertyAccessor(getTestMethod()).hashCode());
   }
 
   private Method getTestMethod() throws Exception {
