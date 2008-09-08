@@ -140,6 +140,11 @@ public class PojomatorImpl<T> implements Pojomator<T>{
                 return false;
               }
             }
+            else {
+              // should NEVER happen
+              throw new IllegalStateException(
+                "unknown primative type " + instanceComponentClass.getName());
+            }
           }
         }
       }
