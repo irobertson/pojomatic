@@ -1,8 +1,6 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
 import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
 

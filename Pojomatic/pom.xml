@@ -28,6 +28,7 @@
       <id>ian.b.robertson</id>
       <organization>Overstock.com</organization>
       <organizationUrl>http://www.overstock.com</organizationUrl>
+      <url>http://www.artima.com/weblogs/index.jsp?blogger=ianr</url>
     </developer>
     <developer>
       <name>Chris Hansen</name>
@@ -38,6 +39,7 @@
       <id>hansen.chris.w</id>
       <organization>Overstock.com</organization>
       <organizationUrl>http://www.overstock.com</organizationUrl>
+      <url>http://polyglot-window.blogspot.com/</url>
     </developer>
   </developers>
   <licenses>
@@ -87,6 +89,51 @@
     </plugins>
   </build>
 
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.0-beta-5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>1.1.1</version>
+        <configuration>
+          <excludeFilterFile>${basedir}/FindBugsFilter.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.4.2</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetJdk>1.5</targetJdk>
+          <rulesets>
+            <ruleset>${project.basedir}/src/pmd.xml</ruleset>
+          </rulesets>
+          <includeTests>true</includeTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
