@@ -14,9 +14,9 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:https://pojomatic.googlecode.com/svn/trunk/pojomatic</connection>
-    <developerConnection>scm:svn:https://pojomatic.googlecode.com/svn/trunk/pojomatic</developerConnection>
-    <url>https://pojomatic.googlecode.com/svn/trunk/pojomatic</url>
+    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</connection>
+    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</developerConnection>
+    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</url>
   </scm>
   <developers>
     <developer>
@@ -50,19 +50,33 @@
     </license>
   </licenses>
   <issueManagement>
-    <system>Google Code</system>
-    <url>http://code.google.com/p/pojomatic/issues/list</url>
+    <system>Sourceforge</system>
+    <url>https://sourceforge.net/tracker/?func=browse&amp;group_id=239113</url>
   </issueManagement>
   <distributionManagement>
-    <downloadUrl>http://code.google.com/p/pojomatic/downloads/list</downloadUrl>
+    <repository>
+      <id>pojomatic-release-repository</id>
+      <name>Pojomatic Release Repository</name>
+      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>pojomatic-snapshot-repository</id>
+      <name>Pojomatic snapshot Repository</name>
+      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/snapshots/</url>
+    </snapshotRepository>
+    <site>
+      <id>pojomatic-site</id>
+      <name>Pojomatic</name>
+      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/site/</url>
+    </site>
   </distributionManagement>
   <mailingLists>
     <mailingList>
-      <name>pojomatic-user</name>
-      <subscribe>pojomatic-user+subscribe@googlegroups.com</subscribe>
-      <unsubscribe>pojomatic-user+unsubscribe@googlegroups.com</unsubscribe>
-      <post>pojomatic-user@googlegroups.com</post>
-      <archive>http://groups.google.com/group/pojomatic-user</archive>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=pojomatic-users</archive>
+      <name>pojomatic-users</name>
+      <post>pojomatic-users@lists.sourceforge.net</post>
+      <subscribe>http://lists.sourceforge.net/mailman/listinfo/pojomatic-users</subscribe>
+      <unsubscribe>http://lists.sourceforge.net/mailman/listinfo/pojomatic-users</unsubscribe>
     </mailingList>
   </mailingLists>
   <build>
