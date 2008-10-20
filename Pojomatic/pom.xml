@@ -55,19 +55,19 @@
   </issueManagement>
   <distributionManagement>
     <repository>
-      <id>pojomatic-release-repository</id>
+      <id>pojomatic-releases</id>
       <name>Pojomatic Release Repository</name>
-      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/releases/</url>
+      <url>sftp://web.sourceforge.net/releases</url>
     </repository>
     <snapshotRepository>
-      <id>pojomatic-snapshot-repository</id>
+      <id>pojomatic-snapshots</id>
       <name>Pojomatic snapshot Repository</name>
-      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/snapshots/</url>
+      <url>sftp://web.sourceforge.net/home/groups/p/po/pojomatic/snapshots</url>
     </snapshotRepository>
     <site>
       <id>pojomatic-site</id>
       <name>Pojomatic</name>
-      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/site/</url>
+      <url>sftp://web.sourceforge.net/site</url>
     </site>
   </distributionManagement>
   <mailingLists>
