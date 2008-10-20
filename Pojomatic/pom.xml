@@ -57,7 +57,7 @@
     <repository>
       <id>pojomatic-releases</id>
       <name>Pojomatic Release Repository</name>
-      <url>sftp://web.sourceforge.net/releases</url>
+      <url>sftp://web.sourceforge.net/home/groups/p/po/pojomatic/releases</url>
     </repository>
     <snapshotRepository>
       <id>pojomatic-snapshots</id>
@@ -67,7 +67,7 @@
     <site>
       <id>pojomatic-site</id>
       <name>Pojomatic</name>
-      <url>sftp://web.sourceforge.net/site</url>
+      <url>sftp://web.sourceforge.net/home/groups/p/po/pojomatic/htdocs/site</url>
     </site>
   </distributionManagement>
   <mailingLists>
