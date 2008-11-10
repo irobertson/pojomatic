@@ -26,5 +26,5 @@ public @interface AutoProperty {
   /**
    *    Specifies whether to auto-detect properties by their fields, getters or not at all.
    */
-  public AutoDetectType autoDetect() default AutoDetectType.FIELD;
+  public AutoDetectPolicy autoDetect() default AutoDetectPolicy.FIELD;
 }

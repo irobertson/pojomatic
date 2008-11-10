@@ -8,13 +8,15 @@ import org.pojomatic.Pojomatic;
 import org.pojomatic.internal.PropertyRole;
 
 /**
- * Defines which sets of {@link Pojomatic} operations that properties should be included.
- * This are set class-wide using {@link AutoProperty} and for
- * an individual property using {@link Property}.
+ * A policy for defining which sets of {@link Pojomatic} operations
+ * ({@code equals}, {@code hashCode} and {@code toString}) should use all properties by default.
+ * This is set class-wide using {@link AutoProperty}.
+ * @see PojomaticPolicy
  */
 public enum DefaultPojomaticPolicy {
 
   /**
+   * Use all properties for both {@code hashCode} and {@code equals} by default.
    * Anything included in {@code public int hashCode()} should also be included in
    * {@code public boolean equals(Object)} to preserve the general
    * contract of {@link Object#hashCode()}.
@@ -25,26 +27,27 @@ public enum DefaultPojomaticPolicy {
   HASHCODE_EQUALS(PropertyRole.HASH_CODE, PropertyRole.EQUALS),
 
   /**
-   * {@code public boolean equals(Object)}
+   * Use all properties for {@code equals} only by default.
    *
    * @see Object#equals(Object)
    */
   EQUALS(PropertyRole.EQUALS),
 
   /**
-   * {@code public String toString()}
+   * Use all properties for both {@code toString} only by default.
    *
    * @see Object#toString()
    */
   TO_STRING(PropertyRole.TO_STRING),
 
   /**
-   * Shorthand for all of the above.
+   * Use all properties for {@code hashCode}, {@code equals} and {@code toString} by default.
    */
   ALL(PropertyRole.EQUALS, PropertyRole.HASH_CODE, PropertyRole.TO_STRING),
 
   /**
-   * Shorthand for none of the above.
+   * Do not use any properties for any of {@code hashCode}, {@code equals} or {@code toString}
+   * by default.
    */
   NONE();
 

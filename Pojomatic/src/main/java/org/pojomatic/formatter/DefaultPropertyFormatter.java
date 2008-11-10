@@ -3,6 +3,12 @@ package org.pojomatic.formatter;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
+/**
+ * The default property formatter used by Pojomatic.  While the particulars of the formatting
+ * strategy are subject to change, the general principle is to provide a meaningful representation.
+ * In particular, arrays are formatted "deeply", rather than simply showing the default toString
+ * representation of Java arrays.
+ */
 public class DefaultPropertyFormatter implements PropertyFormatter {
   public void initialize(AnnotatedElement element) {
     //Not applicable

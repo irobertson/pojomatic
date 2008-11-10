@@ -6,9 +6,10 @@ import java.util.Arrays;
 import org.pojomatic.annotations.Property;
 
 /**
- * Shows only the last 4 characters of a {@link Property}. Useful for credit card numbers, social
- * security numbers, etc. This formatter cannot be used with properties of array types.
- * <br><br>
+ * A property formatter which shows only the last 4 characters of the string representation of the
+ * {@link Property}, with all others replaced by an asterisk ('*').
+ * Useful for credit card numbers, social security numbers, etc.
+ * <p>
  * For example, a 16 character {@code String} representing a credit card number would
  * be formatted as "************1234".
  */

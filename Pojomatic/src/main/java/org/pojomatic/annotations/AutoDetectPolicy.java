@@ -1,13 +1,18 @@
 package org.pojomatic.annotations;
 
-public enum AutoDetectType {
+/**
+ * A policy for determining which class members are automatically detected as properties.  This
+ * policy is set class-wide using {@link AutoProperty}.
+ */
+public enum AutoDetectPolicy {
   /**
    *    Auto-detect fields of the class as properties
    */
   FIELD,
 
   /**
-   *    Auto-detect methods of the class as properties using the JavaBean conventions (i.e. getX).
+   *    Auto-detect accessor methods of the class as properties using the JavaBean conventions
+   *    (i.e. getX and isX).
    */
   METHOD,
 

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.pojomatic.PropertyElement;
-import org.pojomatic.annotations.AutoDetectType;
+import org.pojomatic.annotations.AutoDetectPolicy;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
@@ -42,7 +42,7 @@ public class ClassProperties {
 
         /* add all fields that are explicitly annotated or auto-detected */
         if (propertyPolicy != null ||
-            (autoProperty != null && AutoDetectType.FIELD == autoProperty.autoDetect())) {
+            (autoProperty != null && AutoDetectPolicy.FIELD == autoProperty.autoDetect())) {
           for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
             properties.get(role).add(new PropertyField(field));
           }
@@ -66,7 +66,7 @@ public class ClassProperties {
 
         /* add all methods that are explicitly annotated or auto-detected */
         if (propertyPolicy != null ||
-            (autoProperty != null && AutoDetectType.METHOD == autoProperty.autoDetect())) {
+            (autoProperty != null && AutoDetectPolicy.METHOD == autoProperty.autoDetect())) {
           for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
             properties.get(role).add(new PropertyAccessor(method));
           }
