@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC
+  "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Overview</title>
+</head>
+<body>
+Pojomatic is a library which allows simple creation of the three methods
+{@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()} by
+annotating properties.  There are two steps to pojomatize a pojo class: annotating, and implementing
+the three methods.
+
+<h2>Annotations</h2>
+Pojomatic behavior is controlled by annotations; these can be on a property-by-property basis, a
+class-wide basis, or a mix of the two. Class wide behavior can be controlled by the
+{@link org.pojomatic.annotations.AutoProperty AutoProperty} and
+{@link org.pojomatic.annotations.PojoFormat PojoFormat}, while property-specific behavior can be
+controlled by the {@link org.pojomatic.annotations.Property Property} and
+{@link org.pojomatic.annotations.PojoFormat PropertyFormat} annotations.  A recommended practice is
+to provide an {@code AutoProperty} annotation at the class level, and the override the behavior it
+specifies on a per-property basis as needed.  This minimizes both the number of annotations needed,
+as well as the number of additional steps needed when adding new properties to a class.
+</body>
+</html>
