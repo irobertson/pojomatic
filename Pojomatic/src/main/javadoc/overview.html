@@ -8,8 +8,9 @@
 </head>
 <body>
 Pojomatic is a library which allows simple creation of the three methods
-{@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()} by
-annotating properties.  There are two steps to pojomatize a pojo class: annotating, and implementing
+{@link java.lang.Object#equals(Object)}, {@link java.lang.Object#hashCode()} and
+ {@link java.lang.Object#toString()} by
+annotating properties.  There are two steps to "pojomate" a pojo class: annotating, and implementing
 the three methods.
 
 <h2>Annotations</h2>
@@ -19,8 +20,85 @@ class-wide basis, or a mix of the two. Class wide behavior can be controlled by 
 {@link org.pojomatic.annotations.PojoFormat PojoFormat}, while property-specific behavior can be
 controlled by the {@link org.pojomatic.annotations.Property Property} and
 {@link org.pojomatic.annotations.PojoFormat PropertyFormat} annotations.  A recommended practice is
-to provide an {@code AutoProperty} annotation at the class level, and the override the behavior it
+to provide an {@code AutoProperty} annotation at the class level, and then override the behavior it
 specifies on a per-property basis as needed.  This minimizes both the number of annotations needed,
 as well as the number of additional steps needed when adding new properties to a class.
+
+<h2>Implementing equals, hashCode and toString</h2>
+There are two ways to implement equals, hashCode and toString.  The simplest is to delegate to the
+static methods in {@link org.pojomatic.Pojomatic Pojomatic}:
+<p  style="background-color:#EEEEFF; margin: 1em">
+<code>
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">hashCode</font><font color="#000000">()&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">Pojomatic.hashCode</font><font color="#000000">(</font><font color="#7f0055"><b>this</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">String&nbsp;toString</font><font color="#000000">()&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">Pojomatic.toString</font><font color="#000000">(</font><font color="#7f0055"><b>this</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font><font color="#000000">equals</font><font color="#000000">(</font><font color="#000000">Object&nbsp;o</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">Pojomatic.equals</font><font color="#000000">(</font><font color="#000000">this,&nbsp;o</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font></code>
+</p>
+Under the covers, these methods are referencing a {@link org.pojomatic.Pojomator Pojomator} instance
+which is created lazily and cached on a per-class basis.  The performance penalty for this is
+negligible, but if profiling suggests that it is a bottleneck, one can do this by hand:
+
+<p  style="background-color:#EEEEFF; margin: 1em">
+<code>
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;final&nbsp;static&nbsp;</b></font><font color="#000000">Pojomator&lt;Manual&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator</font><font color="#000000">(</font><font color="#000000">Manual.</font><font color="#7f0055"><b>class</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font><font color="#000000">equals</font><font color="#000000">(</font><font color="#000000">Object&nbsp;other</font><font color="#000000">)&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">POJOMATOR.doEquals</font><font color="#000000">(</font><font color="#000000">this,&nbsp;other</font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">hashCode</font><font color="#000000">()&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">POJOMATOR.doHashCode</font><font color="#000000">(</font><font color="#7f0055"><b>this</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">String&nbsp;toString</font><font color="#000000">()&nbsp;{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;&nbsp;&nbsp;</font><font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">POJOMATOR.doToString</font><font color="#000000">(</font><font color="#7f0055"><b>this</b></font><font color="#000000">)</font><font color="#000000">;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#000000">}</font>
+</code>
+</p>
+
+<h2>Example Annotations</h2>
+The simplest way to annotate a class for pojomation is to add a single {@code AutoProperty} annotation:
+
+<p  style="background-color:#EEEEFF; margin: 1em">
+<code>
+<font color="#646464">@AutoProperty&nbsp;</font><font color="#3f7f5f">//all&nbsp;fields&nbsp;are&nbsp;included&nbsp;by&nbsp;default</font><br />
+<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">Common&nbsp;</font><font color="#000000">{</font><br />
+&nbsp;&nbsp;...<br />
+}<br />
+</code>
+</p>
+
+If you wish reference properties by getter methods instead of direct field access, you can do this by
+passing {@code autoDetect=AutoDetectPolicy.METHOD} to the {@code AutoProperty} annotation.
+
+By default, all properties are used in the implementations of the {@code equals}, {@code hashCode}
+and {@code toString} methods; this can be changed via the
+{@link org.pojomatic.annotations.AutoProperty#policy policy} parameter to {@code AutoProperty}.
+Additionally, one can override this choice on a per-property basis by use of the {@code Property}
+annotation.  For example, if you have a class with a mutable field which you do not wish to include
+in the {@code hashCode} calculation, you can accomplish this via:
+
+
+<p  style="background-color:#EEEEFF; margin: 1em">
+<code>
+<font color="#646464">@AutoProperty</font><br />
+<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font><font color="#000000">Employee&nbsp;</font><font color="#000000">{</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font><font color="#000000">String&nbsp;firstName;</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font><font color="#000000">String&nbsp;lastName;</font><br />
+<font color="#ffffff"></font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#646464">@Property</font><font color="#000000">(</font><font color="#000000">policy=PojomaticPolicy.EQUALS_TO_STRING</font><font color="#000000">)</font><br />
+<font color="#ffffff">&nbsp;&nbsp;</font><font color="#7f0055"><b>private&nbsp;</b></font><font color="#000000">String&nbsp;securityLevel;</font><br />
+&nbsp;&nbsp;...<br />
+}<br />
+</code>
+</p>
+
 </body>
 </html>
