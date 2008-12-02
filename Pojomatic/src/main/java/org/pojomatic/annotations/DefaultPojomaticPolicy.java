@@ -34,6 +34,14 @@ public enum DefaultPojomaticPolicy {
   EQUALS(PropertyRole.EQUALS),
 
   /**
+   * Use all properties for both {@code equals} and {@code toString} by default.
+   *
+   * @see Object#equals(Object)
+   * @see Object#toString()
+   */
+  EQUALS_TO_STRING(PropertyRole.EQUALS, PropertyRole.TO_STRING),
+
+  /**
    * Use all properties for both {@code toString} only by default.
    *
    * @see Object#toString()

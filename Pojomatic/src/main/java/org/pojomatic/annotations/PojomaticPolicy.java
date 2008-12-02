@@ -27,6 +27,15 @@ public enum PojomaticPolicy {
   HASHCODE_EQUALS(PropertyRole.HASH_CODE, PropertyRole.EQUALS),
 
   /**
+   * Use the property for both {@code equals} and {@code toString}.
+   *
+   * @see Object#equals(Object)
+   * @see Object#toString()
+   */
+  EQUALS_TO_STRING(PropertyRole.EQUALS, PropertyRole.TO_STRING),
+
+
+  /**
    * Use the property for {@code equals} only.
    *
    * @see Object#equals(Object)

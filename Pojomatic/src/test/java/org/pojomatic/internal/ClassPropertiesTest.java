@@ -18,20 +18,24 @@ import org.pojomatic.annotations.Property;
 
 public class ClassPropertiesTest {
 
-
   @Test
   public void testAnnotatedFields() throws Exception {
     final PropertyElement privateStringField = TestUtils.field(FieldPojo.class, "privateString");
     final PropertyElement publicIntField = TestUtils.field(FieldPojo.class, "publicInt");
     final PropertyElement onlyForStringField = TestUtils.field(FieldPojo.class, "onlyForToString");
+    final PropertyElement forEqualsAndToString =
+      TestUtils.field(FieldPojo.class, "forEqualsAndToString");
 
     ClassProperties classProperties = ClassProperties.createInstance(FieldPojo.class);
 
-    Set<PropertyElement> expected = asSet(privateStringField, publicIntField);
-    assertEquals(expected, asSet(classProperties.getEqualsProperties()));
-    assertEquals(expected, asSet(classProperties.getHashCodeProperties()));
     assertEquals(
-      asSet(privateStringField, publicIntField, onlyForStringField),
+      asSet(privateStringField, publicIntField, forEqualsAndToString),
+      asSet(classProperties.getEqualsProperties()));
+    assertEquals(
+      asSet(privateStringField, publicIntField),
+      asSet(classProperties.getHashCodeProperties()));
+    assertEquals(
+      asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString),
       asSet(classProperties.getToStringProperties()));
   }
 
@@ -177,6 +181,10 @@ public class ClassPropertiesTest {
     @SuppressWarnings("unused")
     @Property(policy=PojomaticPolicy.TO_STRING)
     private int onlyForToString;
+
+    @SuppressWarnings("unused")
+    @Property(policy=PojomaticPolicy.EQUALS_TO_STRING)
+    private int forEqualsAndToString;
   }
 
   @AutoProperty(policy=DefaultPojomaticPolicy.TO_STRING)
