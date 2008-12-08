@@ -11,7 +11,10 @@ import java.lang.annotation.Target;
 import org.pojomatic.formatter.PropertyFormatter;
 
 /**
- * Specifies formatting information to be used for creating {@code String} representations of properties.
+ * Specifies formatting information to be used for creating {@code String} representations of
+ * properties.  Note that using a {@code PropertyFormat} annotation on a property does not influence
+ * whether that property will be included in the {@code toString} implementation.  That is
+ * determined solely by any {@link Property} and {@link AutoProperty} annotations on the POJO.
  * @see PropertyFormatter
  */
 @Target({FIELD, METHOD})
