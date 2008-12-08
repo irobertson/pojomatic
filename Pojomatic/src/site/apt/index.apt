@@ -56,3 +56,5 @@ public class Person {
 --------
 Person{firstName: {John}, lastName: {Doe}, age: {32}}
 --------
+
+ For more information, see the {{{apidocs/index.html}JavaDocs}}.
