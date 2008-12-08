@@ -4,7 +4,7 @@ import org.pojomatic.PropertyElement;
 import org.pojomatic.internal.PojomatorImpl;
 
 /**
- * A formatter to aid in creating a {@code String} representation of a Pojo.  A new instance will be
+ * A formatter to aid in creating a {@code String} representation of a POJO.  A new instance will be
  * created for each time that {@link PojomatorImpl#doToString(Object)} is called.
  *
  * @see PojomatorImpl#doToString(Object)

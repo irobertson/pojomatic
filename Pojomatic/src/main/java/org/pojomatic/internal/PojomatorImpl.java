@@ -214,7 +214,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
   /**
    * Creates the {@code String} representation of the given instance. The format used depends on the
-   * {@link PojoFormatter} used for the pojo, and the {@link PropertyFormatter} of each property.
+   * {@link PojoFormatter} used for the POJO, and the {@link PropertyFormatter} of each property.
    * <p>
    * For example, suppose a class {@code Person} has properties {@code firstName} and
    * {@code lastName} which are included in its {@code String} representation.
