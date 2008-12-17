@@ -65,7 +65,8 @@
     <site>
       <id>pojomatic-site</id>
       <name>Pojomatic</name>
-      <url>sftp://web.sourceforge.net/home/groups/p/po/pojomatic/htdocs/site</url>
+      <!--  before deploying, you'll need to run ssh <username>,pojomatic@shell.sf.net create -->
+      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/htdocs/site</url>
     </site>
   </distributionManagement>
   <mailingLists>
