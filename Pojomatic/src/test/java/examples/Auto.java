@@ -31,13 +31,8 @@ public class Auto {
     return Pojomatic.equals(this, o);
   }
 
-  public boolean isEmpty() {
-    //TODO
-    return false;
-  }
-
   public boolean isTest() {
-    return this.test;
+    return test;
   }
 
   public void setTest(boolean test) {
@@ -45,7 +40,7 @@ public class Auto {
   }
 
   public int getExlude() {
-    return this.exlude;
+    return exlude;
   }
 
   public void setExlude(int exlude) {
