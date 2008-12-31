@@ -8,6 +8,7 @@ import java.util.List;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
+import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
@@ -50,6 +51,30 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return format == null ? DefaultPojoFormatter.class : format.value();
   }
 
+  /**
+   * {@inheritDoc}
+   *<p>
+   * For this to return true, the following must hold:
+   * <ul>
+   *  <li>{@code other} must be non-null, and an instance of {@code T}</li>
+   *  <li>Each property of {@code instance} which has a {@link PojomaticPolicy} other than
+   *  {@link PojomaticPolicy#TO_STRING TO_STRING} or {@link PojomaticPolicy#NONE NONE} must be equal
+   *  to the corresponding property of {@code other} in the following sense:
+   *  <ul>
+   *   <li>Both are {@code null}, or</li>
+   *   <li>Both are reference-equals (==) to each other, or</li>
+   *   <li>Both are primitive of the same type, and equal to each other, or</li>
+   *   <li>Both are of array type, with matching primitive component types, and the corresponding
+   *   {@code} equals method of {@link Arrays} returns true, or</li>
+   *   <li>Both are of array type with non-primitive component types, and
+   *   {@link Arrays#deepEquals(Object[], Object[])} returns true, or</li>
+   *   <li>The property {@code p} in {@code instance} is an object not of array type, and
+   *   {@code instanceP.equals(otherP)} returns true.
+   *  </ul>
+   * </ul>
+   *
+   * @throws NullPointerException if {@code instance} is null
+   */
   public boolean doEquals(T instance, Object other) {
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
@@ -82,8 +107,6 @@ public class PojomatorImpl<T> implements Pojomator<T>{
           if (!otherValue.getClass().isArray()) {
             return false;
           }
-          //TODO - decide if we should choose to enter this branch based off of the property's
-          // declared or runtime type.  Either way, document the choice.  For now, runtime.
           Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
           Class<?> otherComponentClass = otherValue.getClass().getComponentType();
 
@@ -152,6 +175,16 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return true;
   }
 
+  /**
+   * {@inheritDoc}
+   *<p>
+   * This is done by computing the hashCode of each property which has a {@link PojomaticPolicy} of
+   * {@link PojomaticPolicy#HASHCODE_EQUALS HASHCODE_EQUALS} or {@link PojomaticPolicy#ALL ALL}
+   * (using 0 when the property is null), and combining them in a fashion similar to that of
+   * {@link List#hashCode()}.
+   *
+   * @throws NullPointerException if {@code instance} is null
+   */
   public int doHashCode(T instance) {
     int hashCode = HASH_CODE_SEED;
     if (instance == null) {
@@ -213,7 +246,9 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   }
 
   /**
-   * Creates the {@code String} representation of the given instance. The format used depends on the
+   * {@inheritDoc}
+   * <p>
+   * The format used depends on the
    * {@link PojoFormatter} used for the POJO, and the {@link PropertyFormatter} of each property.
    * <p>
    * For example, suppose a class {@code Person} has properties {@code firstName} and
@@ -241,9 +276,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * </ol>
    * </p>
    *
-   * @param instance the instance for which to create a {@code String} representation. Must not be
-   * {@code null}.
-   * @return the {@code String} representation of the given instance
+   * @throws NullPointerException if {@code instance} is null
    */
   public String doToString(T instance) {
     if (instance == null) {
