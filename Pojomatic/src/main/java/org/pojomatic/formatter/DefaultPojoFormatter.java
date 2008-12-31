@@ -4,9 +4,14 @@ import org.pojomatic.Pojomatic;
 import org.pojomatic.PropertyElement;
 
 /**
- * Default formatter for classes that use {@link Pojomatic}.
- * For example,
- * TODO provide an example
+ * Default formatter for classes that use {@link Pojomatic}.  This implementation first presents
+ * the class name, and then each property in turn, separated by commas, using braces to indicate
+ * nesting.
+ * <p>
+ * For example, if a class Person has two properties, firstName and LastName, and these properties
+ * are using {@link DefaultPropertyFormatter}, then the Person
+ * instance representing Joe Blow would be represented as
+ * <code>"Person{firstName: {Joe}, lastName: {Blow}}"</code>
  */
 public class DefaultPojoFormatter implements PojoFormatter {
   private boolean firstPropertyPrinted = false;
