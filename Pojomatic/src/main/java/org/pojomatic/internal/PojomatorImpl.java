@@ -10,6 +10,7 @@ import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.PropertyFormat;
+import org.pojomatic.diff.Difference;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PojoFormatter;
@@ -321,5 +322,10 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       this.propertyElement = propertyElement;
       this.propertyFormatter = propertyFormatter;
     }
+  }
+
+  public List<Difference> doDiff(T instance, T other) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

@@ -1,5 +1,8 @@
 package org.pojomatic;
 
+import java.util.List;
+
+import org.pojomatic.diff.Difference;
 import org.pojomatic.internal.PojomatorImpl;
 import org.pojomatic.internal.SelfPopulatingMap;
 
@@ -115,5 +118,9 @@ public class Pojomatic {
   @SuppressWarnings("unchecked") // Since Object.getClass returns Class<?>
   private static <T> Class<T> getClass(T pojo) {
     return (Class<T>) pojo.getClass();
+  }
+
+  public static <T, S extends T> List<Difference> diff(T lhs, S rhs) {
+    return null; //TODO
   }
 }
