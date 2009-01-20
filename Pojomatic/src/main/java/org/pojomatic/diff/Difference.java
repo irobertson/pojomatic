@@ -40,7 +40,7 @@ public class Difference {
   @Override
   public String toString() {
     //TODO - can we do better here?
-    return propertyName + ": " + lhs + " versus " + rhs;
+    return propertyName + ": {" + lhs + "} versus {" + rhs + "}";
   }
 
 }
