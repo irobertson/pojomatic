@@ -1,8 +1,6 @@
 package org.pojomatic;
 
-import java.util.List;
-
-import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.Differences;
 import org.pojomatic.internal.PojomatorImpl;
 import org.pojomatic.internal.SelfPopulatingMap;
 
@@ -103,6 +101,22 @@ public class Pojomatic {
     return pojomator(getClass(pojo)).doEquals(pojo, other);
   }
 
+
+  /**
+   * Compute the differences between {@code pojo} and {@code other} among the properties
+   * examined by {@link #equals(Object, Object)} for type {@code T}.
+   *
+   * @param <T> the static type of the first object to compare
+   * @param <S> the static type of the first object to compare
+   * @param instance the instance to diff against - must not be {@code null}
+   * @param other the instance to diff
+   * @return the list of differences (possibly empty) between {@code instance} and {@code other}
+   * among the properties examined by {@link #doEquals(Object, Object)} for type {@code T}.
+   */
+  public static <T, S extends T> Differences diff(T pojo, S other) {
+    return pojomator(getClass(pojo)).doDiff(pojo, other);
+  }
+
   /**
    * Get the {@code Pojomator} for {@code pojoClass}.  The same instance will be returned every time
    * for a given value of {@code pojoClass}.
@@ -118,9 +132,5 @@ public class Pojomatic {
   @SuppressWarnings("unchecked") // Since Object.getClass returns Class<?>
   private static <T> Class<T> getClass(T pojo) {
     return (Class<T>) pojo.getClass();
-  }
-
-  public static <T, S extends T> List<Difference> diff(T lhs, S rhs) {
-    return null; //TODO
   }
 }

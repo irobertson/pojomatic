@@ -39,8 +39,8 @@ public class Difference {
 
   @Override
   public String toString() {
-    // TODO implement a sensible String representation
-    return super.toString();
+    //TODO - can we do better here?
+    return propertyName + ": " + lhs + " versus " + rhs;
   }
 
 }

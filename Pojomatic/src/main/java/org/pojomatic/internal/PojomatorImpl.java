@@ -3,6 +3,7 @@ package org.pojomatic.internal;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.pojomatic.Pojomator;
@@ -11,6 +12,9 @@ import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.DifferenceToNull;
+import org.pojomatic.diff.Differences;
+import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PojoFormatter;
@@ -88,89 +92,8 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     }
 
     for (PropertyElement prop: classProperties.getEqualsProperties()) {
-      Object instanceValue = prop.getValue(instance);
-      Object otherValue = prop.getValue(other);
-      if (instanceValue == null) {
-        if (otherValue != null) {
-          return false;
-        }
-      }
-      else { // instanceValue is not null
-        if (otherValue == null) {
-          return false;
-        }
-        if (!instanceValue.getClass().isArray()) {
-          if (!instanceValue.equals(otherValue)) {
-            return false;
-          }
-        }
-        else {
-          if (!otherValue.getClass().isArray()) {
-            return false;
-          }
-          Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
-          Class<?> otherComponentClass = otherValue.getClass().getComponentType();
-
-          if (!instanceComponentClass.isPrimitive()) {
-            if (otherComponentClass.isPrimitive()) {
-              return false;
-            }
-            if (!Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue)) {
-              return false;
-            }
-          }
-          else { // instanceComponentClass is primative
-            if (otherComponentClass != instanceComponentClass) {
-              return false;
-            }
-
-            if (Boolean.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((boolean[]) instanceValue, (boolean[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Byte.TYPE == instanceComponentClass) {
-              if (! Arrays.equals((byte[]) instanceValue, (byte[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Character.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((char[]) instanceValue, (char[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Short.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((short[]) instanceValue, (short[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Integer.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((int[]) instanceValue, (int[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Long.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((long[]) instanceValue, (long[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Float.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((float[]) instanceValue, (float[]) otherValue)) {
-                return false;
-              }
-            }
-            else if (Double.TYPE == instanceComponentClass) {
-              if(!Arrays.equals((double[]) instanceValue, (double[]) otherValue)) {
-                return false;
-              }
-            }
-            else {
-              // should NEVER happen
-              throw new IllegalStateException(
-                "unknown primative type " + instanceComponentClass.getName());
-            }
-          }
-        }
+      if (!areValuesEqual(prop.getValue(instance), prop.getValue(other))) {
+        return false;
       }
     }
     return true;
@@ -317,15 +240,128 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     private PropertyElement propertyElement;
     private PropertyFormatter propertyFormatter;
 
-    public FormattablePropertyElement(PropertyElement propertyElement,
-        PropertyFormatter propertyFormatter) {
+    public FormattablePropertyElement(
+    PropertyElement propertyElement, PropertyFormatter propertyFormatter) {
       this.propertyElement = propertyElement;
       this.propertyFormatter = propertyFormatter;
     }
   }
 
-  public List<Difference> doDiff(T instance, T other) {
-    // TODO Auto-generated method stub
-    return null;
+  public Differences doDiff(T instance, T other) {
+    if (instance == null) {
+      throw new NullPointerException("instance is null");
+    }
+    if (other == null) {
+      return new DifferenceToNull(instance);
+    }
+    if (instance == other) {
+      return new PropertyDifferences(Collections.<Difference>emptyList());
+    }
+    if (!clazz.isInstance(other)) {
+      throw new ClassCastException(
+        "other has type " + other.getClass() + " which is not a subtype of " + clazz);
+    }
+    List<Difference> differences = new ArrayList<Difference>();
+    for (PropertyElement prop: classProperties.getEqualsProperties()) {
+      final Object instanceValue = prop.getValue(instance);
+      final Object otherValue = prop.getValue(other);
+      if (!areValuesEqual(instanceValue, otherValue)) {
+        differences.add(new Difference(prop.getName(), instanceValue, otherValue));
+      }
+    }
+    return new PropertyDifferences(differences);
+  }
+
+
+  /**
+   * @param instance
+   * @param other
+   * @return true if the values of properties referenced by {@code prop} in {@code instance} and
+   * {@code other} are equal to each other.
+   */
+  private static boolean areValuesEqual(Object instanceValue, Object otherValue) {
+    if (instanceValue == null) {
+      if (otherValue != null) {
+        return false;
+      }
+    }
+    else { // instanceValue is not null
+      if (otherValue == null) {
+        return false;
+      }
+      if (!instanceValue.getClass().isArray()) {
+        if (!instanceValue.equals(otherValue)) {
+          return false;
+        }
+      }
+      else {
+        if (!otherValue.getClass().isArray()) {
+          return false;
+        }
+        Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
+        Class<?> otherComponentClass = otherValue.getClass().getComponentType();
+
+        if (!instanceComponentClass.isPrimitive()) {
+          if (otherComponentClass.isPrimitive()) {
+            return false;
+          }
+          if (!Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue)) {
+            return false;
+          }
+        }
+        else { // instanceComponentClass is primative
+          if (otherComponentClass != instanceComponentClass) {
+            return false;
+          }
+
+          if (Boolean.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((boolean[]) instanceValue, (boolean[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Byte.TYPE == instanceComponentClass) {
+            if (! Arrays.equals((byte[]) instanceValue, (byte[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Character.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((char[]) instanceValue, (char[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Short.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((short[]) instanceValue, (short[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Integer.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((int[]) instanceValue, (int[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Long.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((long[]) instanceValue, (long[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Float.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((float[]) instanceValue, (float[]) otherValue)) {
+              return false;
+            }
+          }
+          else if (Double.TYPE == instanceComponentClass) {
+            if(!Arrays.equals((double[]) instanceValue, (double[]) otherValue)) {
+              return false;
+            }
+          }
+          else {
+            // should NEVER happen
+            throw new IllegalStateException(
+              "unknown primative type " + instanceComponentClass.getName());
+          }
+        }
+      }
+    }
+    return true;
   }
 }

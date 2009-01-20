@@ -1,8 +1,6 @@
 package org.pojomatic;
 
-import java.util.List;
-
-import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.Differences;
 
 /**
  * An automatically generated provider of the three standard {@code Object} methods,
@@ -44,12 +42,14 @@ public interface Pojomator<T> {
 
   /**
    * Compute the differences between {@code instance} and {@code other} among the properties
-   * examined by {@link #doEquals(Object, Object)}.
+   * examined by {@link #doEquals(Object, Object)}.  It is guaranteed that invoking
+   * {@link Differences#areEqual()} on the returned object will return true iff
+   * {@code instance.equals(other)}.
    *
    * @param instance the instance to diff against - must not be {@code null}
    * @param other the instance to diff
-   * @return the list of differences (possibly empty) between {@code instance} and {@code other}
+   * @return the differences between {@code instance} and {@code other}
    * among the properties examined by {@link #doEquals(Object, Object)}.
    */
-  List<Difference> doDiff(T instance, T other);
+  Differences doDiff(T instance, T other);
 }

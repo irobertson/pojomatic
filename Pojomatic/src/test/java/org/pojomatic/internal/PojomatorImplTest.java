@@ -13,6 +13,10 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
+import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.DifferenceToNull;
+import org.pojomatic.diff.Differences;
+import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 
@@ -201,6 +205,47 @@ public class PojomatorImplTest {
   @Test public void testCustomFormatters() {
     assertEquals("PREFIXFormattedObject{s: {BEFOREx}}",
       makePojomatorImpl(FormattedObject.class).doToString(new FormattedObject("x")));
+  }
+
+  @Test(expected=NullPointerException.class) public void testDiffNullInstance() {
+    OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, new ObjectPairProperty("this", "that"));
+  }
+
+  @Test public void testDiffSameObject() {
+    ObjectPairProperty objectPairProperty = new ObjectPairProperty("this", "that");
+    assertTrue(
+      OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(objectPairProperty, objectPairProperty).areEqual());
+  }
+
+  @Test public void testDiffEqualObjects() {
+    assertTrue(
+      OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(
+        new ObjectPairProperty("this", "that"), new ObjectPairProperty("this", "that")).areEqual());
+  }
+
+  @Test public void testDiffDifferentObjectsWithSinglePropertyDifferent() {
+    final Differences diffs = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(
+      new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "that"));
+    assertTrue(diffs instanceof PropertyDifferences);
+    assertEquals(
+      Arrays.asList(new Difference("s", "this", "THIS")),
+      ((PropertyDifferences) diffs).getDifferences());
+  }
+
+  @Test public void testDiffDifferentObjectsWithMultiplePropertiesDifferent() {
+    final Differences diffs = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(
+      new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "THAT"));
+    assertEquals(PropertyDifferences.class, diffs.getClass());
+    assertEquals(
+      Arrays.asList(new Difference("s", "this", "THIS"), new Difference("t", "that", "THAT")),
+      ((PropertyDifferences) diffs).getDifferences());
+  }
+
+  @Test public void testDiffAgainstNull() {
+    ObjectPairProperty instance = new ObjectPairProperty("this", "that");
+    Differences differences = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
+    assertFalse(differences.areEqual());
+    assertEquals(DifferenceToNull.class, differences.getClass());
   }
 
   @PojoFormat(SimplePojoFormatter.class)
