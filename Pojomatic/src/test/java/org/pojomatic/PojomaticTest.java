@@ -2,8 +2,12 @@ package org.pojomatic;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.Test;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.internal.PojomatorImpl;
 
 public class PojomaticTest {
@@ -24,6 +28,12 @@ public class PojomaticTest {
   @Test
   public void testToString() {
     assertEquals(BEAN_POJOMATOR.doToString(BEAN), Pojomatic.toString(BEAN));
+  }
+
+  @Test
+  public void testDiff() {
+    assertEquals(
+      new PropertyDifferences(Collections.<Difference>emptyList()), Pojomatic.diff(BEAN, BEAN));
   }
 
   @Test

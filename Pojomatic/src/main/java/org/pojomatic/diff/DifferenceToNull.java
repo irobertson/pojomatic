@@ -4,6 +4,9 @@ public class DifferenceToNull implements Differences {
   private final Object instance;
 
   public DifferenceToNull(Object instance) {
+    if (instance == null) {
+      throw new NullPointerException();
+    }
     this.instance = instance;
   }
 
