@@ -248,6 +248,11 @@ public class PojomatorImplTest {
     assertEquals(DifferenceToNull.class, differences.getClass());
   }
 
+  @Test(expected=IllegalArgumentException.class)
+  public void testNonPojomatedClass() {
+    makePojomatorImpl(String.class);
+  }
+
   @PojoFormat(SimplePojoFormatter.class)
   private static class FormattedObject {
     public FormattedObject(Object s) {

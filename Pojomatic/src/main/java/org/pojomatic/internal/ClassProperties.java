@@ -15,13 +15,24 @@ import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 
+/**
+ * The properties of a class used for {@link PojomatorImpl#doHashCode(Object)},
+ * {@link PojomatorImpl#doEquals(Object, Object)}, and {@link PojomatorImpl#doToString(Object)}.
+ */
 public class ClassProperties {
   private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
 
   private final Map<PropertyRole, Collection<PropertyElement>> properties =
     new EnumMap<PropertyRole, Collection<PropertyElement>>(PropertyRole.class);
 
-  public ClassProperties(Class<?> pojoClass) {
+  /**
+   * Creates an instance for the given {@code pojoClass}.
+   *
+   * @param pojoClass the class to inspect for properties
+   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
+   * with Pojomatic.
+   */
+  private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
     for (PropertyRole role : PropertyRole.values()) {
       properties.put(role, new ArrayList<PropertyElement>());
     }
@@ -73,6 +84,13 @@ public class ClassProperties {
         }
       }
     }
+
+    for (Collection<PropertyElement> propertyElements : properties.values()) {
+      if (!propertyElements.isEmpty()) {
+        return;
+      }
+    }
+    throw new IllegalArgumentException("Class " + pojoClass.getName() + " has no Pojomatic properties");
   }
 
   private static boolean methodIsAccessor(Method method) {
@@ -89,19 +107,40 @@ public class ClassProperties {
     return ACCESSOR_PATTERN.matcher(name).matches();
   }
 
+  /**
+   * Gets the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
+   * @return the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
+   */
   public Collection<PropertyElement> getEqualsProperties() {
     return properties.get(PropertyRole.EQUALS);
   }
 
+  /**
+   * Gets the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
+   * @return the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
+   */
   public Collection<PropertyElement> getHashCodeProperties() {
     return properties.get(PropertyRole.HASH_CODE);
   }
 
+  /**
+   * Gets the properties to use for {@link PojomatorImpl#doToString(Object)}.
+   * @return the properties to use for {@link PojomatorImpl#doToString(Object)}.
+   */
   public Collection<PropertyElement> getToStringProperties() {
     return properties.get(PropertyRole.TO_STRING);
   }
 
-  public static <T> ClassProperties createInstance(Class<T> pojoClass) {
+  /**
+   * Creates a new instance.
+   *
+   * @param <T> the type of {@code pojoClass}
+   * @param pojoClass the class to inspect
+   * @return a new instance
+   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
+   * with Pojomatic.
+   */
+  public static <T> ClassProperties createInstance(Class<T> pojoClass) throws IllegalArgumentException {
     return new ClassProperties(pojoClass);
   }
 }

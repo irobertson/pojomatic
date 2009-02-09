@@ -25,9 +25,16 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   final static int HASH_CODE_MULTIPLIER = 31;
 
 
-  public PojomatorImpl(Class<T> clazz) {
+  /**
+   * Creates an instance for {@code clazz}.
+   *
+   * @param clazz the class
+   * @throws IllegalArgumentException if {@code clazz} has no properties annotated for use
+   * with Pojomatic
+   */
+  public PojomatorImpl(Class<T> clazz) throws IllegalArgumentException {
     this.clazz = clazz;
-    classProperties = new ClassProperties(clazz);
+    classProperties = ClassProperties.createInstance(clazz);
     pojoFormatterClass = findPojoFormatterClass(clazz);
     for (PropertyElement prop: classProperties.getToStringProperties()) {
       PropertyFormatter propertyFormatter = findPropertyFormatter(prop.getElement());
