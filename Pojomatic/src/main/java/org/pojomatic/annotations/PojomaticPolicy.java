@@ -9,7 +9,7 @@ import org.pojomatic.internal.PropertyRole;
 
 /**
  * A policy for defining which sets of {@link Pojomatic} operations
- * ({@code equals}, {@code hashCode} and {@code toString}) should a property.
+ * ({@code equals}, {@code hashCode} and {@code toString}) should use a property.
  * This is set using {@link Property}.
  * @see DefaultPojomaticPolicy
  */
