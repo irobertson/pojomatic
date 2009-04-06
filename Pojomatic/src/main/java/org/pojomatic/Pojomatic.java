@@ -114,10 +114,10 @@ public class Pojomatic {
    *
    * @param <T> the static type of the first object to compare
    * @param <S> the static type of the first object to compare
-   * @param instance the instance to diff against - must not be {@code null}
+   * @param pojo the instance to diff against - must not be {@code null}
    * @param other the instance to diff
    * @return the list of differences (possibly empty) between {@code instance} and {@code other}
-   * among the properties examined by {@link #doEquals(Object, Object)} for type {@code T}.
+   * among the properties examined by {@link #equals(Object, Object)} for type {@code T}.
    * @throws IllegalArgumentException if {@code pojo}'s class has no properties annotated for use
    * with Pojomatic
    */
