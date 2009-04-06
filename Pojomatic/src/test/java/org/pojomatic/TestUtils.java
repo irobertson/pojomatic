@@ -6,11 +6,11 @@ import org.pojomatic.internal.PropertyField;
 public class TestUtils {
 
   public static PropertyElement field(Class<?> clazz, String fieldName) throws Exception {
-    return new PropertyField(clazz.getDeclaredField(fieldName));
+    return new PropertyField(clazz.getDeclaredField(fieldName), "");
   }
 
   public static PropertyElement method(Class<?> clazz, String methodName) throws Exception {
-    return new PropertyAccessor(clazz.getDeclaredMethod(methodName));
+    return new PropertyAccessor(clazz.getDeclaredMethod(methodName), "");
   }
 
 }

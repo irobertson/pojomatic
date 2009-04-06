@@ -54,8 +54,9 @@ public class ClassProperties {
         /* add all fields that are explicitly annotated or auto-detected */
         if (propertyPolicy != null ||
             (autoProperty != null && AutoDetectPolicy.FIELD == autoProperty.autoDetect())) {
+          PropertyField propertyField = new PropertyField(field, getPropertyName(property));
           for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-            properties.get(role).add(new PropertyField(field));
+            properties.get(role).add(propertyField);
           }
         }
       }
@@ -78,8 +79,10 @@ public class ClassProperties {
         /* add all methods that are explicitly annotated or auto-detected */
         if (propertyPolicy != null ||
             (autoProperty != null && AutoDetectPolicy.METHOD == autoProperty.autoDetect())) {
+          PropertyAccessor propertyAccessor =
+            new PropertyAccessor(method, getPropertyName(property));
           for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-            properties.get(role).add(new PropertyAccessor(method));
+            properties.get(role).add(propertyAccessor);
           }
         }
       }
@@ -91,6 +94,10 @@ public class ClassProperties {
       }
     }
     throw new IllegalArgumentException("Class " + pojoClass.getName() + " has no Pojomatic properties");
+  }
+
+  private String getPropertyName(Property property) {
+    return property == null ? "" : property.name();
   }
 
   private static boolean methodIsAccessor(Method method) {

@@ -10,6 +10,7 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PojomaticPolicy;
+import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Difference;
 import org.pojomatic.diff.DifferenceToNull;
@@ -208,6 +209,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * </p>
    *
    * @throws NullPointerException if {@code instance} is null
+   * @see Property#name()
    */
   public String doToString(T instance) {
     if (instance == null) {

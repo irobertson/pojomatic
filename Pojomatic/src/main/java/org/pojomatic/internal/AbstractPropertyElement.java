@@ -11,10 +11,10 @@ implements PropertyElement {
   protected final E element;
   private final String name;
 
-  protected AbstractPropertyElement(E element) {
+  protected AbstractPropertyElement(E element, String name) {
     element.setAccessible(true);
     this.element = element;
-    this.name = element.getName();
+    this.name = name;
   }
 
   public String getName() {

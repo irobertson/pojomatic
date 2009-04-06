@@ -33,9 +33,13 @@ public class PojomatorImplTest {
   private static Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR =
     makePojomatorImpl(StringArrayProperty.class);
 
+  private static final Pojomator<AccessCheckedProperties> ACCESS_CHECKED_PROPERTIES_POJOMATOR =
+    makePojomatorImpl(AccessCheckedProperties.class);
+
   private static final List<Class<?>> PRIMATIVE_TYPES = Arrays.<Class<?>>asList(
     Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
     Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE);
+
 
   @Test(expected=NullPointerException.class) public void testNullHashCode() {
     OBJECT_PROPERTY_POJOMATOR.doHashCode(null);
@@ -131,24 +135,22 @@ public class PojomatorImplTest {
   }
 
   @Test public void testShortCircuitEquals() {
-    final Pojomator<AccessCheckedProperties> pojomator = makePojomatorImpl(AccessCheckedProperties.class);
-
     AccessCheckedProperties left = new AccessCheckedProperties(1,1);
     AccessCheckedProperties right = new AccessCheckedProperties(2,2);
-    assertFalse(pojomator.doEquals(left, right));
+    assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, right));
     assertFalse(left.getBCalled);
     assertFalse(right.getBCalled);
 
-    assertTrue(pojomator.doEquals(left, left));
+    assertTrue(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, left));
     assertFalse(left.getBCalled);
 
-    assertFalse(pojomator.doEquals(left, null));
+    assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, null));
     assertFalse(left.getBCalled);
 
-    assertFalse(pojomator.doEquals(left, "hello"));
+    assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, "hello"));
     assertFalse(left.getBCalled);
 
-    assertTrue(pojomator.doEquals(left, new AccessCheckedProperties(1,1)));
+    assertTrue(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, new AccessCheckedProperties(1,1)));
     assertTrue(left.getBCalled);
   }
 
@@ -200,6 +202,12 @@ public class PojomatorImplTest {
   @Test public void testSimpleToString() {
     String actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doToString(new ObjectPairProperty("ess", "tee"));
     assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
+  }
+
+  @Test public void testToStringNames() {
+    assertEquals(
+      "AccessCheckedProperties{a: {1}, b: {2}}",
+      ACCESS_CHECKED_PROPERTIES_POJOMATOR.doToString(new AccessCheckedProperties(1, 2)));
   }
 
   @Test public void testCustomFormatters() {
