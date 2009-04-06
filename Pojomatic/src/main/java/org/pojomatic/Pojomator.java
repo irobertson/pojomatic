@@ -3,7 +3,7 @@ package org.pojomatic;
 import org.pojomatic.diff.Differences;
 
 /**
- * An automatically generated provider of the three standard {@code Object} methods,
+ * A provider of the three standard {@code Object} methods,
  * {@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()}.
  *
  * @param <T> the class this {@code Pojomator} is generated for.
