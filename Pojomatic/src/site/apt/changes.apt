@@ -1,0 +1,14 @@
+
+Changes in Pojomatic
+~~~~
+* Release 1.0-RC2 (2009-04-06)
+~~~~
+  * The property name derived from a method such as getFoo() is now "foo" instead of "getFoo"
+    in the default <<<toString()>>> representation.
+
+  * Names of properties in the default <<<toString()>>> representation can be overridden via the
+    <<<name>>> attribute on the <<<Property>>> annotation.
+~~~~
+* Release 1.0-RC1 (2009-01-01)
+~~~~
+  * Initial Release
