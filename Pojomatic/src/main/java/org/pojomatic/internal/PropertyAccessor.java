@@ -8,7 +8,7 @@ public class PropertyAccessor extends AbstractPropertyElement<Method> {
   private final static String GET = "get", IS = "is";
 
   public PropertyAccessor(Method method, String name) {
-    super(method, name.isEmpty() ? getName(method) : name);
+    super(method, name.length() == 0 ? getName(method) : name);
   }
 
   private static String getName(Method method) {
