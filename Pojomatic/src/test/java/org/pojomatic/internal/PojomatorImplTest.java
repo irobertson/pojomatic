@@ -68,7 +68,7 @@ public class PojomatorImplTest {
 
   @Test public void testPropertyEquals() {
     String s1 = "hello";
-    String s2 = new String(s1); // ensure we are using .equals, and not ==
+    String s2 = copyString(s1); // ensure we are using .equals, and not ==
 
     assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty(s1), new ObjectProperty(s2)));
     assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
@@ -89,11 +89,15 @@ public class PojomatorImplTest {
 
   @Test public void testObjectArrayPropertyEquals() {
     String s1 = "hello";
-    String s2 = new String(s1);
+    String s2 = copyString(s1);
     assertTrue(STRING_ARRAY_PROPERTY_POJOMATOR.doEquals(
       new StringArrayProperty(s1, "goodbye"), new StringArrayProperty(s2, "goodbye")));
     assertFalse(STRING_ARRAY_PROPERTY_POJOMATOR.doEquals(
       new StringArrayProperty(s1, "goodbye"), new StringArrayProperty("goodbye", s1)));
+  }
+
+  private String copyString(String s1) {
+    return new String(s1); //NOPMD - we mean to make a copy
   }
 
   @Test public void testPrimitiveArrayEquals() throws Exception {
