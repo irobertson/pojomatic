@@ -3,6 +3,9 @@ Changes in Pojomatic
 ~~~~
 * Release 1.0-RC2 (2009-04-06)
 ~~~~
+  * A new method, <<<Pojomatic.diff>>>, will show top-level differences between two instances
+    of a pojomated class.
+
   * The property name derived from a method such as getFoo() is now "foo" instead of "getFoo"
     in the default <<<toString()>>> representation.
 
