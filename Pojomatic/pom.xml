@@ -3,7 +3,7 @@
   <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-RC2</version>
+  <version>trunk-SNAPSHOT</version>
   <name>Pojomatic</name>
   <description>
     Automatically provides configurable implementations of the
@@ -12,9 +12,9 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-1.0-RC2</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-1.0-RC2</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-1.0-RC2</url>
+    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</connection>
+    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</developerConnection>
+    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</url>
   </scm>
   <developers>
     <developer>
