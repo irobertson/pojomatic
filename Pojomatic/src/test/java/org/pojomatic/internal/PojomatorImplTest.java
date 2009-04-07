@@ -260,6 +260,34 @@ public class PojomatorImplTest {
     assertEquals(DifferenceToNull.class, differences.getClass());
   }
 
+  @Test public void testDiffAgainstWrongType() {
+    Pojomator<?> pojomator = OBJECT_PAIR_PROPERTY_POJOMATOR;
+    @SuppressWarnings("unchecked") Pojomator<Object> misCastPojomator = (Pojomator<Object>) pojomator;
+    try {
+      misCastPojomator.doDiff(new ObjectPairProperty(1,2), "wrong");
+      fail("exception expcected");
+    }
+    catch (ClassCastException e) {
+      assertEquals(
+        "other has type java.lang.String which is not a subtype of org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
+        e.getMessage());
+    }
+  }
+
+  @Test public void testDiffWrongType() {
+    Pojomator<?> pojomator = OBJECT_PAIR_PROPERTY_POJOMATOR;
+    @SuppressWarnings("unchecked") Pojomator<Object> misCastPojomator = (Pojomator<Object>) pojomator;
+    try {
+      misCastPojomator.doDiff("wrong", new ObjectPairProperty(1,2));
+      fail("exception expcected");
+    }
+    catch (ClassCastException e) {
+      assertEquals(
+        "instance has type java.lang.String which is not a subtype of org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
+        e.getMessage());
+    }
+  }
+
   @Test(expected=IllegalArgumentException.class)
   public void testNonPojomatedClass() {
     makePojomatorImpl(String.class);

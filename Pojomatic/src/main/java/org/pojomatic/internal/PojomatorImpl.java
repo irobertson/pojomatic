@@ -266,10 +266,8 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     if (instance == other) {
       return new PropertyDifferences(Collections.<Difference>emptyList());
     }
-    if (!clazz.isInstance(other)) {
-      throw new ClassCastException(
-        "other has type " + other.getClass() + " which is not a subtype of " + clazz);
-    }
+    checkClass(instance, "instance");
+    checkClass(other, "other");
     List<Difference> differences = new ArrayList<Difference>();
     for (PropertyElement prop: classProperties.getEqualsProperties()) {
       final Object instanceValue = prop.getValue(instance);
@@ -279,6 +277,14 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       }
     }
     return new PropertyDifferences(differences);
+  }
+
+  private void checkClass(T instance, String label) {
+    if (!clazz.isInstance(instance)) {
+      throw new ClassCastException(
+        label + " has type " + instance.getClass().getName()
+        + " which is not a subtype of " + clazz.getName());
+    }
   }
 
 
