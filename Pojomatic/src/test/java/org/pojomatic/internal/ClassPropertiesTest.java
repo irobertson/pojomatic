@@ -199,6 +199,9 @@ public class ClassPropertiesTest {
 
     /* Methods are not auto-detected */
     public float getNotDetected() { return 1f; }
+
+    /* static fields are not detected */
+    public static String staticField;
   }
 
   public static class MethodPojo {
@@ -238,6 +241,10 @@ public class ClassPropertiesTest {
     // some methods we should not grab
     public void getHello() {}
     public int getTripple(int arg) { return arg * 3; }
+
+
+    /* static fields are not detected */
+    public static String getStatic() { return null; }
   }
 
   public static class MethodReturnsVoidPojo {

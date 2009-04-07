@@ -1,7 +1,9 @@
 package org.pojomatic.internal;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -53,7 +55,9 @@ public class ClassProperties {
 
         /* add all fields that are explicitly annotated or auto-detected */
         if (propertyPolicy != null ||
-            (autoProperty != null && AutoDetectPolicy.FIELD == autoProperty.autoDetect())) {
+            (autoProperty != null
+                && AutoDetectPolicy.FIELD == autoProperty.autoDetect()
+                && !isStatic(field))) {
           PropertyField propertyField = new PropertyField(field, getPropertyName(property));
           for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
             properties.get(role).add(propertyField);
@@ -78,7 +82,9 @@ public class ClassProperties {
 
         /* add all methods that are explicitly annotated or auto-detected */
         if (propertyPolicy != null ||
-            (autoProperty != null && AutoDetectPolicy.METHOD == autoProperty.autoDetect())) {
+            (autoProperty != null
+                && AutoDetectPolicy.METHOD == autoProperty.autoDetect()
+                && !isStatic(method))) {
           PropertyAccessor propertyAccessor =
             new PropertyAccessor(method, getPropertyName(property));
           for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
@@ -112,6 +118,10 @@ public class ClassProperties {
 
   private static boolean isAccessorName(String name) {
     return ACCESSOR_PATTERN.matcher(name).matches();
+  }
+
+  private static boolean isStatic(Member member) {
+    return Modifier.isStatic(member.getModifiers());
   }
 
   /**
