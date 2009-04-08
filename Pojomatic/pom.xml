@@ -12,9 +12,9 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic</url>
+    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/Pojomatic</connection>
+    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/Pojomatic</developerConnection>
+    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/Pojomatic</url>
   </scm>
   <developers>
     <developer>
