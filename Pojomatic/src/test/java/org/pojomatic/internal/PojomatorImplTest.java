@@ -294,7 +294,7 @@ public class PojomatorImplTest {
   }
 
   @PojoFormat(SimplePojoFormatter.class)
-  private static class FormattedObject {
+  public static class FormattedObject {
     public FormattedObject(Object s) {
       this.s = s;
     }
@@ -318,14 +318,14 @@ public class PojomatorImplTest {
     }
   }
 
-  private static class ObjectProperty {
+  public static class ObjectProperty {
     public ObjectProperty(Object s) {
       this.s = s;
     }
     @Property public Object s;
   }
 
-  private static class ObjectPairProperty {
+  public static class ObjectPairProperty {
     public ObjectPairProperty(Object s, Object t) {
       this.s = s;
       this.t = t;
@@ -334,14 +334,14 @@ public class PojomatorImplTest {
     @Property public Object t;
   }
 
-  private static class IntProperty {
+  public static class IntProperty {
     public IntProperty(int i) {
       this.i = i;
     }
     @Property int i;
   }
 
-  private static class StringArrayProperty {
+  public static class StringArrayProperty {
     public StringArrayProperty(String... strings) {
       this.strings = strings;
     }
@@ -349,7 +349,7 @@ public class PojomatorImplTest {
     @Property String[] strings;
   }
 
-  private static class ExceptionThrowingProperty {
+  public static class ExceptionThrowingProperty {
     @Property public int bomb() {
       throw new RuntimeException();
     }

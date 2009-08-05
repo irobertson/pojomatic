@@ -262,7 +262,7 @@ public class ClassPropertiesTest {
     public abstract int getFoo();
   }
 
-  private static class ChildPojo extends ParentPojo {
+  public static class ChildPojo extends ParentPojo {
     @Property
     public String other;
 
@@ -270,7 +270,7 @@ public class ClassPropertiesTest {
   }
 
   @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
-  private static class ChildExtendsAnnotatedPojo extends ParentPojo {
+  public static class ChildExtendsAnnotatedPojo extends ParentPojo {
     @Override
     public int getFoo() { return 0; }
 
@@ -283,13 +283,13 @@ public class ClassPropertiesTest {
   }
 
   @AutoProperty(autoDetect=AutoDetectPolicy.FIELD, policy=DefaultPojomaticPolicy.TO_STRING)
-  private static class ChildAutoPojo extends ParentAutoPojo {
+  public static class ChildAutoPojo extends ParentAutoPojo {
     public String other;
 
     @Override public int getFoo() { return 2; }
   }
 
-  private static class ChildExtendsAutoPojo extends ParentAutoPojo {
+  public static class ChildExtendsAutoPojo extends ParentAutoPojo {
     @Property
     public String other;
 
