@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
+import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
@@ -293,6 +294,11 @@ public class PojomatorImplTest {
     makePojomatorImpl(String.class);
   }
 
+  @Test public void testPrivateClass() {
+    Pojomator<PrivateClass> pojomator = makePojomatorImpl(PrivateClass.class);
+    assertTrue(pojomator.doToString(new PrivateClass()).contains("number"));
+  }
+
   @PojoFormat(SimplePojoFormatter.class)
   public static class FormattedObject {
     public FormattedObject(Object s) {
@@ -372,6 +378,12 @@ public class PojomatorImplTest {
 
     private int a, b;
     private boolean getBCalled;
+  }
+
+  @AutoProperty
+  private static class PrivateClass {
+    @SuppressWarnings("unused")
+    private int number;
   }
 
   private static <T> Pojomator<T> makePojomatorImpl(Class<T> clazz) {
