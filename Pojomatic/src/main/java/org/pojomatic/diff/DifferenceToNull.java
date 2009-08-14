@@ -1,21 +1,17 @@
 package org.pojomatic.diff;
 
-public class DifferenceToNull implements Differences {
-  private final Object instance;
+/**
+ * The result of comparing a non-null object to {@code null}.
+ * @see DifferenceFromNull
+ */
+public final class DifferenceToNull extends AbstractNullDifference {
 
   public DifferenceToNull(Object instance) {
-    if (instance == null) {
-      throw new NullPointerException();
-    }
-    this.instance = instance;
+    super(instance);
   }
 
   @Override
   public String toString() {
-    return "the object {" + instance + "} is different than null" ;
-  }
-
-  public boolean areEqual() {
-    return false;
+    return "the object {" + instance + "} is different than null";
   }
 }

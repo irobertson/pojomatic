@@ -46,7 +46,7 @@ public interface Pojomator<T> {
    * {@link Differences#areEqual()} on the returned object will return true iff
    * {@code instance.equals(other)}.
    *
-   * @param instance the instance to diff against - must not be {@code null}
+   * @param instance the instance to diff against
    * @param other the instance to diff
    * @return the differences between {@code instance} and {@code other}
    * among the properties examined by {@link #doEquals(Object, Object)}.

@@ -3,7 +3,6 @@ package org.pojomatic.internal;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.pojomatic.Pojomator;
@@ -13,8 +12,10 @@ import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
+import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
@@ -257,15 +258,16 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   }
 
   public Differences doDiff(T instance, T other) {
-    if (instance == null) {
-      throw new NullPointerException("instance is null");
+    if (instance == other) {
+      return NoDifferences.getInstance();
     }
-    if (other == null) {
+    else if (instance == null) {
+      return new DifferenceFromNull(other);
+    }
+    else if (other == null) {
       return new DifferenceToNull(instance);
     }
-    if (instance == other) {
-      return new PropertyDifferences(Collections.<Difference>emptyList());
-    }
+
     checkClass(instance, "instance");
     checkClass(other, "other");
     List<Difference> differences = new ArrayList<Difference>();
@@ -275,6 +277,10 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       if (!areValuesEqual(instanceValue, otherValue)) {
         differences.add(new Difference(prop.getName(), instanceValue, otherValue));
       }
+    }
+
+    if (differences.isEmpty()) {
+      return NoDifferences.getInstance();
     }
     return new PropertyDifferences(differences);
   }

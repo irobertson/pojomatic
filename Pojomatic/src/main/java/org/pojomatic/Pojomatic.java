@@ -1,6 +1,8 @@
 package org.pojomatic;
 
+import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.Differences;
+import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorImpl;
 import org.pojomatic.internal.SelfPopulatingMap;
 
@@ -114,14 +116,24 @@ public class Pojomatic {
    *
    * @param <T> the static type of the first object to compare
    * @param <S> the static type of the first object to compare
-   * @param pojo the instance to diff against - must not be {@code null}
+   * @param pojo the instance to diff against
    * @param other the instance to diff
    * @return the list of differences (possibly empty) between {@code instance} and {@code other}
    * among the properties examined by {@link #equals(Object, Object)} for type {@code T}.
    * @throws IllegalArgumentException if {@code pojo}'s class has no properties annotated for use
    * with Pojomatic
    */
-  public static <T, S extends T> Differences diff(T pojo, S other) throws IllegalArgumentException {
+  public static <T, S extends T> Differences diff(T pojo, S other)
+  throws NullPointerException, IllegalArgumentException {
+    if (pojo == null) {
+      if (other != null) {
+        return new DifferenceFromNull(other);
+      }
+      else { //both null
+        return NoDifferences.getInstance();
+      }
+    }
+
     return pojomator(getClass(pojo)).doDiff(pojo, other);
   }
 

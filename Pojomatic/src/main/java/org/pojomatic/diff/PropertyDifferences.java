@@ -10,9 +10,17 @@ public class PropertyDifferences implements Differences {
   @Property
   private final List<Difference> differences;
 
+  /**
+   * @param differences cannot be {@code null} or empty
+   * @throws NullPointerException if {@code differences} is {@code null}
+   * @throws IllegalArgumentException if {@code differences.isEmpty()} is {@code true}
+   */
   public PropertyDifferences(List<Difference> differences) {
     if (differences == null) {
       throw new NullPointerException("list of differences is null");
+    }
+    if (differences.isEmpty()) {
+      throw new IllegalArgumentException("list of differences is empty");
     }
     this.differences = Collections.unmodifiableList(differences);
   }
@@ -21,15 +29,22 @@ public class PropertyDifferences implements Differences {
     return differences;
   }
 
-  @Override
-  public String toString() {
-    return differences.isEmpty() ? "no differences" : differences.toString();
+  public boolean areEqual() {
+    return false;
   }
 
-  @Override public boolean equals(Object other) { return Pojomatic.equals(this, other); }
-  @Override public int hashCode() { return Pojomatic.hashCode(this); }
+  @Override
+  public String toString() {
+    return differences.toString();
+  }
 
-  public boolean areEqual() {
-    return differences.isEmpty();
+  @Override
+  public boolean equals(Object other) {
+    return Pojomatic.equals(this, other);
+  }
+
+  @Override
+  public int hashCode() {
+    return Pojomatic.hashCode(this);
   }
 }

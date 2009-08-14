@@ -2,12 +2,10 @@ package org.pojomatic;
 
 import static org.junit.Assert.*;
 
-import java.util.Collections;
-
 import org.junit.Test;
 import org.pojomatic.annotations.Property;
-import org.pojomatic.diff.Difference;
-import org.pojomatic.diff.PropertyDifferences;
+import org.pojomatic.diff.DifferenceFromNull;
+import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorImpl;
 
 public class PojomaticTest {
@@ -32,8 +30,22 @@ public class PojomaticTest {
 
   @Test
   public void testDiff() {
-    assertEquals(
-      new PropertyDifferences(Collections.<Difference>emptyList()), Pojomatic.diff(BEAN, BEAN));
+    assertEquals(NoDifferences.getInstance(), Pojomatic.diff(BEAN, BEAN));
+  }
+
+  @Test
+  public void testDiffBothNull() {
+    assertEquals(NoDifferences.getInstance(), Pojomatic.diff(null, null));
+  }
+
+  @Test
+  public void testDiffNullFirst() {
+    assertEquals(new DifferenceFromNull(BEAN), Pojomatic.diff(null, BEAN));
+  }
+
+  @Test
+  public void testDiffNullSecond() {
+    assertEquals(BEAN_POJOMATOR.doDiff(BEAN, null), Pojomatic.diff(BEAN, null));
   }
 
   @Test

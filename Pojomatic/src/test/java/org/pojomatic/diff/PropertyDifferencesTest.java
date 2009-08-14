@@ -13,10 +13,10 @@ public class PropertyDifferencesTest {
   public void testConstructorNullPointerException() {
     new PropertyDifferences(null);
   }
-  @Test
-  public void testEmptyToString() {
-    assertEquals(
-      "no differences", new PropertyDifferences(Collections.<Difference>emptyList()).toString());
+
+  @Test(expected=IllegalArgumentException.class)
+  public void testEmptyDifferences() {
+  	new PropertyDifferences(Collections.<Difference>emptyList());
   }
 
   @Test
@@ -39,7 +39,6 @@ public class PropertyDifferencesTest {
 
   @Test
   public void testAreEqual() {
-    assertTrue(new PropertyDifferences(Collections.<Difference>emptyList()).areEqual());
     assertFalse(new PropertyDifferences(Arrays.asList(new Difference("foo", 3, 4))).areEqual());
   }
 }

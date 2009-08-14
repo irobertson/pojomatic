@@ -15,6 +15,7 @@ import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.PropertyDifferences;
@@ -220,8 +221,20 @@ public class PojomatorImplTest {
       makePojomatorImpl(FormattedObject.class).doToString(new FormattedObject("x")));
   }
 
-  @Test(expected=NullPointerException.class) public void testDiffNullInstance() {
-    OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, new ObjectPairProperty("this", "that"));
+  @Test public void testDiffNullInstance() {
+    ObjectPairProperty other = new ObjectPairProperty("this", "that");
+    Differences actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, other);
+    assertTrue(actual instanceof DifferenceFromNull);
+  }
+
+  @Test public void testDiffNullOther() {
+    ObjectPairProperty instance = new ObjectPairProperty("this", "that");
+    Differences actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
+    assertTrue(actual instanceof DifferenceToNull);
+  }
+
+  @Test public void testDiffNulls() {
+    assertTrue(OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, null).areEqual());
   }
 
   @Test public void testDiffSameObject() {
