@@ -57,7 +57,8 @@ public class SelfPopulatingMapTest {
           return new String(key);
         }
         else {
-          throw new RuntimeException("failing on first attempt");
+          //first time through, throw an exception
+          throw new RuntimeException("This is expected: failing on first attempt");
         }
       }
     };
