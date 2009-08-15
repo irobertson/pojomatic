@@ -62,28 +62,12 @@ public class ClassProperties {
     final AutoDetectPolicy autoDetectPolicy = 
       (autoProperty != null) ? autoProperty.autoDetect() : null;
 
-    for (Field field : clazz.getDeclaredFields()) {
-      Property property = field.getAnnotation(Property.class);
-      if (isStatic(field)) {
-        if (property != null) {
-          throw new IllegalArgumentException(
-            "Static field " + clazz.getName() + "." + field.getName()
-            + " is annotated with @Property");
-        }
-        else {
-          continue;
-        }
-      }
-      
-      final PojomaticPolicy propertyPolicy = (property != null) ? property.policy() : null;
+    extractFields(clazz, classPolicy, autoDetectPolicy);
+    extractMethods(clazz, classPolicy, autoDetectPolicy);
+  }
 
-      /* add all fields that are explicitly annotated or auto-detected */
-      if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
-        addPropertyToRoles(
-          new PropertyField(field, getPropertyName(property)), classPolicy, propertyPolicy);
-      }
-    }
-
+  private void extractMethods(Class<?> clazz, final DefaultPojomaticPolicy classPolicy,
+    final AutoDetectPolicy autoDetectPolicy) {
     for (Method method : clazz.getDeclaredMethods()) {
       Property property = method.getAnnotation(Property.class);
       if (isStatic(method)) {
@@ -115,6 +99,31 @@ public class ClassProperties {
           (AutoDetectPolicy.METHOD == autoDetectPolicy && !isStatic(method))) {
         addPropertyToRoles(
           new PropertyAccessor(method, getPropertyName(property)), classPolicy, propertyPolicy);
+      }
+    }
+  }
+
+  private void extractFields(Class<?> clazz, final DefaultPojomaticPolicy classPolicy,
+    final AutoDetectPolicy autoDetectPolicy) {
+    for (Field field : clazz.getDeclaredFields()) {
+      Property property = field.getAnnotation(Property.class);
+      if (isStatic(field)) {
+        if (property != null) {
+          throw new IllegalArgumentException(
+            "Static field " + clazz.getName() + "." + field.getName()
+            + " is annotated with @Property");
+        }
+        else {
+          continue;
+        }
+      }
+      
+      final PojomaticPolicy propertyPolicy = (property != null) ? property.policy() : null;
+
+      /* add all fields that are explicitly annotated or auto-detected */
+      if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
+        addPropertyToRoles(
+          new PropertyField(field, getPropertyName(property)), classPolicy, propertyPolicy);
       }
     }
   }
