@@ -64,11 +64,21 @@ public class ClassProperties {
 
     for (Field field : clazz.getDeclaredFields()) {
       Property property = field.getAnnotation(Property.class);
+      if (isStatic(field)) {
+        if (property != null) {
+          throw new IllegalArgumentException(
+            "Static field " + clazz.getName() + "." + field.getName()
+            + " is annotated with @Property");
+        }
+        else {
+          continue;
+        }
+      }
+      
       final PojomaticPolicy propertyPolicy = (property != null) ? property.policy() : null;
 
       /* add all fields that are explicitly annotated or auto-detected */
-      if (propertyPolicy != null ||
-          (AutoDetectPolicy.FIELD == autoDetectPolicy && !isStatic(field))) {
+      if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
         addPropertyToRoles(
           new PropertyField(field, getPropertyName(property)), classPolicy, propertyPolicy);
       }
@@ -76,6 +86,17 @@ public class ClassProperties {
 
     for (Method method : clazz.getDeclaredMethods()) {
       Property property = method.getAnnotation(Property.class);
+      if (isStatic(method)) {
+        if (property != null) {
+          throw new IllegalArgumentException(
+            "Static method " + clazz.getName() + "." + method.getName()
+            + "() is annotated with @Property");
+        }
+        else {
+          continue;
+        }
+      }
+      
       PojomaticPolicy propertyPolicy = null;
       if (property != null) {
         if (!methodSignatureIsAccessor(method)) {

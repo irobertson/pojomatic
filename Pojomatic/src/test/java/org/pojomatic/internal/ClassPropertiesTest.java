@@ -169,7 +169,33 @@ public class ClassPropertiesTest {
     assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
     assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
   }
+  
+  @Test
+  public void testAnnotatedStaticField() {
+    try {
+      ClassProperties.createInstance(StaticField.class);
+      fail("Exception expected");
+    }
+    catch (IllegalArgumentException e) {
+      assertEquals(
+        "Static field " + StaticField.class.getName() + ".a is annotated with @Property", 
+        e.getMessage());
+    }
+  }
 
+  @Test
+  public void testAnnotatedStaticMethod() {
+    try {
+      ClassProperties.createInstance(StaticMethod.class);
+      fail("Exception expected");
+    }
+    catch (IllegalArgumentException e) {
+      assertEquals(
+        "Static method " + StaticMethod.class.getName() + ".a() is annotated with @Property", 
+        e.getMessage());
+    }
+  }
+  
   public static class FieldPojo {
     @SuppressWarnings("unused")
     @Property
@@ -297,7 +323,15 @@ public class ClassPropertiesTest {
 
     public String getBar() { return ""; }
   }
+  
+  public static class StaticField {
+    @Property public static int a;
+  }
 
+  public static class StaticMethod {
+    @Property public static int a() { return 1; }
+  }
+  
   private static Set<PropertyElement> asSet(PropertyElement... elements) {
     HashSet<PropertyElement> result = new HashSet<PropertyElement>();
     for (PropertyElement element : elements) {
