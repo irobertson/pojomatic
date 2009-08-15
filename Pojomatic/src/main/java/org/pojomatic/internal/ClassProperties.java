@@ -24,8 +24,7 @@ import org.pojomatic.annotations.Property;
 public class ClassProperties {
   private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
 
-  private final Map<PropertyRole, Collection<PropertyElement>> properties =
-    new EnumMap<PropertyRole, Collection<PropertyElement>>(PropertyRole.class);
+  private final Map<PropertyRole, Collection<PropertyElement>> properties = makeProperties();
 
   /**
    * Creates an instance for the given {@code pojoClass}.
@@ -35,71 +34,73 @@ public class ClassProperties {
    * with Pojomatic.
    */
   private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
-    for (PropertyRole role : PropertyRole.values()) {
-      properties.put(role, new ArrayList<PropertyElement>());
-    }
-
     for (Class<?> clazz = pojoClass; clazz != Object.class; clazz = clazz.getSuperclass()) {
-      AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
-      DefaultPojomaticPolicy classPolicy = null;
-      if (autoProperty != null) {
-        classPolicy = autoProperty.policy();
-      }
+      extractClassProperties(clazz);
+    }
 
-      for (Field field : clazz.getDeclaredFields()) {
-        Property property = field.getAnnotation(Property.class);
-        PojomaticPolicy propertyPolicy = null;
-        if (property != null) {
-          propertyPolicy = property.policy();
-        }
+    verifyPropertiesNotEmpty(pojoClass);
+  }
 
-        /* add all fields that are explicitly annotated or auto-detected */
-        if (propertyPolicy != null ||
-            (autoProperty != null
-                && AutoDetectPolicy.FIELD == autoProperty.autoDetect()
-                && !isStatic(field))) {
-          PropertyField propertyField = new PropertyField(field, getPropertyName(property));
-          for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-            properties.get(role).add(propertyField);
-          }
-        }
-      }
+  private void extractClassProperties(Class<?> clazz) {
+    AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
+    final DefaultPojomaticPolicy classPolicy = 
+      (autoProperty != null) ? autoProperty.policy() : null; 
+    final AutoDetectPolicy autoDetectPolicy = 
+      (autoProperty != null) ? autoProperty.autoDetect() : null;
 
-      for (Method method : clazz.getDeclaredMethods()) {
-        Property property = method.getAnnotation(Property.class);
-        PojomaticPolicy propertyPolicy = null;
-        if (property != null) {
-          if (!methodSignatureIsAccessor(method)) {
-            throw new IllegalArgumentException(
-              "Method " + method +
-              " is annotated with @Property but either takes arguments or returns void");
-          }
-          propertyPolicy = property.policy();
-        }
-        else if (!methodIsAccessor(method)) {
-          continue;
-        }
+    for (Field field : clazz.getDeclaredFields()) {
+      Property property = field.getAnnotation(Property.class);
+      final PojomaticPolicy propertyPolicy = (property != null) ? property.policy() : null;
 
-        /* add all methods that are explicitly annotated or auto-detected */
-        if (propertyPolicy != null ||
-            (autoProperty != null
-                && AutoDetectPolicy.METHOD == autoProperty.autoDetect()
-                && !isStatic(method))) {
-          PropertyAccessor propertyAccessor =
-            new PropertyAccessor(method, getPropertyName(property));
-          for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-            properties.get(role).add(propertyAccessor);
-          }
-        }
+      /* add all fields that are explicitly annotated or auto-detected */
+      if (propertyPolicy != null ||
+          (AutoDetectPolicy.FIELD == autoDetectPolicy && !isStatic(field))) {
+        addPropertyToRoles(
+          new PropertyField(field, getPropertyName(property)), classPolicy, propertyPolicy);
       }
     }
 
+    for (Method method : clazz.getDeclaredMethods()) {
+      Property property = method.getAnnotation(Property.class);
+      PojomaticPolicy propertyPolicy = null;
+      if (property != null) {
+        if (!methodSignatureIsAccessor(method)) {
+          throw new IllegalArgumentException(
+            "Method " + method +
+            " is annotated with @Property but either takes arguments or returns void");
+        }
+        propertyPolicy = property.policy();
+      }
+      else if (!methodIsAccessor(method)) {
+        continue;
+      }
+
+      /* add all methods that are explicitly annotated or auto-detected */
+      if (propertyPolicy != null ||
+          (AutoDetectPolicy.METHOD == autoDetectPolicy && !isStatic(method))) {
+        addPropertyToRoles(
+          new PropertyAccessor(method, getPropertyName(property)), classPolicy, propertyPolicy);
+      }
+    }
+  }
+
+  private void addPropertyToRoles(
+    PropertyElement propertyElement,
+    final DefaultPojomaticPolicy classPolicy, 
+    final PojomaticPolicy propertyPolicy) {
+    for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
+      properties.get(role).add(propertyElement);
+    }
+  }
+
+  private void verifyPropertiesNotEmpty(Class<?> pojoClass) {
     for (Collection<PropertyElement> propertyElements : properties.values()) {
       if (!propertyElements.isEmpty()) {
         return;
       }
     }
-    throw new IllegalArgumentException("Class " + pojoClass.getName() + " has no Pojomatic properties");
+    throw new IllegalArgumentException(
+      "Class " + pojoClass.getName() + " has no Pojomatic properties");
   }
 
   private String getPropertyName(Property property) {
@@ -148,6 +149,15 @@ public class ClassProperties {
     return properties.get(PropertyRole.TO_STRING);
   }
 
+  private static Map<PropertyRole, Collection<PropertyElement>> makeProperties() {
+    Map<PropertyRole, Collection<PropertyElement>> properties =
+      new EnumMap<PropertyRole, Collection<PropertyElement>>(PropertyRole.class);
+    for (PropertyRole role : PropertyRole.values()) {
+      properties.put(role, new ArrayList<PropertyElement>());
+    }
+    return properties;
+  }
+  
   /**
    * Creates a new instance.
    *
