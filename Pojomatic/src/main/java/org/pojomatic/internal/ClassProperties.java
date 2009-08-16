@@ -48,18 +48,20 @@ public class ClassProperties {
    * with Pojomatic.
    */
   private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
-    walkHierarchy(pojoClass);    
+    walkHierarchy(pojoClass, makeOverridableMethods());    
     verifyPropertiesNotEmpty(pojoClass);
   }
   
-  private void walkHierarchy(Class<?> clazz) {
+  private void walkHierarchy(
+    Class<?> clazz, Map<PropertyRole, OverridableMethods> overridableMethods) {
     if (clazz != Object.class) {
-      walkHierarchy(clazz.getSuperclass());
-      extractClassProperties(clazz);
+      walkHierarchy(clazz.getSuperclass(), overridableMethods);
+      extractClassProperties(clazz, overridableMethods);
     }
   }
 
-  private void extractClassProperties(Class<?> clazz) {
+  private void extractClassProperties(
+    Class<?> clazz, Map<PropertyRole, OverridableMethods> overridableMethods) {
     AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
     final DefaultPojomaticPolicy classPolicy = 
       (autoProperty != null) ? autoProperty.policy() : null; 
@@ -67,11 +69,14 @@ public class ClassProperties {
       (autoProperty != null) ? autoProperty.autoDetect() : null;
 
     extractFields(clazz, classPolicy, autoDetectPolicy);
-    extractMethods(clazz, classPolicy, autoDetectPolicy);
+    extractMethods(clazz, classPolicy, autoDetectPolicy, overridableMethods);
   }
 
-  private void extractMethods(Class<?> clazz, final DefaultPojomaticPolicy classPolicy,
-    final AutoDetectPolicy autoDetectPolicy) {
+  private void extractMethods(
+    Class<?> clazz, 
+    final DefaultPojomaticPolicy classPolicy,
+    final AutoDetectPolicy autoDetectPolicy,
+    final Map<PropertyRole, OverridableMethods> overridableMethods) {
     for (Method method : clazz.getDeclaredMethods()) {
       Property property = method.getAnnotation(Property.class);
       if (isStatic(method)) {
@@ -98,11 +103,14 @@ public class ClassProperties {
         continue;
       }
 
-      /* add all methods that are explicitly annotated or auto-detected */
-      if (propertyPolicy != null ||
-          (AutoDetectPolicy.METHOD == autoDetectPolicy && !isStatic(method))) {
-        addPropertyToRoles(
-          new PropertyAccessor(method, getPropertyName(property)), classPolicy, propertyPolicy);
+      /* add all methods that are explicitly annotated or auto-detected, and not overriding already
+       * added methods */
+      if (propertyPolicy != null || AutoDetectPolicy.METHOD == autoDetectPolicy) {
+        for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
+          if(overridableMethods.get(role).checkAndMaybeAddMethod(method)) {
+            properties.get(role).add(new PropertyAccessor(method, getPropertyName(property)));
+          }
+        }
       }
     }
   }
@@ -126,18 +134,10 @@ public class ClassProperties {
 
       /* add all fields that are explicitly annotated or auto-detected */
       if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
-        addPropertyToRoles(
-          new PropertyField(field, getPropertyName(property)), classPolicy, propertyPolicy);
+        for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
+          properties.get(role).add(new PropertyField(field, getPropertyName(property)));
+        }
       }
-    }
-  }
-
-  private void addPropertyToRoles(
-    PropertyElement propertyElement,
-    final DefaultPojomaticPolicy classPolicy, 
-    final PojomaticPolicy propertyPolicy) {
-    for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-      properties.get(role).add(propertyElement);
     }
   }
 
@@ -205,4 +205,15 @@ public class ClassProperties {
     }
     return properties;
   }
+  
+  private Map<PropertyRole, OverridableMethods> makeOverridableMethods() {
+    Map<PropertyRole, OverridableMethods> overrideableMethods =
+      new EnumMap<PropertyRole, OverridableMethods>(PropertyRole.class);
+    for (PropertyRole role : PropertyRole.values()) {
+      overrideableMethods.put(role, new OverridableMethods());
+    }
+    return overrideableMethods;
+    
+  }
+
 }
