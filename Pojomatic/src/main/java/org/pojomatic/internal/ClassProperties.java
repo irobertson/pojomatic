@@ -48,11 +48,15 @@ public class ClassProperties {
    * with Pojomatic.
    */
   private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
-    for (Class<?> clazz = pojoClass; clazz != Object.class; clazz = clazz.getSuperclass()) {
+    walkHierarchy(pojoClass);    
+    verifyPropertiesNotEmpty(pojoClass);
+  }
+  
+  private void walkHierarchy(Class<?> clazz) {
+    if (clazz != Object.class) {
+      walkHierarchy(clazz.getSuperclass());
       extractClassProperties(clazz);
     }
-
-    verifyPropertiesNotEmpty(pojoClass);
   }
 
   private void extractClassProperties(Class<?> clazz) {
