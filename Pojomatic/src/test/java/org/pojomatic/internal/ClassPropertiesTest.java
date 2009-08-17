@@ -206,6 +206,16 @@ public class ClassPropertiesTest {
     }
   }
   
+  @Test public void testInterface() throws Exception {
+    ClassProperties classProperties = ClassProperties.createInstance(Interface.class);
+    PropertyElement getFoo = TestUtils.method(Interface.class, "getFoo");
+    PropertyElement baz = TestUtils.method(Interface.class, "baz");
+    assertEquals(asSet(getFoo), asSet(classProperties.getHashCodeProperties()));
+    assertEquals(asSet(getFoo), asSet(classProperties.getToStringProperties()));
+    assertEquals(asSet(getFoo, baz), asSet(classProperties.getEqualsProperties()));
+
+  }
+  
   public static class FieldPojo {
     @SuppressWarnings("unused")
     @Property
@@ -331,6 +341,13 @@ public class ClassPropertiesTest {
     @Override public int getFoo() { return 2; }
   }
 
+  @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
+  public static interface Interface {
+    int getFoo();
+    int bar();
+    @Property(policy=PojomaticPolicy.EQUALS) int baz();
+  }
+  
   public static class ChildExtendsAutoPojo extends ParentAutoPojo {
     @Property
     public String other;

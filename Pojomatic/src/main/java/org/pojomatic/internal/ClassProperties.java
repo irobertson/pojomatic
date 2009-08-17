@@ -48,7 +48,12 @@ public class ClassProperties {
    * with Pojomatic.
    */
   private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
-    walkHierarchy(pojoClass, makeOverridableMethods());    
+    if (pojoClass.isInterface()) {
+     extractClassProperties(pojoClass, makeOverridableMethods()); 
+    }
+    else {
+      walkHierarchy(pojoClass, makeOverridableMethods());
+    }
     verifyPropertiesNotEmpty(pojoClass);
   }
   
