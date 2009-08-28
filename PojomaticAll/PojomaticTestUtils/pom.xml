@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>pojomatic-all</artifactId>
+    <groupId>org.pojomatic</groupId>
+    <version>TestUtils-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>pojomatic-test-utils</artifactId>
+  <packaging>jar</packaging>
+  <name>PojomaticTestUtils</name>
+  <description>
+    Utilities to help with writing tests for, or using, classes which use Pojomatic.
+    For example, this library includes classes with JUnit and TestNG style
+    assertEquals methods which include differences (via Pojomatic.diff(Object, Object))
+    in the error message if the assertion fails.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pojomatic</groupId>
+      <artifactId>pojomatic</artifactId>
+    </dependency>
+  </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetJdk>1.5</targetJdk>
+          <rulesets>
+            <ruleset>${project.basedir}/src/pmd.xml</ruleset>
+          </rulesets>
+          <includeTests>true</includeTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
