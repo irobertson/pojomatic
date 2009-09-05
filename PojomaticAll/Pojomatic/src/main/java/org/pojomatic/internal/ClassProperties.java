@@ -49,28 +49,26 @@ public class ClassProperties {
    */
   private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
     if (pojoClass.isInterface()) {
-     extractClassProperties(pojoClass, makeOverridableMethods()); 
+      extractClassProperties(pojoClass, new OverridableMethods());
     }
     else {
-      walkHierarchy(pojoClass, makeOverridableMethods());
+      walkHierarchy(pojoClass, new OverridableMethods());
     }
     verifyPropertiesNotEmpty(pojoClass);
   }
-  
-  private void walkHierarchy(
-    Class<?> clazz, Map<PropertyRole, OverridableMethods> overridableMethods) {
+
+  private void walkHierarchy(Class<?> clazz, OverridableMethods overridableMethods) {
     if (clazz != Object.class) {
       walkHierarchy(clazz.getSuperclass(), overridableMethods);
       extractClassProperties(clazz, overridableMethods);
     }
   }
 
-  private void extractClassProperties(
-    Class<?> clazz, Map<PropertyRole, OverridableMethods> overridableMethods) {
+  private void extractClassProperties(Class<?> clazz, OverridableMethods overridableMethods) {
     AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
     final DefaultPojomaticPolicy classPolicy = 
       (autoProperty != null) ? autoProperty.policy() : null; 
-    final AutoDetectPolicy autoDetectPolicy = 
+    final AutoDetectPolicy autoDetectPolicy =
       (autoProperty != null) ? autoProperty.autoDetect() : null;
 
     extractFields(clazz, classPolicy, autoDetectPolicy);
@@ -78,10 +76,10 @@ public class ClassProperties {
   }
 
   private void extractMethods(
-    Class<?> clazz, 
+    Class<?> clazz,
     final DefaultPojomaticPolicy classPolicy,
     final AutoDetectPolicy autoDetectPolicy,
-    final Map<PropertyRole, OverridableMethods> overridableMethods) {
+    final OverridableMethods overridableMethods) {
     for (Method method : clazz.getDeclaredMethods()) {
       Property property = method.getAnnotation(Property.class);
       if (isStatic(method)) {
@@ -111,10 +109,9 @@ public class ClassProperties {
       /* add all methods that are explicitly annotated or auto-detected, and not overriding already
        * added methods */
       if (propertyPolicy != null || AutoDetectPolicy.METHOD == autoDetectPolicy) {
-        for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-          if(overridableMethods.get(role).checkAndMaybeAddMethod(method)) {
-            properties.get(role).add(new PropertyAccessor(method, getPropertyName(property)));
-          }
+        for (PropertyRole role : overridableMethods.checkAndMaybeAddRolesToMethod(
+          method, PropertyFilter.getRoles(propertyPolicy, classPolicy))) {
+          properties.get(role).add(new PropertyAccessor(method, getPropertyName(property)));
         }
       }
     }
@@ -210,15 +207,4 @@ public class ClassProperties {
     }
     return properties;
   }
-  
-  private Map<PropertyRole, OverridableMethods> makeOverridableMethods() {
-    Map<PropertyRole, OverridableMethods> overrideableMethods =
-      new EnumMap<PropertyRole, OverridableMethods>(PropertyRole.class);
-    for (PropertyRole role : PropertyRole.values()) {
-      overrideableMethods.put(role, new OverridableMethods());
-    }
-    return overrideableMethods;
-    
-  }
-
 }
