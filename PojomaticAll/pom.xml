@@ -3,7 +3,7 @@
   <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic-all</artifactId>
   <packaging>pom</packaging>
-  <version>TestUtils-SNAPSHOT</version>
+  <version>trunk-SNAPSHOT</version>
   <name>PojomaticAll</name>
   <description>
     Parent and aggregator for all artifacts related to the Pojomatic project.
@@ -171,7 +171,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
       </plugin>
     </plugins>
   </reporting>

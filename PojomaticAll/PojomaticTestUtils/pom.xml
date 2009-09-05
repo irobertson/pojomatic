@@ -3,7 +3,7 @@
   <parent>
     <artifactId>pojomatic-all</artifactId>
     <groupId>org.pojomatic</groupId>
-    <version>TestUtils-SNAPSHOT</version>
+    <version>trunk-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
