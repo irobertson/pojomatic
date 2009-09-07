@@ -295,10 +295,10 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
 
   /**
-   * @param instance
-   * @param other
-   * @return true if the values of properties referenced by {@code prop} in {@code instance} and
-   * {@code other} are equal to each other.
+   * Compare two values for equality
+   * @param instanceValue the first value to compare
+   * @param otherValue the second value to compare
+   * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
    */
   private static boolean areValuesEqual(Object instanceValue, Object otherValue) {
     if (instanceValue == null) {
