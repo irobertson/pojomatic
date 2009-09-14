@@ -22,20 +22,8 @@ import org.pojomatic.annotations.Property;
  * {@link PojomatorImpl#doEquals(Object, Object)}, and {@link PojomatorImpl#doToString(Object)}.
  */
 public class ClassProperties {
-  /**
-   * Creates a new instance.
-   *
-   * @param <T> the type of {@code pojoClass}
-   * @param pojoClass the class to inspect
-   * @return a new instance
-   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
-   * with Pojomatic.
-   */
-  public static <T> ClassProperties createInstance(Class<T> pojoClass) throws IllegalArgumentException {
-    return new ClassProperties(pojoClass);
-  }
 
-  
+
   private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
 
   private final Map<PropertyRole, Collection<PropertyElement>> properties = makeProperties();
@@ -47,7 +35,7 @@ public class ClassProperties {
    * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
    * with Pojomatic.
    */
-  private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
+  public ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
     if (pojoClass.isInterface()) {
       extractClassProperties(pojoClass, new OverridableMethods());
     }

@@ -23,7 +23,7 @@ public class ClassPropertiesTest {
     final PropertyElement forEqualsAndToString =
       TestUtils.field(FieldPojo.class, "forEqualsAndToString");
 
-    ClassProperties classProperties = ClassProperties.createInstance(FieldPojo.class);
+    ClassProperties classProperties = new ClassProperties(FieldPojo.class);
 
     assertEquals(
       asSet(privateStringField, publicIntField, forEqualsAndToString),
@@ -42,7 +42,7 @@ public class ClassPropertiesTest {
     final PropertyElement stringField = TestUtils.field(AutoFieldPojo.class, "string");
     final PropertyElement allInDoubleField = TestUtils.field(AutoFieldPojo.class, "allInDouble");
 
-    ClassProperties classProperties = ClassProperties.createInstance(AutoFieldPojo.class);
+    ClassProperties classProperties = new ClassProperties(AutoFieldPojo.class);
 
     assertEquals(asSet(allInDoubleField), asSet(classProperties.getEqualsProperties()));
     assertEquals(asSet(allInDoubleField), asSet(classProperties.getHashCodeProperties()));
@@ -63,7 +63,7 @@ public class ClassPropertiesTest {
     final PropertyElement privateStringMethod = TestUtils.method(MethodPojo.class, "privateString");
     final PropertyElement onlyForEqualsMethod = TestUtils.method(MethodPojo.class, "onlyForEquals");
 
-    ClassProperties classProperties = ClassProperties.createInstance(MethodPojo.class);
+    ClassProperties classProperties = new ClassProperties(MethodPojo.class);
 
     assertEquals(
       asSet(getIntMethod, privateStringMethod, onlyForEqualsMethod),
@@ -87,7 +87,7 @@ public class ClassPropertiesTest {
       new HashSet<PropertyElement>(commonProperties);
     equalsHashCodeProperties.add(TestUtils.method(AutoMethodPojo.class, "getHashCodeAndEquals"));
 
-    ClassProperties classProperties = ClassProperties.createInstance(AutoMethodPojo.class);
+    ClassProperties classProperties = new ClassProperties(AutoMethodPojo.class);
 
     assertEquals(equalsHashCodeProperties, asSet(classProperties.getEqualsProperties()));
     assertEquals(equalsHashCodeProperties, asSet(classProperties.getHashCodeProperties()));
@@ -97,24 +97,24 @@ public class ClassPropertiesTest {
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodReturningVoid() {
     class MethodReturnsVoidPojo { @Property public void noReturn() {} }
-    ClassProperties.createInstance(MethodReturnsVoidPojo.class);
+    new ClassProperties(MethodReturnsVoidPojo.class);
   }
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodTakingArgs() {
     class MethodTakesArgsPojo { @Property public int takesArgs(String death) { return death.length(); } }
-    ClassProperties.createInstance(MethodTakesArgsPojo.class);
+    new ClassProperties(MethodTakesArgsPojo.class);
   }
 
   @Test
   public void testAnnotatedInheritance() throws Exception {
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentPojo.class, "getFoo"));
-    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentPojo.class);
+    ClassProperties parentClassProperties = new ClassProperties(ParentPojo.class);
     assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
     assertEquals(expectedParent, asSet(parentClassProperties.getHashCodeProperties()));
     assertEquals(expectedParent, asSet(parentClassProperties.getToStringProperties()));
 
-    ClassProperties childClassProperties = ClassProperties.createInstance(ChildPojo.class);
+    ClassProperties childClassProperties = new ClassProperties(ChildPojo.class);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"), TestUtils.field(ChildPojo.class, "other"));
     assertEquals(expectedChild, asSet(childClassProperties.getEqualsProperties()));
@@ -125,12 +125,12 @@ public class ClassPropertiesTest {
   @Test
   public void testAutoInheritanceBothAuto() throws Exception {
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentAutoPojo.class, "getFoo"));
-    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentAutoPojo.class);
+    ClassProperties parentClassProperties = new ClassProperties(ParentAutoPojo.class);
     assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
     assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getHashCodeProperties()));
     assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getToStringProperties()));
 
-    ClassProperties childClassProperties = ClassProperties.createInstance(ChildAutoFieldPojo.class);
+    ClassProperties childClassProperties = new ClassProperties(ChildAutoFieldPojo.class);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.field(ChildAutoFieldPojo.class, "other"));
     assertEquals(expectedParent, asSet(childClassProperties.getEqualsProperties()));
@@ -146,7 +146,7 @@ public class ClassPropertiesTest {
       public int getBar() { return 2; }
     }
 
-    ClassProperties childClassProperties = ClassProperties.createInstance(ChildAutoMethodPojo.class);
+    ClassProperties childClassProperties = new ClassProperties(ChildAutoMethodPojo.class);
     Set<PropertyElement> expected = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"),
       TestUtils.method(ChildAutoMethodPojo.class, "getBar"));
@@ -164,12 +164,12 @@ public class ClassPropertiesTest {
     }
 
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentPojo.class, "getFoo"));
-    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentPojo.class);
+    ClassProperties parentClassProperties = new ClassProperties(ParentPojo.class);
     assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
     assertEquals(expectedParent, asSet(parentClassProperties.getHashCodeProperties()));
     assertEquals(expectedParent, asSet(parentClassProperties.getToStringProperties()));
 
-    ClassProperties childClassProperties = ClassProperties.createInstance(ChildExtendsAnnotatedPojo.class);
+    ClassProperties childClassProperties = new ClassProperties(ChildExtendsAnnotatedPojo.class);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"),
       TestUtils.method(ChildExtendsAnnotatedPojo.class, "getMyString"));
@@ -187,12 +187,12 @@ public class ClassPropertiesTest {
     }
 
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentAutoPojo.class, "getFoo"));
-    ClassProperties parentClassProperties = ClassProperties.createInstance(ParentAutoPojo.class);
+    ClassProperties parentClassProperties = new ClassProperties(ParentAutoPojo.class);
     assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
     assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getHashCodeProperties()));
     assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getToStringProperties()));
 
-    ClassProperties childClassProperties = ClassProperties.createInstance(ChildExtendsAutoPojo.class);
+    ClassProperties childClassProperties = new ClassProperties(ChildExtendsAutoPojo.class);
     Set<PropertyElement> expectedChildEquals = asSet(
       TestUtils.method(ParentAutoPojo.class, "getFoo"),
       TestUtils.field(ChildExtendsAutoPojo.class, "other"));
@@ -206,7 +206,7 @@ public class ClassPropertiesTest {
   @Test
   public void testAnnotatedStaticField() {
     try {
-      ClassProperties.createInstance(StaticField.class);
+      new ClassProperties(StaticField.class);
       fail("Exception expected");
     }
     catch (IllegalArgumentException e) {
@@ -219,7 +219,7 @@ public class ClassPropertiesTest {
   @Test
   public void testAnnotatedStaticMethod() {
     try {
-      ClassProperties.createInstance(StaticMethod.class);
+      new ClassProperties(StaticMethod.class);
       fail("Exception expected");
     }
     catch (IllegalArgumentException e) {
@@ -230,7 +230,7 @@ public class ClassPropertiesTest {
   }
   
   @Test public void testInterface() throws Exception {
-    ClassProperties classProperties = ClassProperties.createInstance(Interface.class);
+    ClassProperties classProperties = new ClassProperties(Interface.class);
     PropertyElement getFoo = TestUtils.method(Interface.class, "getFoo");
     PropertyElement baz = TestUtils.method(Interface.class, "baz");
     assertEquals(asSet(getFoo), asSet(classProperties.getHashCodeProperties()));

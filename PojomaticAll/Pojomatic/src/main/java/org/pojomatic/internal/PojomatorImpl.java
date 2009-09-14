@@ -36,7 +36,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    */
   public PojomatorImpl(Class<T> clazz) throws IllegalArgumentException {
     this.clazz = clazz;
-    classProperties = ClassProperties.createInstance(clazz);
+    classProperties = new ClassProperties(clazz);
     pojoFormatterClass = findPojoFormatterClass(clazz);
     for (PropertyElement prop: classProperties.getToStringProperties()) {
       PropertyFormatter propertyFormatter = findPropertyFormatter(prop.getElement());

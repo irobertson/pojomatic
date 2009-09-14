@@ -25,7 +25,7 @@ public class Bean {
   }
   
   private static void setUpPojomaticHandrolled() {
-    ClassProperties classProperties = ClassProperties.createInstance(Bean.class);
+    ClassProperties classProperties = new ClassProperties(Bean.class);
     for (PropertyElement prop: classProperties.getHashCodeProperties()) {
       if ("integer".equals(prop.getName())) {
         getInteger = prop;
