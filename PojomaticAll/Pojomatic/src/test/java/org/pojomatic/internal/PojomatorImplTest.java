@@ -32,9 +32,6 @@ public class PojomatorImplTest {
   private static Pojomator<IntProperty> INT_PROPERTY_POJOMATOR =
     makePojomatorImpl(IntProperty.class);
 
-  private static Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR =
-    makePojomatorImpl(StringArrayProperty.class);
-
   private static final Pojomator<AccessCheckedProperties> ACCESS_CHECKED_PROPERTIES_POJOMATOR =
     makePojomatorImpl(AccessCheckedProperties.class);
 
@@ -90,6 +87,13 @@ public class PojomatorImplTest {
   }
 
   @Test public void testObjectArrayPropertyEquals() {
+    class StringArrayProperty {
+      public StringArrayProperty(String... strings) { this.strings = strings; }
+      @Property String[] strings;
+    }
+
+    Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR = makePojomatorImpl(StringArrayProperty.class);
+
     String s1 = "hello";
     String s2 = copyString(s1);
     assertTrue(STRING_ARRAY_PROPERTY_POJOMATOR.doEquals(
@@ -358,14 +362,6 @@ public class PojomatorImplTest {
       this.i = i;
     }
     @Property int i;
-  }
-
-  public static class StringArrayProperty {
-    public StringArrayProperty(String... strings) {
-      this.strings = strings;
-    }
-
-    @Property String[] strings;
   }
 
   public static class ExceptionThrowingProperty {

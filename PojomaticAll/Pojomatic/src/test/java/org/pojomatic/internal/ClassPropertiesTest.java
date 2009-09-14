@@ -2,10 +2,7 @@ package org.pojomatic.internal;
 
 import static org.junit.Assert.*;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.junit.Test;
 import org.pojomatic.PropertyElement;
@@ -56,6 +53,12 @@ public class ClassPropertiesTest {
 
   @Test
   public void testAnnotatedMethods() throws Exception {
+    class MethodPojo {
+      @Property public int getInt() { return 0; }
+      @Property @SuppressWarnings("unused") private String privateString() { return null; }
+      @Property(policy=PojomaticPolicy.EQUALS) public double onlyForEquals() { return 0.0; }
+    }
+
     final PropertyElement getIntMethod = TestUtils.method(MethodPojo.class, "getInt");
     final PropertyElement privateStringMethod = TestUtils.method(MethodPojo.class, "privateString");
     final PropertyElement onlyForEqualsMethod = TestUtils.method(MethodPojo.class, "onlyForEquals");
@@ -93,12 +96,14 @@ public class ClassPropertiesTest {
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodReturningVoid() {
-      ClassProperties.createInstance(MethodReturnsVoidPojo.class);
+    class MethodReturnsVoidPojo { @Property public void noReturn() {} }
+    ClassProperties.createInstance(MethodReturnsVoidPojo.class);
   }
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodTakingArgs() {
-      ClassProperties.createInstance(MethodTakesArgsPojo.class);
+    class MethodTakesArgsPojo { @Property public int takesArgs(String death) { return death.length(); } }
+    ClassProperties.createInstance(MethodTakesArgsPojo.class);
   }
 
   @Test
@@ -135,6 +140,12 @@ public class ClassPropertiesTest {
 
   @Test
   public void testAutoInheritanceWithOverride() throws Exception {
+    @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
+    class ChildAutoMethodPojo extends ParentPojo {
+      @Override public int getFoo() { return 2; }
+      public int getBar() { return 2; }
+    }
+
     ClassProperties childClassProperties = ClassProperties.createInstance(ChildAutoMethodPojo.class);
     Set<PropertyElement> expected = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"),
@@ -146,6 +157,12 @@ public class ClassPropertiesTest {
   
   @Test
   public void testAutoInheritanceAnnotatedParent() throws Exception {
+    @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
+    class ChildExtendsAnnotatedPojo extends ParentPojo {
+      @Override public int getFoo() { return 0; }
+      public String getMyString() { return "foo"; }
+    }
+
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentPojo.class, "getFoo"));
     ClassProperties parentClassProperties = ClassProperties.createInstance(ParentPojo.class);
     assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
@@ -163,6 +180,12 @@ public class ClassPropertiesTest {
 
   @Test
   public void testAutoInheritanceAutoParentAnnotatedChild() throws Exception {
+    class ChildExtendsAutoPojo extends ParentAutoPojo {
+      @Property public String other;
+      @Override public int getFoo() { return 2; }
+      public String getBar() { return ""; }
+    }
+
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentAutoPojo.class, "getFoo"));
     ClassProperties parentClassProperties = ClassProperties.createInstance(ParentAutoPojo.class);
     assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
@@ -213,9 +236,11 @@ public class ClassPropertiesTest {
     assertEquals(asSet(getFoo), asSet(classProperties.getHashCodeProperties()));
     assertEquals(asSet(getFoo), asSet(classProperties.getToStringProperties()));
     assertEquals(asSet(getFoo, baz), asSet(classProperties.getEqualsProperties()));
-
   }
-  
+
+  //Not all classes can be made internal.  In particular, autodetect=FIELD classes cannot, because of the synthetic
+  //$this, and classes requiring static elements cannot.
+
   public static class FieldPojo {
     @SuppressWarnings("unused")
     @Property
@@ -250,18 +275,6 @@ public class ClassPropertiesTest {
     public static String staticField;
   }
 
-  public static class MethodPojo {
-    @Property
-    public int getInt() { return 0; }
-
-    @Property
-    @SuppressWarnings("unused")
-    private String privateString() { return null; }
-
-    @Property(policy=PojomaticPolicy.EQUALS)
-    public double onlyForEquals() { return 0.0; }
-  }
-
   @AutoProperty(autoDetect=AutoDetectPolicy.METHOD, policy=DefaultPojomaticPolicy.ALL)
   public static class AutoMethodPojo {
     /* Fields are not auto-detected */
@@ -293,16 +306,6 @@ public class ClassPropertiesTest {
     public static String getStatic() { return null; }
   }
 
-  public static class MethodReturnsVoidPojo {
-    @Property
-    public void noReturn() {}
-  }
-
-  public static class MethodTakesArgsPojo {
-    @Property
-    public int takesArgs(String death) { return death.length(); }
-  }
-
   private static abstract class ParentPojo {
     @Property
     public abstract int getFoo();
@@ -313,20 +316,6 @@ public class ClassPropertiesTest {
     public String other;
 
     @Override public int getFoo() { return 2; }
-  }
-
-  @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
-  public static class ChildAutoMethodPojo extends ParentPojo {
-    @Override public int getFoo() { return 2; }
-    public int getBar() { return 2; }
-  }
-  
-  @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
-  public static class ChildExtendsAnnotatedPojo extends ParentPojo {
-    @Override
-    public int getFoo() { return 0; }
-
-    public String getMyString() { return "foo"; }
   }
 
   @AutoProperty(autoDetect=AutoDetectPolicy.METHOD, policy=DefaultPojomaticPolicy.EQUALS)
@@ -347,16 +336,7 @@ public class ClassPropertiesTest {
     int bar();
     @Property(policy=PojomaticPolicy.EQUALS) int baz();
   }
-  
-  public static class ChildExtendsAutoPojo extends ParentAutoPojo {
-    @Property
-    public String other;
 
-    @Override public int getFoo() { return 2; }
-
-    public String getBar() { return ""; }
-  }
-  
   public static class StaticField {
     @Property public static int a;
   }
@@ -364,13 +344,9 @@ public class ClassPropertiesTest {
   public static class StaticMethod {
     @Property public static int a() { return 1; }
   }
-  
+
   private static Set<PropertyElement> asSet(PropertyElement... elements) {
-    HashSet<PropertyElement> result = new HashSet<PropertyElement>();
-    for (PropertyElement element : elements) {
-      result.add(element);
-    }
-    return result;
+    return new HashSet<PropertyElement>(Arrays.asList(elements));
   }
 
   private static Set<PropertyElement> asSet(Collection<PropertyElement> elements) {
