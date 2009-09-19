@@ -58,8 +58,13 @@ public class PropertyElementTest {
   }
 
   @Test
-  public void testHashCode() throws Exception {
-    assertEquals(getTestMethod().hashCode(), new PropertyAccessor(getTestMethod(), "").hashCode());
+  public void testMethodHashCode() throws Exception {
+    assertEquals(getTestMethod().hashCode(), new PropertyAccessor(getTestMethod(), "salt").hashCode());
+  }
+
+  @Test
+  public void testFieldHashCode() throws Exception {
+    assertEquals(getTestField().hashCode(), new PropertyField(getTestField(), "salt").hashCode());
   }
 
   @Test
