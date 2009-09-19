@@ -10,10 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
-import org.pojomatic.annotations.AutoProperty;
-import org.pojomatic.annotations.PojoFormat;
-import org.pojomatic.annotations.Property;
-import org.pojomatic.annotations.PropertyFormat;
+import org.pojomatic.annotations.*;
 import org.pojomatic.diff.Difference;
 import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
@@ -316,6 +313,29 @@ public class PojomatorImplTest {
     assertTrue(pojomator.doToString(new PrivateClass()).contains("number"));
   }
 
+  @Test public void testInterface() {
+    Pojomator<Interface> pojomator = makePojomatorImpl(Interface.class);
+    class Impl1 implements Interface {
+      public int getInt() { return 2; }
+      public String getString() { return "hello"; }
+    }
+
+    class Impl2 implements Interface {
+      private final String string;
+
+      Impl2(String string) { this.string = string; }
+      public int getInt() { return 2; }
+      public String getString() { return string; }
+    }
+
+
+    assertEquals("Interface{int: {2}, string: {hello}}", pojomator.doToString(new Impl1()));
+    assertEquals((
+      HASH_CODE_MULTIPLIER + 2)*HASH_CODE_MULTIPLIER + "hello".hashCode(), pojomator.doHashCode(new Impl1()));
+    assertTrue(pojomator.doEquals(new Impl1(), new Impl2("hello")));
+    assertFalse(pojomator.doEquals(new Impl1(), new Impl2("goodbye")));
+  }
+
   @PojoFormat(SimplePojoFormatter.class)
   public static class FormattedObject {
     public FormattedObject(Object s) {
@@ -393,6 +413,12 @@ public class PojomatorImplTest {
   private static class PrivateClass {
     @SuppressWarnings("unused")
     private int number;
+  }
+
+  @AutoProperty(autoDetect = AutoDetectPolicy.METHOD)
+  private static interface Interface {
+    public int getInt();
+    public String getString();
   }
 
   private static <T> Pojomator<T> makePojomatorImpl(Class<T> clazz) {
