@@ -96,8 +96,16 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     if (instance == other) {
       return true;
     }
-    if (! clazz.isInstance(other)) {
+    if (other == null) {
       return false;
+    }
+    if (!instance.getClass().equals(other.getClass())) {
+      if (instance.getClass().isAssignableFrom(other.getClass())) {
+        return other.equals(instance);
+      }
+      if (!classProperties.getEqualsParentClass().isAssignableFrom(other.getClass())) {
+        return false;
+      }
     }
 
     for (PropertyElement prop: classProperties.getEqualsProperties()) {

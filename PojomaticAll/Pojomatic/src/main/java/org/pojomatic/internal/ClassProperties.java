@@ -22,11 +22,11 @@ import org.pojomatic.annotations.Property;
  * {@link PojomatorImpl#doEquals(Object, Object)}, and {@link PojomatorImpl#doToString(Object)}.
  */
 public class ClassProperties {
-
-
   private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
 
   private final Map<PropertyRole, Collection<PropertyElement>> properties = makeProperties();
+
+  private final Class<?> equalsParentClass;
 
   /**
    * Creates an instance for the given {@code pojoClass}.
@@ -38,11 +38,47 @@ public class ClassProperties {
   public ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
     if (pojoClass.isInterface()) {
       extractClassProperties(pojoClass, new OverridableMethods());
+      equalsParentClass = pojoClass;
     }
     else {
       walkHierarchy(pojoClass, new OverridableMethods());
+      equalsParentClass = findMostSpecificClassContributingToEquals();
     }
     verifyPropertiesNotEmpty(pojoClass);
+  }
+
+  /**
+   * Gets the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
+   * @return the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
+   */
+  public Collection<PropertyElement> getEqualsProperties() {
+    return properties.get(PropertyRole.EQUALS);
+  }
+
+  /**
+   * Gets the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
+   * @return the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
+   */
+  public Collection<PropertyElement> getHashCodeProperties() {
+    return properties.get(PropertyRole.HASH_CODE);
+  }
+
+  /**
+   * Gets the properties to use for {@link PojomatorImpl#doToString(Object)}.
+   * @return the properties to use for {@link PojomatorImpl#doToString(Object)}.
+   */
+  public Collection<PropertyElement> getToStringProperties() {
+    return properties.get(PropertyRole.TO_STRING);
+  }
+
+  /**
+   * Get the class which any class must inherit from in order for its instances to be candidates for being considered
+   * equal by {@link PojomatorImpl#doEquals(Object, Object)}.
+   * @return the class which any class must inherit from in order for its instances to be candidates for being
+   * considered equal by {@link PojomatorImpl#doEquals(Object, Object)}.
+   */
+  public Class<?> getEqualsParentClass() {
+    return equalsParentClass;
   }
 
   private void walkHierarchy(Class<?> clazz, OverridableMethods overridableMethods) {
@@ -141,6 +177,16 @@ public class ClassProperties {
       "Class " + pojoClass.getName() + " has no Pojomatic properties");
   }
 
+  private Class<?> findMostSpecificClassContributingToEquals() {
+    Class<?> clazz = Object.class;
+    for (PropertyElement propertyElement : properties.get(PropertyRole.EQUALS)) {
+      if (clazz.isAssignableFrom(propertyElement.getDeclaringClass())) {
+        clazz = propertyElement.getDeclaringClass();
+      }
+    }
+    return clazz;
+  }
+
   private String getPropertyName(Property property) {
     return property == null ? "" : property.name();
   }
@@ -161,30 +207,6 @@ public class ClassProperties {
 
   private static boolean isStatic(Member member) {
     return Modifier.isStatic(member.getModifiers());
-  }
-
-  /**
-   * Gets the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
-   * @return the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
-   */
-  public Collection<PropertyElement> getEqualsProperties() {
-    return properties.get(PropertyRole.EQUALS);
-  }
-
-  /**
-   * Gets the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
-   * @return the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
-   */
-  public Collection<PropertyElement> getHashCodeProperties() {
-    return properties.get(PropertyRole.HASH_CODE);
-  }
-
-  /**
-   * Gets the properties to use for {@link PojomatorImpl#doToString(Object)}.
-   * @return the properties to use for {@link PojomatorImpl#doToString(Object)}.
-   */
-  public Collection<PropertyElement> getToStringProperties() {
-    return properties.get(PropertyRole.TO_STRING);
   }
 
   private static Map<PropertyRole, Collection<PropertyElement>> makeProperties() {
