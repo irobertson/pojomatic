@@ -41,6 +41,12 @@ public class PropertyElementTest {
   }
 
   @Test
+  public void testGetDeclaringClass() throws Exception {
+    assertEquals(PropertyElementTest.class, new PropertyAccessor(getTestMethod(), "").getDeclaringClass());
+    assertEquals(PropertyElementTest.class, new PropertyField(getTestField(), "").getDeclaringClass());      
+  }
+
+  @Test
   public void testEquals() throws Exception {
     PropertyAccessor testMethodProperty = new PropertyAccessor(getTestMethod(), "");
     assertEquals(testMethodProperty, testMethodProperty);

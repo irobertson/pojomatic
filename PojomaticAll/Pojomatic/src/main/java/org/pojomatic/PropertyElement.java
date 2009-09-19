@@ -28,4 +28,10 @@ public interface PropertyElement {
    */
   AnnotatedElement getElement();
 
+  /**
+   * Get the class object representing the class or interface declaring this property.
+   * @return the declaring class or interface of this property.
+   */
+  Class<?> getDeclaringClass();
+
 }

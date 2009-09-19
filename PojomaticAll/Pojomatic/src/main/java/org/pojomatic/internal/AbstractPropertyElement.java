@@ -48,6 +48,10 @@ implements PropertyElement {
     return this.element;
   }
 
+  public Class<?> getDeclaringClass() {
+    return element.getDeclaringClass();
+  }
+
   @Override
   public int hashCode() {
     return element.hashCode();
