@@ -54,8 +54,9 @@ public class ClassPropertiesTest {
   @Test
   public void testAnnotatedMethods() throws Exception {
     class MethodPojo {
-      @Property public int getInt() { return 0; }
+      @SuppressWarnings("unused") @Property public int getInt() { return 0; }
       @Property @SuppressWarnings("unused") private String privateString() { return null; }
+      @SuppressWarnings("unused")
       @Property(policy=PojomaticPolicy.EQUALS) public double onlyForEquals() { return 0.0; }
     }
 
@@ -96,13 +97,16 @@ public class ClassPropertiesTest {
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodReturningVoid() {
-    class MethodReturnsVoidPojo { @Property public void noReturn() {} }
+    class MethodReturnsVoidPojo { @SuppressWarnings("unused") @Property public void noReturn() {} }
     new ClassProperties(MethodReturnsVoidPojo.class);
   }
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodTakingArgs() {
-    class MethodTakesArgsPojo { @Property public int takesArgs(String death) { return death.length(); } }
+    class MethodTakesArgsPojo {
+      @SuppressWarnings("unused") @Property public int takesArgs(String death) {
+        return death.length(); }
+    }
     new ClassProperties(MethodTakesArgsPojo.class);
   }
 
@@ -143,7 +147,7 @@ public class ClassPropertiesTest {
     @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
     class ChildAutoMethodPojo extends ParentPojo {
       @Override public int getFoo() { return 2; }
-      public int getBar() { return 2; }
+      @SuppressWarnings("unused") public int getBar() { return 2; }
     }
 
     ClassProperties childClassProperties = new ClassProperties(ChildAutoMethodPojo.class);
@@ -154,13 +158,13 @@ public class ClassPropertiesTest {
     assertEquals(expected, asSet(childClassProperties.getHashCodeProperties()));
     assertEquals(expected, asSet(childClassProperties.getToStringProperties()));
   }
-  
+
   @Test
   public void testAutoInheritanceAnnotatedParent() throws Exception {
     @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
     class ChildExtendsAnnotatedPojo extends ParentPojo {
       @Override public int getFoo() { return 0; }
-      public String getMyString() { return "foo"; }
+      @SuppressWarnings("unused") public String getMyString() { return "foo"; }
     }
 
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentPojo.class, "getFoo"));
@@ -181,9 +185,9 @@ public class ClassPropertiesTest {
   @Test
   public void testAutoInheritanceAutoParentAnnotatedChild() throws Exception {
     class ChildExtendsAutoPojo extends ParentAutoPojo {
-      @Property public String other;
+      @SuppressWarnings("unused") @Property public String other;
       @Override public int getFoo() { return 2; }
-      public String getBar() { return ""; }
+      @SuppressWarnings("unused") public String getBar() { return ""; }
     }
 
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentAutoPojo.class, "getFoo"));
@@ -202,7 +206,7 @@ public class ClassPropertiesTest {
     assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
     assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
   }
-  
+
   @Test
   public void testAnnotatedStaticField() {
     try {
@@ -211,7 +215,7 @@ public class ClassPropertiesTest {
     }
     catch (IllegalArgumentException e) {
       assertEquals(
-        "Static field " + StaticField.class.getName() + ".a is annotated with @Property", 
+        "Static field " + StaticField.class.getName() + ".a is annotated with @Property",
         e.getMessage());
     }
   }
@@ -224,11 +228,11 @@ public class ClassPropertiesTest {
     }
     catch (IllegalArgumentException e) {
       assertEquals(
-        "Static method " + StaticMethod.class.getName() + ".a() is annotated with @Property", 
+        "Static method " + StaticMethod.class.getName() + ".a() is annotated with @Property",
         e.getMessage());
     }
   }
-  
+
   @Test public void testInterface() throws Exception {
     ClassProperties classProperties = new ClassProperties(Interface.class);
     PropertyElement getFoo = TestUtils.method(Interface.class, "getFoo");

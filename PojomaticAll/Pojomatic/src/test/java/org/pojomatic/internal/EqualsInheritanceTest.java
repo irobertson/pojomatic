@@ -8,7 +8,7 @@ import org.pojomatic.Pojomatic;
 
 public class EqualsInheritanceTest {
   private static class Parent {
-    @Property int x = 3;
+    @SuppressWarnings("unused") @Property int x = 3;
 
     @Override
     public boolean equals(Object obj) {
@@ -30,7 +30,7 @@ public class EqualsInheritanceTest {
   }
 
   @Test public void testChildWithNewProperty() {
-    class Child extends Parent { @Property int y = 4; }
+    class Child extends Parent { @SuppressWarnings("unused") @Property int y = 4; }
     Child child = new Child();
     Pojomator<Child> childPojomator = new PojomatorImpl<Child>(Child.class);
 

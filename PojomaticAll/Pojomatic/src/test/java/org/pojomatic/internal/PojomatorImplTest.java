@@ -86,7 +86,7 @@ public class PojomatorImplTest {
   @Test public void testObjectArrayPropertyEquals() {
     class StringArrayProperty {
       public StringArrayProperty(String... strings) { this.strings = strings; }
-      @Property String[] strings;
+      @SuppressWarnings("unused") @Property String[] strings;
     }
 
     Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR = makePojomatorImpl(StringArrayProperty.class);
