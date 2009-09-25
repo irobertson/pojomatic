@@ -26,6 +26,8 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   final static int HASH_CODE_SEED = 1;
   final static int HASH_CODE_MULTIPLIER = 31;
 
+  //TODO: someplace in our docs, we need to describe how we walk the class hierarchy, and how we
+  //handle interfaces.
 
   /**
    * Creates an instance for {@code clazz}.
@@ -68,27 +70,31 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   /**
    * {@inheritDoc}
    * <p>
-   * In essance, two objects will be considered equal if they have the same set of properties with a
-   * {@link PropertyRole} of {@link PropertyRole#EQUALS EQUALS}, and for each property, the values are equal as
-   * described below.
+   * In essence, two objects will be considered equal if they have the same set of properties with a
+   * {@link PojomaticPolicy} other than {@link PojomaticPolicy#TO_STRING TO_STRING} or
+   * {@link PojomaticPolicy#NONE NONE}, and for each property, the values are equal as described
+   * below. Note that two properties cannot be considered the same if they come from different
+   * declaring classes.
    * <p>
-   * More precisely, if {@code other} is null, this method returns {@code false}.  If {@code other} is a an instance of
-   * a proper subclass of the class of {@code instance}, then this method returns the result of calling
-   * {@code other.equals(instance)}.  Otherwise, it is verified that the class of {@code other} either the same as or a
-   * subclass of the most specific class contributing a property with a {@code PropertyRole} of {@code EQUALS}; if not,
-   * then this method returns false.  Otherwise, this method will return true provided that each property of
-   * {@code instance} which has a {@link PojomaticPolicy} other than {@link PojomaticPolicy#TO_STRING TO_STRING} or
-   * {@link PojomaticPolicy#NONE NONE} is equal to the corresponding property of {@code other} in the following sense:
+   * More precisely, if {@code other} is null, this method returns {@code false}. If {@code other}
+   * is a an instance of a proper subclass of the class of {@code instance}, then this method
+   * returns the result of calling {@code other.equals(instance)}. Otherwise, it is verified that
+   * the class of {@code other} either the same as or a subclass of the most specific class
+   * contributing a property with a {@code PojomaticPolicy} other than {@code TO_STRING} or 
+   * {@code NONE}; if not, then this method
+   * returns false. Otherwise, this method will return true provided that each property of {@code
+   * instance} which has a {@code PojomaticPolicy} other than {@code TO_STRING} or 
+   * {@code NONE} is equal to the corresponding property of {@code other} in the following sense:
    * <ul>
-   *  <li>Both are {@code null}, or</li>
-   *  <li>Both are reference-equals (==) to each other, or</li>
-   *  <li>Both are primitive of the same type, and equal to each other, or</li>
-   *  <li>Both are of array type, with matching primitive component types, and the corresponding
-   *  {@code} equals method of {@link Arrays} returns true, or</li>
-   *  <li>Both are of array type with non-primitive component types, and
-   *  {@link Arrays#deepEquals(Object[], Object[])} returns true, or</li>
-   *  <li>The property {@code p} in {@code instance} is an object not of array type, and
-   *  {@code instanceP.equals(otherP)} returns true.
+   * <li>Both are {@code null}, or</li>
+   * <li>Both are reference-equals (==) to each other, or</li>
+   * <li>Both are primitive of the same type, and equal to each other, or</li>
+   * <li>Both are of array type, with matching primitive component types, and the corresponding
+   * {@code} equals method of {@link Arrays} returns true, or</li>
+   * <li>Both are of array type with non-primitive component types, and
+   * {@link Arrays#deepEquals(Object[], Object[])} returns true, or</li>
+   * <li>The property {@code p} in {@code instance} is an object not of array type, and {@code
+   * instanceP.equals(otherP)} returns true.
    * </ul>
    *
    * @throws NullPointerException if {@code instance} is null
