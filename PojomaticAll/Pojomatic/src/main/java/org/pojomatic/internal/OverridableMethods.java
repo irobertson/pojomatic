@@ -10,6 +10,20 @@ import java.util.*;
  */
 class OverridableMethods {
 
+  /**
+   * Check to see if roles should be added to a method, and add them if so.  Only roles not already
+   * on the method will be added.  If {@code method} already has an
+   * {@link PropertyRole#EQUALS EQUALS} role, and it is requested to add the
+   * {@link PropertyRole#HASH_CODE HASH_CODE} role, an {@link IllegalArgumentException} will be
+   * thrown.
+   *
+   * @param method the method to check
+   * @param newRoles the roles to add
+   * @return the roles which were actually added.
+   * @throws IllegalArgumentException if {@code method} already has an
+   * {@link PropertyRole#EQUALS EQUALS} role, and it is requested to add the
+   * {@link PropertyRole#HASH_CODE HASH_CODE} role
+   */
   Set<PropertyRole> checkAndMaybeAddRolesToMethod(Method method, Set<PropertyRole> newRoles) {
     Set<PropertyRole> existingRoles = findExistingRoles(method);
     if (existingRoles.contains(PropertyRole.EQUALS)
@@ -61,6 +75,8 @@ class OverridableMethods {
    * A bean to track the package and name of a package-private method
    */
   private static class PackageMethod {
+    //TODO: Consider tracking the return type as well, to deal with byte-code-generated overloads
+    // that have different return types, as well as return type narrowing in a subclass.
     PackageMethod(Method method) {
       name = method.getName();
       pakage = method.getDeclaringClass().getPackage();
