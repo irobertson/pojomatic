@@ -38,7 +38,9 @@ public class EqualsInheritanceTest {
     assertFalse(child.equals(PARENT));
     assertFalse(PARENT_POJOMATOR.doEquals(PARENT, child));
     assertFalse(childPojomator.doEquals(child, PARENT));
-    // If we expicitely use a PARENT_POJOMATOR to compare child to parent, we'll miss the additional child property.
+    // If we expicitely use a PARENT_POJOMATOR to compare child to parent, we'll miss the additional
+    //child property.
+    //TODO - document this a as a danger of creating your own Pojomators.
     assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
   }
 
@@ -51,5 +53,17 @@ public class EqualsInheritanceTest {
 
     assertTrue(PARENT_POJOMATOR.doEquals(child1, child2));
     assertTrue(childPojomator.doEquals(child1, child2));
+  }
+
+  @Test public void testTwoChildrenWithOneHavingNewProperties() {
+    class Child1 extends Parent { @SuppressWarnings("unused") @Property int y = 4; }
+    class Child2 extends Parent {}
+    Child1 child1 = new Child1();
+    Child2 child2 = new Child2();
+    Pojomator<Child1> child1Pojomator = new PojomatorImpl<Child1>(Child1.class);
+    Pojomator<Child2> child2Pojomator = new PojomatorImpl<Child2>(Child2.class);
+
+    assertFalse(child1Pojomator.doEquals(child1, child2));
+    assertFalse(child2Pojomator.doEquals(child2, child1));
   }
 }
