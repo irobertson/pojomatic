@@ -12,6 +12,9 @@ import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.DefaultPojomaticPolicy;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.internal.a.C1;
+import org.pojomatic.internal.b.C2;
+import org.pojomatic.internal.b.C4;
 
 public class ClassPropertiesTest {
 
@@ -205,6 +208,22 @@ public class ClassPropertiesTest {
       TestUtils.field(ChildExtendsAutoPojo.class, "other"));
     assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
     assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+  }
+
+  @Test
+  public void testOverriddenMethods() throws Exception {
+    ClassProperties classProperties = new ClassProperties(C4.class);
+    assertEquals(
+      asSet(
+        TestUtils.method(C1.class, "packagePrivate"),
+        TestUtils.method(C1.class, "packagePrivateOverriddenProtected"),
+        TestUtils.method(C1.class, "packagePrivateOverriddenPublic"),
+        TestUtils.method(C1.class, "protectedMethod"),
+        TestUtils.method(C1.class, "publicMethod"),
+        TestUtils.method(C2.class, "packagePrivate"),
+        TestUtils.method(C2.class, "packagePrivateOverriddenProtected"),
+        TestUtils.method(C2.class, "packagePrivateOverriddenPublic")),
+      asSet(classProperties.getEqualsProperties()));
   }
 
   @Test
