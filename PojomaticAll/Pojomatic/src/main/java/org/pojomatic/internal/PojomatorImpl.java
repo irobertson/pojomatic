@@ -38,7 +38,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    */
   public PojomatorImpl(Class<T> clazz) throws IllegalArgumentException {
     this.clazz = clazz;
-    classProperties = new ClassProperties(clazz);
+    classProperties = ClassProperties.forClass(clazz);
     pojoFormatterClass = findPojoFormatterClass(clazz);
     for (PropertyElement prop: classProperties.getToStringProperties()) {
       PropertyFormatter propertyFormatter = findPropertyFormatter(prop.getElement());
@@ -110,11 +110,15 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       return false;
     }
     if (!instance.getClass().equals(other.getClass())) {
-      if (instance.getClass().isAssignableFrom(other.getClass())) {
-        return other.equals(instance);
-      }
-      if (!classProperties.getEqualsParentClass().isAssignableFrom(other.getClass())) {
-        return false;
+      if (classProperties.subclassCanOverrideEquals()) {
+        if (instance.getClass().isAssignableFrom(other.getClass())) {
+          return other.equals(instance);
+        }
+        if ((!classProperties.getEqualsParentClass().isAssignableFrom(other.getClass()))
+          || !classProperties.getEqualsParentClass().equals(
+          ClassProperties.forClass(other.getClass()).getEqualsParentClass())) {
+          return false;
+        }
       }
     }
 

@@ -11,11 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.pojomatic.PropertyElement;
-import org.pojomatic.annotations.AutoDetectPolicy;
-import org.pojomatic.annotations.AutoProperty;
-import org.pojomatic.annotations.DefaultPojomaticPolicy;
-import org.pojomatic.annotations.PojomaticPolicy;
-import org.pojomatic.annotations.Property;
+import org.pojomatic.annotations.*;
 
 /**
  * The properties of a class used for {@link PojomatorImpl#doHashCode(Object)},
@@ -28,6 +24,40 @@ public class ClassProperties {
 
   private final Class<?> equalsParentClass;
 
+  private final boolean subclassCanOverrideEquals;
+
+  private final static SelfPopulatingMap<Class<?>, ClassProperties> INSTANCES =
+    new SelfPopulatingMap<Class<?>, ClassProperties>() {
+      protected ClassProperties create(Class<?> key) {
+        return new ClassProperties(key);
+      }
+    };
+
+  private final static class ClassContributionTracker {
+    private Class<?> clazz = Object.class;
+
+    public void noteContribution(Class<?> contributingClass) {
+      if (clazz.isAssignableFrom(contributingClass)) {
+        clazz = contributingClass;
+      }
+    }
+
+    public Class<?> getMostSpecificContributingClass() {
+      return clazz;
+    }
+  }
+  /**
+   * Get an instance for the given {@code pojoClass}.  Instances are cached, so calling this method
+   * repeatedly is not inefficient.
+   * @param pojoClass the class to inspect for properties
+   * @return The {@code ClassProperties} for {@code pojoClass}.
+   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
+   * with Pojomatic.
+   */
+  public static ClassProperties forClass(Class<?> pojoClass) throws IllegalArgumentException {
+    return new ClassProperties(pojoClass);
+  }
+
   /**
    * Creates an instance for the given {@code pojoClass}.
    *
@@ -35,16 +65,22 @@ public class ClassProperties {
    * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
    * with Pojomatic.
    */
-  public ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
+  private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
     if (pojoClass.isInterface()) {
-      extractClassProperties(pojoClass, new OverridableMethods());
+      extractClassProperties(pojoClass, new OverridableMethods(), new ClassContributionTracker());
       equalsParentClass = pojoClass;
     }
     else {
-      walkHierarchy(pojoClass, new OverridableMethods());
-      equalsParentClass = findMostSpecificClassContributingToEquals();
+      ClassContributionTracker classContributionTracker = new ClassContributionTracker();
+      walkHierarchy(pojoClass, new OverridableMethods(), classContributionTracker);
+      equalsParentClass = classContributionTracker.getMostSpecificContributingClass();
     }
     verifyPropertiesNotEmpty(pojoClass);
+    SubclassCanOverrideEquals subclassCanOverrideEqualsAnnotation
+      = pojoClass.getAnnotation(SubclassCanOverrideEquals.class);
+    subclassCanOverrideEquals = (subclassCanOverrideEqualsAnnotation != null)
+      ? subclassCanOverrideEqualsAnnotation.value()
+      : !pojoClass.isInterface();
   }
 
   /**
@@ -72,38 +108,60 @@ public class ClassProperties {
   }
 
   /**
-   * Get the class which any class must inherit from in order for its instances to be candidates for being considered
-   * equal by {@link PojomatorImpl#doEquals(Object, Object)}.
-   * @return the class which any class must inherit from in order for its instances to be candidates for being
-   * considered equal by {@link PojomatorImpl#doEquals(Object, Object)}.
+   * Get the class which any class must inherit from in order for its instances to be candidates for
+   * being considered equal by {@link PojomatorImpl#doEquals(Object, Object)}.
+   * @return the class which any class must inherit from in order for its instances to be candidates
+   * for being considered equal by {@link PojomatorImpl#doEquals(Object, Object)}.
    */
   public Class<?> getEqualsParentClass() {
     return equalsParentClass;
   }
 
-  private void walkHierarchy(Class<?> clazz, OverridableMethods overridableMethods) {
+  /**
+   * Whether subclasses of this class can override the {@link Object#equals(Object)} method defined
+   * in {@code pojoClass}.
+   * @return {@code true} if subclasses of this class can override the {@link Object#equals(Object)}
+   * method defined in {@code pojoClass}, and {@code false} otherwise.
+   */
+  public boolean subclassCanOverrideEquals() {
+    return subclassCanOverrideEquals;
+  }
+
+  private void walkHierarchy(
+    Class<?> clazz,
+    OverridableMethods overridableMethods,
+    ClassContributionTracker classContributionTracker) {
     if (clazz != Object.class) {
-      walkHierarchy(clazz.getSuperclass(), overridableMethods);
-      extractClassProperties(clazz, overridableMethods);
+      walkHierarchy(clazz.getSuperclass(), overridableMethods, classContributionTracker);
+      extractClassProperties(clazz, overridableMethods, classContributionTracker);
+      if (clazz.isAnnotationPresent(OverridesEquals.class)) {
+        classContributionTracker.noteContribution(clazz);
+      }
     }
   }
 
-  private void extractClassProperties(Class<?> clazz, OverridableMethods overridableMethods) {
+  private void extractClassProperties(
+    Class<?> clazz,
+    OverridableMethods overridableMethods,
+    ClassContributionTracker classContributionTracker) {
     AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
     final DefaultPojomaticPolicy classPolicy = 
       (autoProperty != null) ? autoProperty.policy() : null; 
     final AutoDetectPolicy autoDetectPolicy =
       (autoProperty != null) ? autoProperty.autoDetect() : null;
 
-    extractFields(clazz, classPolicy, autoDetectPolicy);
-    extractMethods(clazz, classPolicy, autoDetectPolicy, overridableMethods);
+    extractFields(
+      clazz, classPolicy, autoDetectPolicy, classContributionTracker);
+    extractMethods(
+      clazz, classPolicy, autoDetectPolicy, overridableMethods, classContributionTracker);
   }
 
   private void extractMethods(
     Class<?> clazz,
     final DefaultPojomaticPolicy classPolicy,
     final AutoDetectPolicy autoDetectPolicy,
-    final OverridableMethods overridableMethods) {
+    final OverridableMethods overridableMethods,
+    final ClassContributionTracker classContributionTracker) {
     for (Method method : clazz.getDeclaredMethods()) {
       Property property = method.getAnnotation(Property.class);
       if (isStatic(method)) {
@@ -136,13 +194,19 @@ public class ClassProperties {
         for (PropertyRole role : overridableMethods.checkAndMaybeAddRolesToMethod(
           method, PropertyFilter.getRoles(propertyPolicy, classPolicy))) {
           properties.get(role).add(new PropertyAccessor(method, getPropertyName(property)));
+          if (PropertyRole.EQUALS == role) {
+            classContributionTracker.noteContribution(clazz);
+          }
         }
       }
     }
   }
 
-  private void extractFields(Class<?> clazz, final DefaultPojomaticPolicy classPolicy,
-    final AutoDetectPolicy autoDetectPolicy) {
+  private void extractFields(
+    Class<?> clazz, 
+    final DefaultPojomaticPolicy classPolicy,
+    final AutoDetectPolicy autoDetectPolicy,
+    final ClassContributionTracker classContributionTracker) {
     for (Field field : clazz.getDeclaredFields()) {
       Property property = field.getAnnotation(Property.class);
       if (isStatic(field)) {
@@ -162,6 +226,9 @@ public class ClassProperties {
       if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
         for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
           properties.get(role).add(new PropertyField(field, getPropertyName(property)));
+          if (PropertyRole.EQUALS == role) {
+            classContributionTracker.noteContribution(clazz);
+          }
         }
       }
     }
@@ -175,16 +242,6 @@ public class ClassProperties {
     }
     throw new IllegalArgumentException(
       "Class " + pojoClass.getName() + " has no Pojomatic properties");
-  }
-
-  private Class<?> findMostSpecificClassContributingToEquals() {
-    Class<?> clazz = Object.class;
-    for (PropertyElement propertyElement : properties.get(PropertyRole.EQUALS)) {
-      if (clazz.isAssignableFrom(propertyElement.getDeclaringClass())) {
-        clazz = propertyElement.getDeclaringClass();
-      }
-    }
-    return clazz;
   }
 
   private String getPropertyName(Property property) {
