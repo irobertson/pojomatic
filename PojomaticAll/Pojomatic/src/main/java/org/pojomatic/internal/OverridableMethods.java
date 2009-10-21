@@ -82,8 +82,8 @@ class OverridableMethods {
       pakage = method.getDeclaringClass().getPackage();
     }
 
-    String name;
-    Package pakage;
+    final String name;
+    final Package pakage;
 
     @Override
     public int hashCode() {

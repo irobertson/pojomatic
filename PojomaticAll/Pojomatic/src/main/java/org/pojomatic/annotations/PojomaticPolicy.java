@@ -1,5 +1,6 @@
 package org.pojomatic.annotations;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -79,9 +80,7 @@ public enum PojomaticPolicy {
 
   private PojomaticPolicy(PropertyRole... roles) {
     Set<PropertyRole> roleSet = EnumSet.noneOf(PropertyRole.class);
-    for (PropertyRole role: roles) {
-      roleSet.add(role);
-    }
+    roleSet.addAll(Arrays.asList(roles));
     this.roles = Collections.unmodifiableSet(roleSet);
   }
 

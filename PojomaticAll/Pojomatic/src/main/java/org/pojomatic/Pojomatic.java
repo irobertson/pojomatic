@@ -54,7 +54,7 @@ import org.pojomatic.internal.SelfPopulatingMap;
  */
 public class Pojomatic {
 
-  private static SelfPopulatingMap<Class<?>, Pojomator<?>> POJOMATORS =
+  private final static SelfPopulatingMap<Class<?>, Pojomator<?>> POJOMATORS =
     new SelfPopulatingMap<Class<?>, Pojomator<?>>() {
       @Override
       @SuppressWarnings("unchecked")

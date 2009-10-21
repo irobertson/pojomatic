@@ -262,8 +262,8 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   private final Class<? extends PojoFormatter> pojoFormatterClass;
 
   private static class FormattablePropertyElement {
-    private PropertyElement propertyElement;
-    private PropertyFormatter propertyFormatter;
+    private final PropertyElement propertyElement;
+    private final PropertyFormatter propertyFormatter;
 
     public FormattablePropertyElement(
     PropertyElement propertyElement, PropertyFormatter propertyFormatter) {
