@@ -80,10 +80,10 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * is a an instance of a proper subclass of the class of {@code instance}, then this method
    * returns the result of calling {@code other.equals(instance)}. Otherwise, it is verified that
    * the class of {@code other} either the same as or a subclass of the most specific class
-   * contributing a property with a {@code PojomaticPolicy} other than {@code TO_STRING} or 
+   * contributing a property with a {@code PojomaticPolicy} other than {@code TO_STRING} or
    * {@code NONE}; if not, then this method
    * returns false. Otherwise, this method will return true provided that each property of {@code
-   * instance} which has a {@code PojomaticPolicy} other than {@code TO_STRING} or 
+   * instance} which has a {@code PojomaticPolicy} other than {@code TO_STRING} or
    * {@code NONE} is equal to the corresponding property of {@code other} in the following sense:
    * <ul>
    * <li>Both are {@code null}, or</li>
@@ -110,15 +110,8 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       return false;
     }
     if (!instance.getClass().equals(other.getClass())) {
-      if (classProperties.subclassCanOverrideEquals()) {
-        if (instance.getClass().isAssignableFrom(other.getClass())) {
-          return other.equals(instance);
-        }
-        if ((!classProperties.getEqualsParentClass().isAssignableFrom(other.getClass()))
-          || !classProperties.getEqualsParentClass().equals(
-          ClassProperties.forClass(other.getClass()).getEqualsParentClass())) {
-          return false;
-        }
+      if (!classProperties.isCompatibleForEquals(other.getClass())) {
+        return false;
       }
     }
 

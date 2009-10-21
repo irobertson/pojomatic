@@ -257,52 +257,33 @@ public class ClassPropertiesTest {
     assertEquals(asSet(getFoo, baz), asSet(classProperties.getEqualsProperties()));
   }
 
-  @Test public void testSubclassCanOverrideEqualsForClasses() {
-    class Parent { @Property int getX() { return 3; } } // simplify subsequent class defs
-
-    class Unannotated extends Parent {}
-    @SubclassCanOverrideEquals class Annotated extends Parent {}
-    @SubclassCanOverrideEquals(true) class AnnotatedWithTrue extends Parent {}
-    @SubclassCanOverrideEquals(false) class AnnotatedWithFalse extends Parent {}
-
-    assertTrue(ClassProperties.forClass(Unannotated.class).subclassCanOverrideEquals());
-    assertTrue(ClassProperties.forClass(Annotated.class).subclassCanOverrideEquals());
-    assertTrue(ClassProperties.forClass(AnnotatedWithTrue.class).subclassCanOverrideEquals());
-    assertFalse(ClassProperties.forClass(AnnotatedWithFalse.class).subclassCanOverrideEquals());
-  }
-
-  @Test public void testSubclassCanOverrideEqualsForInterfaces() {
-    assertFalse(ClassProperties.forClass(UnannotatedInterface.class).subclassCanOverrideEquals());
-    assertTrue(ClassProperties.forClass(AnnotatedInterface.class).subclassCanOverrideEquals());
-    assertTrue(ClassProperties.forClass(AnnotatedInterfaceWithTrue.class).subclassCanOverrideEquals());
-    assertFalse(ClassProperties.forClass(AnnotatedInterfaceWithFalse.class).subclassCanOverrideEquals());
-  }
-
-  @Test public void testEqualsParentClassForInterface() {
-    assertEquals(
-      UnannotatedInterface.class,
-      ClassProperties.forClass(UnannotatedInterface.class).getEqualsParentClass());
-  }
-
-  @Test public void testEqualsParentClassForClasses() {
-    class Parent { @Property int getX() { return 3; } }
+  @Test public void testIsCompatibleForEquals() {
+    class Parent { @SuppressWarnings("unused") @Property int getX() { return 3; } }
     class NonContributingChild extends Parent {}
     @OverridesEquals class AnnotatedNonContributingChild extends Parent {}
-    class ContributingChild extends Parent{ @Property int getY() { return 3; } }
+    class ContributingChild extends Parent{ @SuppressWarnings("unused") @Property int getY() { return 3; } }
     class ChildOfContributingChild extends ContributingChild{}
 
-    assertEquals(Parent.class, ClassProperties.forClass(Parent.class).getEqualsParentClass());
-    assertEquals(
-      Parent.class, ClassProperties.forClass(NonContributingChild.class).getEqualsParentClass());
-    assertEquals(
-      AnnotatedNonContributingChild.class,
-      ClassProperties.forClass(AnnotatedNonContributingChild.class).getEqualsParentClass());
-    assertEquals(
-      ContributingChild.class,
-      ClassProperties.forClass(ContributingChild.class).getEqualsParentClass());
-    assertEquals(
-      ContributingChild.class,
-      ClassProperties.forClass(ChildOfContributingChild.class).getEqualsParentClass());
+    @SuppressWarnings("unchecked")
+    List<List<Class<?>>> partitions = Arrays.asList(
+      Arrays.<Class<?>>asList(Parent.class, NonContributingChild.class),
+      Arrays.<Class<?>>asList(ContributingChild.class, ChildOfContributingChild.class),
+      Arrays.<Class<?>>asList(AnnotatedNonContributingChild.class),
+      Arrays.<Class<?>>asList(Interface.class));
+    for (List<Class<?>> partition: partitions) {
+      for (Class<?> clazz: partition) {
+        for(List<Class<?>> otherPartition: partitions) {
+          for(Class<?> otherClazz: otherPartition) {
+            if (partition == otherPartition) {
+              assertTrue(ClassProperties.forClass(clazz).isCompatibleForEquals(otherClazz));
+            }
+            else {
+              assertFalse(ClassProperties.forClass(clazz).isCompatibleForEquals(otherClazz));
+            }
+          }
+        }
+      }
+    }
   }
 
   //Not all classes can be made internal.  In particular, autodetect=FIELD classes cannot, because of the synthetic

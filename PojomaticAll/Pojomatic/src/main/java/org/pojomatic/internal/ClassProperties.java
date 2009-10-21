@@ -28,6 +28,7 @@ public class ClassProperties {
 
   private final static SelfPopulatingMap<Class<?>, ClassProperties> INSTANCES =
     new SelfPopulatingMap<Class<?>, ClassProperties>() {
+      @Override
       protected ClassProperties create(Class<?> key) {
         return new ClassProperties(key);
       }
@@ -108,23 +109,24 @@ public class ClassProperties {
   }
 
   /**
-   * Get the class which any class must inherit from in order for its instances to be candidates for
-   * being considered equal by {@link PojomatorImpl#doEquals(Object, Object)}.
-   * @return the class which any class must inherit from in order for its instances to be candidates
-   * for being considered equal by {@link PojomatorImpl#doEquals(Object, Object)}.
+   * Whether instances of {@code otherClass} are candidates for being equal to instances of
+   * {@code pojoClass}
+   * @param otherClass
+   * @return {@code true} if instances of {@code otherClass} are candidates for being equal to
+   * instances of {@code pojoClass}, or {@code false} otherwise.
    */
-  public Class<?> getEqualsParentClass() {
-    return equalsParentClass;
-  }
-
-  /**
-   * Whether subclasses of this class can override the {@link Object#equals(Object)} method defined
-   * in {@code pojoClass}.
-   * @return {@code true} if subclasses of this class can override the {@link Object#equals(Object)}
-   * method defined in {@code pojoClass}, and {@code false} otherwise.
-   */
-  public boolean subclassCanOverrideEquals() {
-    return subclassCanOverrideEquals;
+  public boolean isCompatibleForEquals(Class<?> otherClass) {
+    if (!equalsParentClass.isAssignableFrom(otherClass)) {
+      return false;
+    }
+    else {
+      if (!subclassCanOverrideEquals) {
+        return true;
+      }
+      else {
+        return equalsParentClass.equals(forClass(otherClass).equalsParentClass);
+      }
+    }
   }
 
   private void walkHierarchy(
@@ -145,8 +147,8 @@ public class ClassProperties {
     OverridableMethods overridableMethods,
     ClassContributionTracker classContributionTracker) {
     AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
-    final DefaultPojomaticPolicy classPolicy = 
-      (autoProperty != null) ? autoProperty.policy() : null; 
+    final DefaultPojomaticPolicy classPolicy =
+      (autoProperty != null) ? autoProperty.policy() : null;
     final AutoDetectPolicy autoDetectPolicy =
       (autoProperty != null) ? autoProperty.autoDetect() : null;
 
@@ -174,7 +176,7 @@ public class ClassProperties {
           continue;
         }
       }
-      
+
       PojomaticPolicy propertyPolicy = null;
       if (property != null) {
         if (!methodSignatureIsAccessor(method)) {
@@ -203,7 +205,7 @@ public class ClassProperties {
   }
 
   private void extractFields(
-    Class<?> clazz, 
+    Class<?> clazz,
     final DefaultPojomaticPolicy classPolicy,
     final AutoDetectPolicy autoDetectPolicy,
     final ClassContributionTracker classContributionTracker) {
@@ -219,7 +221,7 @@ public class ClassProperties {
           continue;
         }
       }
-      
+
       final PojomaticPolicy propertyPolicy = (property != null) ? property.policy() : null;
 
       /* add all fields that are explicitly annotated or auto-detected */

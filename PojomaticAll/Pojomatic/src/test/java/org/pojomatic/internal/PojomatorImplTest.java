@@ -334,6 +334,7 @@ public class PojomatorImplTest {
       HASH_CODE_MULTIPLIER + 2)*HASH_CODE_MULTIPLIER + "hello".hashCode(), pojomator.doHashCode(new Impl1()));
     assertTrue(pojomator.doEquals(new Impl1(), new Impl2("hello")));
     assertFalse(pojomator.doEquals(new Impl1(), new Impl2("goodbye")));
+    assertFalse(pojomator.doEquals(new Impl1(), "not even in the right hierarchy"));
   }
 
   @PojoFormat(SimplePojoFormatter.class)
