@@ -14,6 +14,11 @@ import org.pojomatic.internal.b.C4;
 
 public class ClassPropertiesTest {
 
+  @Test public void testForClass() {
+    ClassProperties interfaceProperties = ClassProperties.forClass(Interface.class);
+    assertSame(interfaceProperties, ClassProperties.forClass(Interface.class));
+  }
+
   @Test
   public void testAnnotatedFields() throws Exception {
     final PropertyElement privateStringField = TestUtils.field(FieldPojo.class, "privateString");

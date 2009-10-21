@@ -56,7 +56,7 @@ public class ClassProperties {
    * with Pojomatic.
    */
   public static ClassProperties forClass(Class<?> pojoClass) throws IllegalArgumentException {
-    return new ClassProperties(pojoClass);
+    return INSTANCES.get(pojoClass);
   }
 
   /**
