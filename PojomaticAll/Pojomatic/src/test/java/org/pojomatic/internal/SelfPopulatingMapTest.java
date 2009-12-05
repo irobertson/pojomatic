@@ -44,7 +44,7 @@ public class SelfPopulatingMapTest {
   }
 
   @Test
-  public void testBadConstructionFirstTime() throws Exception {
+  public void testBadConstructionFirstTime() {
     final AtomicBoolean firstTime = new AtomicBoolean(false);
     final SelfPopulatingMap<String, String> selfPopulatingMap =
       new SelfPopulatingMap<String, String>() {
