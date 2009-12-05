@@ -291,6 +291,22 @@ public class ClassPropertiesTest {
     }
   }
 
+  @Test public void testSubclassCannotOverrideEquals() {
+    class ChildOfInterface implements Interface {
+      public int getFoo() { return 0; }
+      public int bar() { return 0; }
+      public int baz() { return 0; }
+    }
+
+    assertTrue(
+      ClassProperties.forClass(Interface.class).isCompatibleForEquals(ChildOfInterface.class));
+
+    @SubclassCannotOverrideEquals class A { @Property int x; }
+    class B extends A { @Property int y; }
+    assertTrue(ClassProperties.forClass(A.class).isCompatibleForEquals(B.class));
+    assertFalse(ClassProperties.forClass(B.class).isCompatibleForEquals(A.class));
+  }
+
   //Not all classes can be made internal.  In particular, autodetect=FIELD classes cannot, because of the synthetic
   //$this, and classes requiring static elements cannot.
 
@@ -396,14 +412,6 @@ public class ClassPropertiesTest {
 
   public static class StaticMethod {
     @Property public static int a() { return 1; }
-  }
-
-  public static interface UnannotatedInterface { @Property int getX(); }
-
-  @SubclassCannotOverrideEquals public static interface AnnotatedInterface { @Property int getX(); }
-
-  @SubclassCannotOverrideEquals public static class AnnotatedClass {
-    @Property int getX() { return 1; }
   }
 
   private static Set<PropertyElement> asSet(PropertyElement... elements) {
