@@ -38,9 +38,7 @@ public class ClassProperties {
     private Class<?> clazz = Object.class;
 
     public void noteContribution(Class<?> contributingClass) {
-      if (clazz.isAssignableFrom(contributingClass)) {
-        clazz = contributingClass;
-      }
+      clazz = contributingClass;
     }
 
     public Class<?> getMostSpecificContributingClass() {
