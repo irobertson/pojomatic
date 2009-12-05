@@ -8,8 +8,6 @@ import java.util.List;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
-import org.pojomatic.annotations.PojomaticPolicy;
-import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Difference;
 import org.pojomatic.diff.DifferenceFromNull;
@@ -67,38 +65,6 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return format == null ? DefaultPojoFormatter.class : format.value();
   }
 
-  /**
-   * {@inheritDoc}
-   * <p>
-   * In essence, two objects will be considered equal if they have the same set of properties with a
-   * {@link PojomaticPolicy} other than {@link PojomaticPolicy#TO_STRING TO_STRING} or
-   * {@link PojomaticPolicy#NONE NONE}, and for each property, the values are equal as described
-   * below. Note that two properties cannot be considered the same if they come from different
-   * declaring classes.
-   * <p>
-   * More precisely, if {@code other} is null, this method returns {@code false}. If {@code other}
-   * is a an instance of a proper subclass of the class of {@code instance}, then this method
-   * returns the result of calling {@code other.equals(instance)}. Otherwise, it is verified that
-   * the class of {@code other} either the same as or a subclass of the most specific class
-   * contributing a property with a {@code PojomaticPolicy} other than {@code TO_STRING} or
-   * {@code NONE}; if not, then this method
-   * returns false. Otherwise, this method will return true provided that each property of {@code
-   * instance} which has a {@code PojomaticPolicy} other than {@code TO_STRING} or
-   * {@code NONE} is equal to the corresponding property of {@code other} in the following sense:
-   * <ul>
-   * <li>Both are {@code null}, or</li>
-   * <li>Both are reference-equals (==) to each other, or</li>
-   * <li>Both are primitive of the same type, and equal to each other, or</li>
-   * <li>Both are of array type, with matching primitive component types, and the corresponding
-   * {@code} equals method of {@link Arrays} returns true, or</li>
-   * <li>Both are of array type with non-primitive component types, and
-   * {@link Arrays#deepEquals(Object[], Object[])} returns true, or</li>
-   * <li>The property {@code p} in {@code instance} is an object not of array type, and {@code
-   * instanceP.equals(otherP)} returns true.
-   * </ul>
-   *
-   * @throws NullPointerException if {@code instance} is null
-   */
   public boolean doEquals(T instance, Object other) {
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
@@ -123,16 +89,6 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return true;
   }
 
-  /**
-   * {@inheritDoc}
-   *<p>
-   * This is done by computing the hashCode of each property which has a {@link PojomaticPolicy} of
-   * {@link PojomaticPolicy#HASHCODE_EQUALS HASHCODE_EQUALS} or {@link PojomaticPolicy#ALL ALL}
-   * (using 0 when the property is null), and combining them in a fashion similar to that of
-   * {@link List#hashCode()}.
-   *
-   * @throws NullPointerException if {@code instance} is null
-   */
   public int doHashCode(T instance) {
     int hashCode = HASH_CODE_SEED;
     if (instance == null) {
@@ -193,40 +149,6 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     }
   }
 
-  /**
-   * {@inheritDoc}
-   * <p>
-   * The format used depends on the
-   * {@link PojoFormatter} used for the POJO, and the {@link PropertyFormatter} of each property.
-   * <p>
-   * For example, suppose a class {@code Person} has properties {@code firstName} and
-   * {@code lastName} which are included in its {@code String} representation.
-   * No {@code PojoFormatter} or {@code PropertyFormatter} are specified, so the defaults are used.
-   * In particular, instances of {@code DefaultPropertyFormatter} will be created for
-   * {@code firstName} and {@code lastName} (referred to here as {@code firstNameFormatter} and
-   * {@code lastNameFormatter}, respectively).  Let {@code firstNameProperty} and
-   * {@code lastNameProperty} refer to the instances of {@link PropertyElement} referring to the
-   * properties {@code firstName} and {@code lastName} respectively.
-   * </p>
-   * <p>
-   * For a non-null {@code Person} instance, the {@code String} representation will be created by
-   * creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class (referred to
-   * here as {@code personFormatter}), and then concatenating the results of following:
-   * <ol>
-   *   <li>{@link DefaultPojoFormatter#getToStringPrefix(Class) personFormatter.getToStringPrefix(Person.class)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(firstNameProperty)}</li>
-   *   <li>{@link DefaultPropertyFormatter#format(Object) firstNameFormatter.format(firstName)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(firstNameProperty)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(lastNameProperty)}</li>
-   *   <li>{@link DefaultPropertyFormatter#format(Object) lastNameFormatter.format(lastName)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(lasttNameProperty)}</li>
-   *   <li>{@link DefaultPojoFormatter#getToStringSuffix(Class) personFormatter.getToStringSuffix(Person.class)}</li>
-   * </ol>
-   * </p>
-   *
-   * @throws NullPointerException if {@code instance} is null
-   * @see Property#name()
-   */
   public String doToString(T instance) {
     if (instance == null) {
       throw new NullPointerException("instance must not be null");

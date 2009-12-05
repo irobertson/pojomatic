@@ -24,7 +24,7 @@ public class ClassProperties {
 
   private final Class<?> equalsParentClass;
 
-  private final boolean subclassCanOverrideEquals;
+  private final boolean subclassCannotOverrideEquals;
 
   private final static SelfPopulatingMap<Class<?>, ClassProperties> INSTANCES =
     new SelfPopulatingMap<Class<?>, ClassProperties>() {
@@ -77,11 +77,8 @@ public class ClassProperties {
       equalsParentClass = classContributionTracker.getMostSpecificContributingClass();
     }
     verifyPropertiesNotEmpty(pojoClass);
-    SubclassCanOverrideEquals subclassCanOverrideEqualsAnnotation
-      = pojoClass.getAnnotation(SubclassCanOverrideEquals.class);
-    subclassCanOverrideEquals = (subclassCanOverrideEqualsAnnotation != null)
-      ? subclassCanOverrideEqualsAnnotation.value()
-      : !pojoClass.isInterface();
+    subclassCannotOverrideEquals = pojoClass.isAnnotationPresent(SubclassCannotOverrideEquals.class)
+      || pojoClass.isInterface();
   }
 
   /**
@@ -120,7 +117,7 @@ public class ClassProperties {
       return false;
     }
     else {
-      if (!subclassCanOverrideEquals) {
+      if (subclassCannotOverrideEquals) {
         return true;
       }
       else {

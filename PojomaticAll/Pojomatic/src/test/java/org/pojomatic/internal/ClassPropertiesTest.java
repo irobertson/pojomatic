@@ -400,13 +400,11 @@ public class ClassPropertiesTest {
 
   public static interface UnannotatedInterface { @Property int getX(); }
 
-  @SubclassCanOverrideEquals public static interface AnnotatedInterface { @Property int getX(); }
+  @SubclassCannotOverrideEquals public static interface AnnotatedInterface { @Property int getX(); }
 
-  @SubclassCanOverrideEquals(true)
-  public static interface AnnotatedInterfaceWithTrue { @Property int getX(); }
-
-  @SubclassCanOverrideEquals(false)
-  public static interface AnnotatedInterfaceWithFalse { @Property int getX(); }
+  @SubclassCannotOverrideEquals public static class AnnotatedClass {
+    @Property int getX() { return 1; }
+  }
 
   private static Set<PropertyElement> asSet(PropertyElement... elements) {
     return new HashSet<PropertyElement>(Arrays.asList(elements));
