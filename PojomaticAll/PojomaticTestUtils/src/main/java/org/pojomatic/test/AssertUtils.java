@@ -42,12 +42,12 @@ public class AssertUtils {
   }
 
   private static String buildMessage(String message, Differences differences) {
-    String formatted = "";
+    StringBuilder formatted = new StringBuilder();
     if (message != null) {
-      formatted = message + " ";
+      formatted.append(message).append(" ");
     }
 
-    return formatted + differences.toString();
+    return formatted.append(differences).toString();
   }
 
   private AssertUtils() {}
