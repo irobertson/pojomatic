@@ -7,8 +7,8 @@ import org.junit.Test;
 public class AssertUtilsTest extends AssertTest {
 
   @Override
-  protected void performAssertEquals(Object first, Object second) {
-    AssertUtils.assertEquals(null, first, second);
+  protected void performAssertEquals(Object first, Object second, String message) {
+    AssertUtils.assertEquals(message, first, second);
   }
 
   @Test

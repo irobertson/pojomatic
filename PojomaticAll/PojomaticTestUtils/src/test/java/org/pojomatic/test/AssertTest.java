@@ -1,6 +1,6 @@
 package org.pojomatic.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.pojomatic.Pojomatic;
@@ -18,23 +18,23 @@ public abstract class AssertTest {
    * @param first the object which should appear first if the assertion fails. Note that this
    * could be either "expected" or "actual".
    * @param second the object which should appear second if the assertion fails. Note that this
-   * could be either "expected" or "actual".
+   * @param message the messaage to include with the assertion
    */
-  protected abstract void performAssertEquals(Object first, Object second);
+  protected abstract void performAssertEquals(Object first, Object second, String message);
 
   @Test
   public final void assertEqualsBothNull() {
-    performAssertEquals(null, null);
+    performAssertEquals(null, null, null);
   }
 
   @Test(expected=AssertionError.class)
   public final void assertEqualsNullExpected() {
-    performAssertEquals(null, new Container(null));
+    performAssertEquals(null, new Container(null), null);
   }
 
   @Test(expected=AssertionError.class)
   public final void assertEqualsNullActual() {
-    performAssertEquals(new Container(null), null);
+    performAssertEquals(new Container(null), null, null);
   }
 
   /**
@@ -48,45 +48,24 @@ public abstract class AssertTest {
     OnlyPojomaticEqual first = new OnlyPojomaticEqual();
     OnlyPojomaticEqual second = new OnlyPojomaticEqual();
 
-    performAssertEquals(first, second);
+    performAssertEquals(first, second, null);
   }
 
   @Test
-  public final void assertEqualsMessagingOrder() {
+  public final void assertEqualsMessage() {
     String first = "foo";
     String second = "bar";
     try {
-      performAssertEquals(new Container(first), new Container(second));
+      performAssertEquals(new Container(first), new Container(second), null);
     }
     catch (AssertionError e) {
-      //expected, check the message
-      assertAppearanceOrder(e.getMessage(), first, second);
+      assertEquals("[test: {foo} versus {bar}]", e.getMessage());
+    }
+    try {
+      performAssertEquals(new Container(first), new Container(second), "custom message");
+    }
+    catch (AssertionError e) {
+      assertEquals("custom message [test: {foo} versus {bar}]", e.getMessage());
     }
   }
-
-  /**
-   * Asserts that {@code first} appears before {@code second} in {@code text}.
-   *
-   * @param text must contain both {@code first} and {@code second}
-   * @param first cannot be {@code null}
-   * @param second cannot be {@code null}
-   * @throws NullPointerException if {@code first} or {@code second} is {@code null}
-   * @throws IllegalArgumentException if {@code text} does not contain both
-   * {@code first} and {@code second}
-   */
-  protected final void assertAppearanceOrder(String text, String first, String second) {
-    if (first == null || second == null) {
-      throw new NullPointerException();
-    }
-    int firstIndex = text.indexOf(first);
-    int secondIndex = text.indexOf(second);
-    if (firstIndex < 0 || secondIndex < 0) {
-      throw new IllegalArgumentException("The string \"" + text + "\" does not conatin " +
-        "both \"" + first + "\" and \"" + second + "\"");
-    }
-    String message = "In the string \"" + text + "\", " +
-      "\"" + first + "\" should come before \"" + second + "\"";
-    assertTrue(message, firstIndex < secondIndex);
-  }
-
 }
