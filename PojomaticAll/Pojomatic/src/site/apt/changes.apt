@@ -1,5 +1,28 @@
 
 Changes in Pojomatic
+
+~~~~
+* Release 1.0-RC3 (2009-012-06)
+~~~~
+  * <<<Pojomatic.equals()>>> now properly handles inheritance,
+    including comparing instances of two separate child classes of a
+    parent class (Bug 2845939).
+
+  * A <<<Pojomator>>> can now be created for an interface.
+
+  * New annotations, <<<OverridesEquals>>> and
+    <<<SubclassCannotOverrideEquals>>> help control how inheritance is
+    handled.
+
+  * Properties from the parent class now come before those of the
+    child in <<<equals>>> calculations and in the <<<toString()>>>
+    representation.
+
+  * Pojomatic will no longer add a method property multiple times if it is overridden
+    (even if the overridden method is explicitely annotated).
+
+  * <<<Pojomatic.diff>>> no longer requires a non-null first argument.
+
 ~~~~
 * Release 1.0-RC2 (2009-04-07)
 ~~~~
@@ -14,6 +37,7 @@ Changes in Pojomatic
 
   * Static fields and methods are no longer picked up by <<<@AutoProperty>>>
    ({{{https://sourceforge.net/tracker/?func=detail&aid=2739467&group_id=239113&atid=1108645}bug 2739467}})
+
 ~~~~
 * Release 1.0-RC1 (2009-01-01)
 ~~~~
