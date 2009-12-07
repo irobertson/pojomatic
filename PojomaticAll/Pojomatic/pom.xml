@@ -2,7 +2,7 @@
   <parent>
     <artifactId>pojomatic-all</artifactId>
     <groupId>org.pojomatic</groupId>
-    <version>trunk-SNAPSHOT</version>
+    <version>1.0-RC3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -14,9 +14,9 @@
     equals(Object), toString() and hashCode() methods inherited from java.lang.Object
   </description>
   <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</url>
+    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-all-1.0-RC3</connection>
+    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-all-1.0-RC3</developerConnection>
+    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-all-1.0-RC3</url>
   </scm>
 
   <reporting>

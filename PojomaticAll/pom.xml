@@ -3,7 +3,7 @@
   <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic-all</artifactId>
   <packaging>pom</packaging>
-  <version>trunk-SNAPSHOT</version>
+  <version>1.0-RC3</version>
   <name>PojomaticAll</name>
   <description>
     Parent and aggregator for all artifacts related to the Pojomatic project.
@@ -11,9 +11,9 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/PojomaticAll</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/PojomaticAll</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/PojomaticAll</url>
+    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-all-1.0-RC3</connection>
+    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-all-1.0-RC3</developerConnection>
+    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/tags/pojomatic-all-1.0-RC3</url>
   </scm>
 
   <dependencies>
