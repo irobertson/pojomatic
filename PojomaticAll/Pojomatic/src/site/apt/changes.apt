@@ -6,7 +6,8 @@ Changes in Pojomatic
 ~~~~
   * <<<Pojomatic.equals()>>> now properly handles inheritance,
     including comparing instances of two separate child classes of a
-    parent class (Bug 2845939).
+    parent class
+    ({{{https://sourceforge.net/tracker/?func=detail&aid=2845939&group_id=239113&atid=1108645}bug 2845939}}).
 
   * A <<<Pojomator>>> can now be created for an interface.
 
