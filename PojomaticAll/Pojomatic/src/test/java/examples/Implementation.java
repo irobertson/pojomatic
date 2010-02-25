@@ -3,7 +3,7 @@ package examples;
 public class Implementation implements Interface {
   private final String name;
 
-  public Implementation(String name, String value) {
+  public Implementation(String name) {
     this.name = name;
   }
 
