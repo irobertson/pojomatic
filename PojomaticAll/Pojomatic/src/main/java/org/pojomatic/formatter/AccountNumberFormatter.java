@@ -1,6 +1,5 @@
 package org.pojomatic.formatter;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
 import org.pojomatic.annotations.Property;
