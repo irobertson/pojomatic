@@ -136,4 +136,14 @@ public interface Pojomator<T> {
    * @see #doEquals(Object, Object)
    */
   Differences doDiff(T instance, T other);
+
+  /**
+   * Return a simple String representation of this Pojomator. This is meant to aid in debugging
+   * which properties are being used for which purposes. The contents and format of this
+   * representation are subject to change.
+   *
+   * @return a simple String representation of this Pojomator.
+   */
+  @Override
+  public String toString();
 }

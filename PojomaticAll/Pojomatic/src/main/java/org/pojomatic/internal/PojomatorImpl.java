@@ -177,6 +177,33 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return result.toString();
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Pojomator for ").append(clazz.getName()).append(" with equals properties ");
+    propertiesList(builder, classProperties.getEqualsProperties());
+    builder.append(", hashCodeProperties ");
+    propertiesList(builder, classProperties.getHashCodeProperties());
+    builder.append(", and toStringProperties ");
+    propertiesList(builder, classProperties.getToStringProperties());
+    return builder.toString();
+  }
+
+  private void propertiesList(StringBuilder builder, final Iterable<PropertyElement> properties) {
+    builder.append("{");
+    boolean firstElement = true;
+    for (PropertyElement prop: properties) {
+      if (!firstElement) {
+        builder.append(",");
+      }
+      else {
+        firstElement = false;
+      }
+      builder.append(prop.getName());
+    }
+    builder.append("}");
+  }
+
   private final Class<T> clazz;
   private final ClassProperties classProperties;
   private final List<FormattablePropertyElement> formattablePropertyElements =
