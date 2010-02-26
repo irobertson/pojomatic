@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class DifferenceTest {
+public class ValueDifferenceTest {
   private ValueDifference DIFFERENCE = new ValueDifference("foo", "this", "that");
 
   @Test
