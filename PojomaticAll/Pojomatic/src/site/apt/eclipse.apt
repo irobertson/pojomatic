@@ -10,9 +10,9 @@
  with the following body:
 
 ------------------------
-  @Override public boolean equals(Object other) { return Pojomatic.equals(this, other); }
-  @Override public String toString() { return Pojomatic.toString(this); }
-  @Override public int hashCode() { return Pojomatic.hashCode(this); }
+@Override public boolean equals(Object other) { return Pojomatic.equals(this, other); }
+@Override public String toString() { return Pojomatic.toString(this); }
+@Override public int hashCode() { return Pojomatic.hashCode(this); }
 ${:import(org.pojomatic.Pojomatic)}
 ------------------------
 
