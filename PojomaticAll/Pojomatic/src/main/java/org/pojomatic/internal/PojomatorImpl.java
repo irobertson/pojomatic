@@ -9,7 +9,7 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PropertyFormat;
-import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
@@ -234,12 +234,12 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
     checkClass(instance, "instance");
     checkClass(other, "other");
-    List<Difference> differences = new ArrayList<Difference>();
+    List<ValueDifference> differences = new ArrayList<ValueDifference>();
     for (PropertyElement prop: classProperties.getEqualsProperties()) {
       final Object instanceValue = prop.getValue(instance);
       final Object otherValue = prop.getValue(other);
       if (!areValuesEqual(instanceValue, otherValue)) {
-        differences.add(new Difference(prop.getName(), instanceValue, otherValue));
+        differences.add(new ValueDifference(prop.getName(), instanceValue, otherValue));
       }
     }
 

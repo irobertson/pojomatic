@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.*;
-import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
@@ -256,7 +256,7 @@ public class PojomatorImplTest {
       new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "that"));
     assertTrue(diffs instanceof PropertyDifferences);
     assertEquals(
-      Arrays.asList(new Difference("s", "this", "THIS")),
+      Arrays.asList(new ValueDifference("s", "this", "THIS")),
       ((PropertyDifferences) diffs).getDifferences());
   }
 
@@ -265,7 +265,7 @@ public class PojomatorImplTest {
       new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "THAT"));
     assertEquals(PropertyDifferences.class, diffs.getClass());
     assertEquals(
-      Arrays.asList(new Difference("s", "this", "THIS"), new Difference("t", "that", "THAT")),
+      Arrays.asList(new ValueDifference("s", "this", "THIS"), new ValueDifference("t", "that", "THAT")),
       ((PropertyDifferences) diffs).getDifferences());
   }
 

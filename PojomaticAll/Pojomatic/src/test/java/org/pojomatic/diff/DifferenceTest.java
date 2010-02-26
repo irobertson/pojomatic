@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class DifferenceTest {
-  private Difference DIFFERENCE = new Difference("foo", "this", "that");
+  private ValueDifference DIFFERENCE = new ValueDifference("foo", "this", "that");
 
   @Test
   public void testGetPropertyName() {

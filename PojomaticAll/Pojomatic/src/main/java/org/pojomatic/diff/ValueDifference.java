@@ -4,12 +4,12 @@ import org.pojomatic.Pojomatic;
 import org.pojomatic.annotations.AutoProperty;
 
 @AutoProperty
-public class Difference {
+public class ValueDifference {
   private final String propertyName;
   private final Object lhs;
   private final Object rhs;
 
-  public Difference(String propertyName, Object lhs, Object rhs) {
+  public ValueDifference(String propertyName, Object lhs, Object rhs) {
     this.propertyName = propertyName;
     this.lhs = lhs;
     this.rhs = rhs;

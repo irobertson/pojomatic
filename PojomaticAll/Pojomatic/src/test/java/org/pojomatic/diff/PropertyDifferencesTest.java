@@ -16,17 +16,17 @@ public class PropertyDifferencesTest {
 
   @Test(expected=IllegalArgumentException.class)
   public void testEmptyDifferences() {
-  	new PropertyDifferences(Collections.<Difference>emptyList());
+  	new PropertyDifferences(Collections.<ValueDifference>emptyList());
   }
 
   @Test
   public void testSingleDifferenceToString() {
     assertEquals(
       "[foo: {3} versus {4}]",
-      new PropertyDifferences(Arrays.asList(new Difference("foo", 3, 4))).toString());
+      new PropertyDifferences(Arrays.asList(new ValueDifference("foo", 3, 4))).toString());
     assertEquals(
       "[foo: {null} versus {4}]",
-      new PropertyDifferences(Arrays.asList(new Difference("foo", null, 4))).toString());
+      new PropertyDifferences(Arrays.asList(new ValueDifference("foo", null, 4))).toString());
   }
 
   @Test
@@ -34,11 +34,11 @@ public class PropertyDifferencesTest {
     assertEquals(
       "[foo: {3} versus {4}, bar: {this} versus {that}]",
       new PropertyDifferences(Arrays.asList(
-        new Difference("foo", 3, 4), new Difference("bar", "this", "that"))).toString());
+        new ValueDifference("foo", 3, 4), new ValueDifference("bar", "this", "that"))).toString());
   }
 
   @Test
   public void testAreEqual() {
-    assertFalse(new PropertyDifferences(Arrays.asList(new Difference("foo", 3, 4))).areEqual());
+    assertFalse(new PropertyDifferences(Arrays.asList(new ValueDifference("foo", 3, 4))).areEqual());
   }
 }
