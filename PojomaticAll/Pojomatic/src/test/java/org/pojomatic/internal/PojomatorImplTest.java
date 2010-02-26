@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.*;
 import org.pojomatic.diff.Difference;
@@ -335,6 +336,21 @@ public class PojomatorImplTest {
     assertTrue(pojomator.doEquals(new Impl1(), new Impl2("hello")));
     assertFalse(pojomator.doEquals(new Impl1(), new Impl2("goodbye")));
     assertFalse(pojomator.doEquals(new Impl1(), "not even in the right hierarchy"));
+  }
+
+  @Test public void testToString() {
+    @SuppressWarnings("unused")
+    class SimplePojo {
+      @Property(policy=PojomaticPolicy.EQUALS) int x;
+      @Property(policy=PojomaticPolicy.HASHCODE_EQUALS) int y;
+      @Property(policy=PojomaticPolicy.TO_STRING) int z;
+    }
+    assertEquals(
+      "Pojomator for org.pojomatic.internal.PojomatorImplTest$1SimplePojo" +
+      " with equals properties {x,y}," +
+      " hashCodeProperties {y}," +
+      " and toStringProperties {z}",
+      Pojomatic.pojomator(SimplePojo.class).toString());
   }
 
   @PojoFormat(SimplePojoFormatter.class)
