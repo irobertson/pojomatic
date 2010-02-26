@@ -301,8 +301,8 @@ public class ClassPropertiesTest {
     assertTrue(
       ClassProperties.forClass(Interface.class).isCompatibleForEquals(ChildOfInterface.class));
 
-    @SubclassCannotOverrideEquals class A { @Property int x; }
-    class B extends A { @Property int y; }
+    @SubclassCannotOverrideEquals class A { @SuppressWarnings("unused") @Property int x; }
+    class B extends A { @SuppressWarnings("unused") @Property int y; }
     assertTrue(ClassProperties.forClass(A.class).isCompatibleForEquals(B.class));
     assertFalse(ClassProperties.forClass(B.class).isCompatibleForEquals(A.class));
   }
