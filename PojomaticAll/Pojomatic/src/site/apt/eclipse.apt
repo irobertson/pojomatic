@@ -1,0 +1,20 @@
+ ------
+ Using with eclipse
+ ------
+ ------
+ ------
+
+
+ Adding an eclipse template for pojomatic can make pojomating a class even easier.  Open up the
+ Preferences dialog, and then go to Java->Editor->Templates.  Then add a template named "pojomatic"
+ with the following body:
+
+------------------------
+  @Override public boolean equals(Object other) { return Pojomatic.equals(this, other); }
+  @Override public String toString() { return Pojomatic.toString(this); }
+  @Override public int hashCode() { return Pojomatic.hashCode(this); }
+${:import(org.pojomatic.Pojomatic)}
+------------------------
+
+ After that, to pojomate a class, simply add an <<<@AutoProperty>>> annotation to the class, and
+ insert the macro in the class body by typing "pojomatic" and hitting Control-space.

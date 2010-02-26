@@ -3,6 +3,7 @@
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
       <item name="Changes" href="changes.html"/>
+      <item name="Eclipse" href="eclipse.html"/>
     </menu>
     <menu ref="reports"/>
   </body>
