@@ -8,14 +8,14 @@ import org.pojomatic.annotations.Property;
 
 public class PropertyDifferences implements Differences {
   @Property
-  private final List<ValueDifference> differences;
+  private final List<Difference> differences;
 
   /**
    * @param differences cannot be {@code null} or empty
    * @throws NullPointerException if {@code differences} is {@code null}
    * @throws IllegalArgumentException if {@code differences.isEmpty()} is {@code true}
    */
-  public PropertyDifferences(List<ValueDifference> differences) {
+  public PropertyDifferences(List<Difference> differences) {
     if (differences == null) {
       throw new NullPointerException("list of differences is null");
     }
@@ -25,7 +25,7 @@ public class PropertyDifferences implements Differences {
     this.differences = Collections.unmodifiableList(differences);
   }
 
-  public List<ValueDifference> getDifferences() {
+  public List<Difference> differences() {
     return differences;
   }
 

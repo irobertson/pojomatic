@@ -3,18 +3,22 @@ package org.pojomatic.internal;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PropertyFormat;
-import org.pojomatic.diff.ValueDifference;
+import org.pojomatic.diff.Difference;
 import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
+import org.pojomatic.diff.OnlyOnLeft;
+import org.pojomatic.diff.OnlyOnRight;
 import org.pojomatic.diff.PropertyDifferences;
+import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
 import org.pojomatic.formatter.PojoFormatter;
@@ -108,7 +112,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     else {
       if (value.getClass().isArray()) {
         Class<?> instanceComponentClass = value.getClass().getComponentType();
-        if (! instanceComponentClass.isPrimitive()) {
+        if (!instanceComponentClass.isPrimitive()) {
           return Arrays.hashCode((Object[]) value);
         }
         else {
@@ -116,7 +120,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
             return Arrays.hashCode((boolean[]) value);
           }
           else if (Byte.TYPE == instanceComponentClass) {
-            return  Arrays.hashCode((byte[]) value);
+            return Arrays.hashCode((byte[]) value);
           }
           else if (Character.TYPE == instanceComponentClass) {
             return Arrays.hashCode((char[]) value);
@@ -222,20 +226,23 @@ public class PojomatorImpl<T> implements Pojomator<T>{
   }
 
   public Differences doDiff(T instance, T other) {
+    final Collection<PropertyElement> diffProperties = classProperties.getEqualsProperties();
     if (instance == other) {
       return NoDifferences.getInstance();
     }
     else if (instance == null) {
-      return new DifferenceFromNull(other);
+      checkClass(other, "other");
+      return new DifferenceFromNull(other, onlyOnRight(other, diffProperties));
     }
     else if (other == null) {
-      return new DifferenceToNull(instance);
+      checkClass(instance, "instance");
+      return new DifferenceToNull(instance, onlyOnLeft(instance, diffProperties));
     }
 
     checkClass(instance, "instance");
     checkClass(other, "other");
-    List<ValueDifference> differences = new ArrayList<ValueDifference>();
-    for (PropertyElement prop: classProperties.getEqualsProperties()) {
+    final List<Difference> differences = new ArrayList<Difference>();
+    for (PropertyElement prop : diffProperties) {
       final Object instanceValue = prop.getValue(instance);
       final Object otherValue = prop.getValue(other);
       if (!areValuesEqual(instanceValue, otherValue)) {
@@ -247,6 +254,23 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       return NoDifferences.getInstance();
     }
     return new PropertyDifferences(differences);
+  }
+
+  private Iterable<OnlyOnLeft> onlyOnLeft(T instance, Collection<PropertyElement> diffProperties) {
+    List<OnlyOnLeft> result = new ArrayList<OnlyOnLeft>();
+    for (PropertyElement element : diffProperties) {
+      result.add(new OnlyOnLeft(element.getName(), element.getValue(instance)));
+    }
+    return result;
+  }
+
+  private Iterable<OnlyOnRight> onlyOnRight(Object value,
+      Collection<PropertyElement> diffProperties) {
+    List<OnlyOnRight> result = new ArrayList<OnlyOnRight>();
+    for (PropertyElement element : diffProperties) {
+      result.add(new OnlyOnRight(element.getName(), element.getValue(value)));
+    }
+    return result;
   }
 
   private void checkClass(T instance, String label) {
@@ -283,8 +307,8 @@ public class PojomatorImpl<T> implements Pojomator<T>{
         if (!otherValue.getClass().isArray()) {
           return false;
         }
-        Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
-        Class<?> otherComponentClass = otherValue.getClass().getComponentType();
+        final Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
+        final Class<?> otherComponentClass = otherValue.getClass().getComponentType();
 
         if (!instanceComponentClass.isPrimitive()) {
           if (otherComponentClass.isPrimitive()) {
@@ -300,42 +324,42 @@ public class PojomatorImpl<T> implements Pojomator<T>{
           }
 
           if (Boolean.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((boolean[]) instanceValue, (boolean[]) otherValue)) {
+            if (!Arrays.equals((boolean[]) instanceValue, (boolean[]) otherValue)) {
               return false;
             }
           }
           else if (Byte.TYPE == instanceComponentClass) {
-            if (! Arrays.equals((byte[]) instanceValue, (byte[]) otherValue)) {
+            if (!Arrays.equals((byte[]) instanceValue, (byte[]) otherValue)) {
               return false;
             }
           }
           else if (Character.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((char[]) instanceValue, (char[]) otherValue)) {
+            if (!Arrays.equals((char[]) instanceValue, (char[]) otherValue)) {
               return false;
             }
           }
           else if (Short.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((short[]) instanceValue, (short[]) otherValue)) {
+            if (!Arrays.equals((short[]) instanceValue, (short[]) otherValue)) {
               return false;
             }
           }
           else if (Integer.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((int[]) instanceValue, (int[]) otherValue)) {
+            if (!Arrays.equals((int[]) instanceValue, (int[]) otherValue)) {
               return false;
             }
           }
           else if (Long.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((long[]) instanceValue, (long[]) otherValue)) {
+            if (!Arrays.equals((long[]) instanceValue, (long[]) otherValue)) {
               return false;
             }
           }
           else if (Float.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((float[]) instanceValue, (float[]) otherValue)) {
+            if (!Arrays.equals((float[]) instanceValue, (float[]) otherValue)) {
               return false;
             }
           }
           else if (Double.TYPE == instanceComponentClass) {
-            if(!Arrays.equals((double[]) instanceValue, (double[]) otherValue)) {
+            if (!Arrays.equals((double[]) instanceValue, (double[]) otherValue)) {
               return false;
             }
           }

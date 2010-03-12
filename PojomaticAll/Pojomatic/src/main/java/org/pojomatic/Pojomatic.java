@@ -1,6 +1,5 @@
 package org.pojomatic;
 
-import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorImpl;
@@ -143,7 +142,7 @@ public class Pojomatic {
   throws NullPointerException, IllegalArgumentException {
     if (pojo == null) {
       if (other != null) {
-        return new DifferenceFromNull(other);
+        return pojomator(getClass(other)).doDiff(null, other);
       }
       else { //both null
         return NoDifferences.getInstance();

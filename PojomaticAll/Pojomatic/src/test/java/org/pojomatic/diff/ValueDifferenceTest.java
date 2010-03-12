@@ -8,18 +8,28 @@ public class ValueDifferenceTest {
   private ValueDifference DIFFERENCE = new ValueDifference("foo", "this", "that");
 
   @Test
-  public void testGetPropertyName() {
-    assertEquals("foo", DIFFERENCE.getPropertyName());
+  public void testPropertyName() {
+    assertEquals("foo", DIFFERENCE.propertyName());
   }
 
   @Test
-  public void testGetLhs() {
-    assertEquals("this", DIFFERENCE.getLhs());
+  public void testLeftValue() {
+    assertEquals("this", DIFFERENCE.leftValue());
   }
 
   @Test
-  public void testGetRhs() {
-    assertEquals("that", DIFFERENCE.getRhs());
+  public void testRightValue() {
+    assertEquals("that", DIFFERENCE.rightValue());
+  }
+
+  @Test
+  public void testExistsOnLeft() {
+    assertTrue(DIFFERENCE.existsOnLeft());
+  }
+
+  @Test
+  public void testExistsOnRight() {
+    assertTrue(DIFFERENCE.existsOnRight());
   }
 
 }

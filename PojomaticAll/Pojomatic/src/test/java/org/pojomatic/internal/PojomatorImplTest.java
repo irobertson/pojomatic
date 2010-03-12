@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.*;
+import org.pojomatic.diff.OnlyOnLeft;
+import org.pojomatic.diff.OnlyOnRight;
 import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.diff.DifferenceFromNull;
 import org.pojomatic.diff.DifferenceToNull;
@@ -19,6 +21,8 @@ import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.DefaultPropertyFormatter;
+
+import com.google.common.collect.Sets;
 
 public class PojomatorImplTest {
   private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
@@ -226,13 +230,19 @@ public class PojomatorImplTest {
   @Test public void testDiffNullInstance() {
     ObjectPairProperty other = new ObjectPairProperty("this", "that");
     Differences actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, other);
+    assertFalse(actual.areEqual());
     assertTrue(actual instanceof DifferenceFromNull);
+    assertEquals(Sets.newHashSet(new OnlyOnRight("s", "this"), new OnlyOnRight("t", "that")),
+      Sets.newHashSet(actual.differences()));
   }
 
   @Test public void testDiffNullOther() {
     ObjectPairProperty instance = new ObjectPairProperty("this", "that");
     Differences actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
+    assertFalse(actual.areEqual());
     assertTrue(actual instanceof DifferenceToNull);
+    assertEquals(Sets.newHashSet(new OnlyOnLeft("s", "this"), new OnlyOnLeft("t", "that")),
+        Sets.newHashSet(actual.differences()));
   }
 
   @Test public void testDiffNulls() {
@@ -256,8 +266,8 @@ public class PojomatorImplTest {
       new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "that"));
     assertTrue(diffs instanceof PropertyDifferences);
     assertEquals(
-      Arrays.asList(new ValueDifference("s", "this", "THIS")),
-      ((PropertyDifferences) diffs).getDifferences());
+      Sets.newHashSet(new ValueDifference("s", "this", "THIS")),
+      Sets.newHashSet(diffs.differences()));
   }
 
   @Test public void testDiffDifferentObjectsWithMultiplePropertiesDifferent() {
@@ -265,15 +275,8 @@ public class PojomatorImplTest {
       new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "THAT"));
     assertEquals(PropertyDifferences.class, diffs.getClass());
     assertEquals(
-      Arrays.asList(new ValueDifference("s", "this", "THIS"), new ValueDifference("t", "that", "THAT")),
-      ((PropertyDifferences) diffs).getDifferences());
-  }
-
-  @Test public void testDiffAgainstNull() {
-    ObjectPairProperty instance = new ObjectPairProperty("this", "that");
-    Differences differences = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
-    assertFalse(differences.areEqual());
-    assertEquals(DifferenceToNull.class, differences.getClass());
+      Sets.newHashSet(new ValueDifference("s", "this", "THIS"), new ValueDifference("t", "that", "THAT")),
+      Sets.newHashSet(diffs.differences()));
   }
 
   @Test public void testDiffAgainstWrongType() {

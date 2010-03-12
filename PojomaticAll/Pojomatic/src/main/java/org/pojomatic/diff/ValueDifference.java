@@ -1,30 +1,40 @@
 package org.pojomatic.diff;
 
 import org.pojomatic.Pojomatic;
-import org.pojomatic.annotations.AutoProperty;
+import org.pojomatic.annotations.Property;
 
-@AutoProperty
-public class ValueDifference {
+public class ValueDifference implements Difference {
   private final String propertyName;
-  private final Object lhs;
-  private final Object rhs;
+  private final Object leftValue;
+  private final Object rightValue;
 
   public ValueDifference(String propertyName, Object lhs, Object rhs) {
     this.propertyName = propertyName;
-    this.lhs = lhs;
-    this.rhs = rhs;
+    this.leftValue = lhs;
+    this.rightValue = rhs;
   }
 
-  public String getPropertyName() {
+  @Property
+  public String propertyName() {
     return propertyName;
   }
 
-  public Object getLhs() {
-    return lhs;
+  @Property
+  public Object leftValue() {
+    return leftValue;
   }
 
-  public Object getRhs() {
-    return rhs;
+  @Property
+  public Object rightValue() {
+    return rightValue;
+  }
+
+  public boolean existsOnLeft() {
+    return true;
+  }
+
+  public boolean existsOnRight() {
+    return true;
   }
 
   @Override
@@ -40,7 +50,7 @@ public class ValueDifference {
   @Override
   public String toString() {
     //TODO - can we do better here?
-    return propertyName + ": {" + lhs + "} versus {" + rhs + "}";
+    return propertyName + ": {" + leftValue + "} versus {" + rightValue + "}";
   }
 
 }

@@ -16,4 +16,9 @@ public class NoDifferencesTest {
     assertEquals("no differences", NoDifferences.getInstance().toString());
   }
 
+  @Test
+  public void testDifferences() {
+    assertFalse(NoDifferences.getInstance().differences().iterator().hasNext());
+  }
+
 }

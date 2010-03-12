@@ -1,5 +1,7 @@
 package org.pojomatic.diff;
 
+import java.util.Collections;
+
 public final class NoDifferences implements Differences {
   private static final NoDifferences INSTANCE = new NoDifferences();
 
@@ -17,6 +19,10 @@ public final class NoDifferences implements Differences {
 
   public static NoDifferences getInstance() {
     return INSTANCE;
+  }
+
+  public Iterable<Difference> differences() {
+    return Collections.emptyList();
   }
 
 }

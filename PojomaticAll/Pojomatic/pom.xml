@@ -19,6 +19,15 @@
     <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</url>
   </scm>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <reporting>
     <plugins>
       <plugin>

@@ -5,8 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.diff.DifferenceFromNull;
+import org.pojomatic.diff.DifferenceToNull;
+import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
+import org.pojomatic.diff.OnlyOnLeft;
+import org.pojomatic.diff.OnlyOnRight;
 import org.pojomatic.internal.PojomatorImpl;
+
+import com.google.common.collect.Sets;
 
 public class PojomaticTest {
   public static class Bean {
@@ -29,7 +35,7 @@ public class PojomaticTest {
   }
 
   @Test
-  public void testDiff() {
+  public void testDiffNoDifferences() {
     assertEquals(NoDifferences.getInstance(), Pojomatic.diff(BEAN, BEAN));
   }
 
@@ -40,12 +46,18 @@ public class PojomaticTest {
 
   @Test
   public void testDiffNullFirst() {
-    assertEquals(new DifferenceFromNull(BEAN), Pojomatic.diff(null, BEAN));
+    Iterable<OnlyOnRight> beanDifferences = Sets.newHashSet(new OnlyOnRight("x", BEAN.x));
+    Differences differences = Pojomatic.diff(null, BEAN);
+    assertEquals(new DifferenceFromNull(BEAN, beanDifferences), differences);
+    assertEquals(beanDifferences, Sets.newHashSet(differences.differences()));
   }
 
   @Test
   public void testDiffNullSecond() {
-    assertEquals(BEAN_POJOMATOR.doDiff(BEAN, null), Pojomatic.diff(BEAN, null));
+    Iterable<OnlyOnLeft> beanDifferences = Sets.newHashSet(new OnlyOnLeft("x", BEAN.x));
+    Differences differences = Pojomatic.diff(BEAN, null);
+    assertEquals(new DifferenceToNull(BEAN, beanDifferences), differences);
+    assertEquals(beanDifferences, Sets.newHashSet(differences.differences()));
   }
 
   @Test
