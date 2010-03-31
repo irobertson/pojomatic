@@ -80,7 +80,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       return false;
     }
     if (!instance.getClass().equals(other.getClass())) {
-      if (!classProperties.isCompatibleForEquals(other.getClass())) {
+      if (!isCompatibleForEquality(other.getClass())) {
         return false;
       }
     }
@@ -91,6 +91,10 @@ public class PojomatorImpl<T> implements Pojomator<T>{
       }
     }
     return true;
+  }
+
+  public boolean isCompatibleForEquality(Class<?> otherClass) {
+    return classProperties.isCompatibleForEquals(otherClass);
   }
 
   public int doHashCode(T instance) {

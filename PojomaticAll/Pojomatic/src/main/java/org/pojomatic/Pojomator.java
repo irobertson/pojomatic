@@ -15,7 +15,8 @@ import org.pojomatic.formatter.PropertyFormatter;
 
 /**
  * A provider of the three standard {@code Object} methods,
- * {@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()}.
+ * {@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()}, as
+ * well as a usefull method to aid in debugging, {@link #doDiff(Object, Object)}}.
  *
  * @param <T> the class this {@code Pojomator} is generated for.
  */
@@ -76,30 +77,17 @@ public interface Pojomator<T> {
 
   /**
    * Compute whether {@code instance} and {@code other} are equal to each other in the sense of
-   * {@code Object}'s {@link Object#equals(Object) equals} method.
-   * <p>
-   * For two instances to be considered equal, the first requirement is that their classes must be
-   * compatible for equality. Classes {@code A} and {@code B} are compatible for equality if
-   * they share a common superclass {@code C}, and for every class {@code D} which
-   * is a proper subclass of {@code C} and a superclass of {@code A} or {@code B} (including
-   * the classes {@code A} and {@code B} themselves), the following hold:
-   * <ul>
-   *   <li>{@code D} has not added additional properties for inclusion in the {@code equals} calculation, and</li>
-   *   <li>{@code D} has not been annotated with {@link OverridesEquals}</li>
-   * </ul>
-   * If {@code T} is an interface or is annotated with {@link SubclassCannotOverrideEquals},
-   * then all subclasses of {@code T} are automatically assumed by {@code T}'s {@code Pojomator}
-   * to be comapatible for equals with each other and with {@code T}.  Note that in this case.
-   * to add an {@link OverridesEquals} annotation or additional
-   * properties for inclusion in {@code equals} to a subclass of {@code T} will
-   * result in a violation of the contract for {@link Object#equals(Object)}.
+   * {@code Object}'s {@link Object#equals(Object) equals} method. For two instances to be
+   * considered equal, the first requirement is that their classes must be compatible for equality,
+   * as described in the documentation for {@link #isCompatibleForEquality(Class)}.
    * </p>
    * <p>
-   * More precisely, if {@code other} is null, this method returns {@code false}. Otherwise, it is verified that
-   * the class of {@code other} is compatible for {@code equals} with {@code T}; if not, then this method
-   * returns false. Otherwise, this method will return true provided that each property of {@code
-   * instance} which has a {@code PojomaticPolicy} other than {@code TO_STRING} or
-   * {@code NONE} is equal to the corresponding property of {@code other} in the following sense:
+   * More precisely, if {@code other} is null, this method returns {@code false}.  Otherwise, if
+   * {@link #isCompatibleForEquality(Class) isCompatibleForEquals(other.getClass())} would return
+   * false, then this method will return false.  Otherwise, this method will return true provided
+   * that each property of {@code instance} which has a {@code PojomaticPolicy} other than
+   * {@code TO_STRING} or {@code NONE} is equal to the corresponding property of {@code other} in
+   * the following sense:
    * <ul>
    * <li>Both are {@code null}, or</li>
    * <li>Both are reference-equals (==) to each other, or</li>
@@ -120,6 +108,28 @@ public interface Pojomator<T> {
    * @see Object#equals(Object)
    */
   boolean doEquals(T instance, Object other);
+
+  /**
+   * Compute whether {@code otherClass} is compatible for equality with {@code T}.
+   * Classes {@code A} and {@code B} are compatible for equality if
+   * they share a common superclass {@code C}, and for every class {@code D} which
+   * is a proper subclass of {@code C} and a superclass of {@code A} or {@code B} (including
+   * the classes {@code A} and {@code B} themselves), the following hold:
+   * <ul>
+   *   <li>{@code D} has not added additional properties for inclusion in the {@code equals} calculation, and</li>
+   *   <li>{@code D} has not been annotated with {@link OverridesEquals}</li>
+   * </ul>
+   * If {@code T} is an interface or is annotated with {@link SubclassCannotOverrideEquals},
+   * then all subclasses of {@code T} are automatically assumed by {@code T}'s {@code Pojomator}
+   * to be comapatible for equals with each other and with {@code T}.  Note that in this case.
+   * to add an {@link OverridesEquals} annotation or additional
+   * properties for inclusion in {@code equals} to a subclass of {@code T} will
+   * result in a violation of the contract for {@link Object#equals(Object)}.
+   * @param otherClass the class to check for compatibility for equality with {@code T}
+   * @return {@code true} if {@code otherClass} is compatible for equality with {@code T}, and
+   * {@code false} otherwise.
+   */
+  boolean isCompatibleForEquality(Class<?> otherClass);
 
   /**
    * Compute the differences between {@code instance} and {@code other} among the properties

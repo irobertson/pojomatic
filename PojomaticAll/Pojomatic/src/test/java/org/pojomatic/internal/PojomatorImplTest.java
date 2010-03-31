@@ -332,7 +332,6 @@ public class PojomatorImplTest {
       public String getString() { return string; }
     }
 
-
     assertEquals("Interface{int: {2}, string: {hello}}", pojomator.doToString(new Impl1()));
     assertEquals((
       HASH_CODE_MULTIPLIER + 2)*HASH_CODE_MULTIPLIER + "hello".hashCode(), pojomator.doHashCode(new Impl1()));
@@ -341,6 +340,15 @@ public class PojomatorImplTest {
     assertFalse(pojomator.doEquals(new Impl1(), "not even in the right hierarchy"));
   }
 
+  @Test public void testIsCompatibleForEquals() {
+    assertTrue(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectProperty.class));
+    assertFalse(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectPairProperty.class));
+    assertTrue(makePojomatorImpl(Interface.class).isCompatibleForEquality(new Interface() {
+      public int getInt() { return 0; }
+      public String getString() { return null; }
+    }.getClass()));
+  }
+  
   @Test public void testToString() {
     @SuppressWarnings("unused")
     class SimplePojo {

@@ -124,6 +124,17 @@ public class Pojomatic {
     return pojomator(getClass(pojo)).doEquals(pojo, other);
   }
 
+  /**
+   * Compute whether {@code classA} and {@code classB} are compatible for equality as specified
+   * by the documentation for {@link Pojomator#isCompatibleForEquality(Class)}.
+   * @param classA the first class to check for compatibility for equality
+   * @param classB the second class to check for compatibility for equality
+   * @return {@code true} if the two classes are compatible for equality, or {@code false}
+   * otherwise.
+   */
+  public static boolean areCompatibleForEquals(Class<?> classA, Class<?> classB) {
+    return pojomator(classA).isCompatibleForEquality(classB);
+  }
 
   /**
    * Compute the differences between {@code pojo} and {@code other} among the properties

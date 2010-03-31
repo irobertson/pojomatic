@@ -18,6 +18,7 @@ public class PojomaticTest {
   public static class Bean {
     @Property public final int x;
     public Bean(int x) { this.x = x; }
+    public Bean() { x = 0; }
   }
 
   private static Pojomator<Bean> BEAN_POJOMATOR = new PojomatorImpl<Bean>(Bean.class);
@@ -69,5 +70,17 @@ public class PojomaticTest {
   public void testEquals() {
     assertTrue(Pojomatic.equals(new Bean(3), new Bean(3)));
     assertFalse(Pojomatic.equals(new Bean(3), new Bean(4)));
+  }
+
+  @Test
+  public void testCompatibleForEquality() {
+    class BeanSubClass extends Bean{};
+
+    class BeanWithExtraData extends Bean {
+      @Property public int getY() { return 0; }
+    }
+    assertTrue(Pojomatic.areCompatibleForEquals(Bean.class, BeanSubClass.class));
+    assertFalse(Pojomatic.areCompatibleForEquals(Bean.class, BeanWithExtraData.class));
+    assertFalse(Pojomatic.areCompatibleForEquals(BeanWithExtraData.class, Bean.class));
   }
 }
