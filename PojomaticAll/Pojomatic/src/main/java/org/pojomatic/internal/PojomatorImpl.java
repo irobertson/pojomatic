@@ -8,15 +8,12 @@ import java.util.List;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
+import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Difference;
-import org.pojomatic.diff.DifferenceFromNull;
-import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
-import org.pojomatic.diff.OnlyOnLeft;
-import org.pojomatic.diff.OnlyOnRight;
 import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.formatter.DefaultPojoFormatter;
@@ -35,10 +32,10 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * Creates an instance for {@code clazz}.
    *
    * @param clazz the class
-   * @throws IllegalArgumentException if {@code clazz} has no properties annotated for use
+   * @throws NoPojomaticPropertiesException if {@code clazz} has no properties annotated for use
    * with Pojomatic
    */
-  public PojomatorImpl(Class<T> clazz) throws IllegalArgumentException {
+  public PojomatorImpl(Class<T> clazz) throws NoPojomaticPropertiesException {
     this.clazz = clazz;
     classProperties = ClassProperties.forClass(clazz);
     pojoFormatterClass = findPojoFormatterClass(clazz);
@@ -231,16 +228,14 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
   public Differences doDiff(T instance, T other) {
     final Collection<PropertyElement> diffProperties = classProperties.getEqualsProperties();
+    if (instance == null) {
+      throw new NullPointerException("instance is null");
+    }
+    if (other == null) {
+      throw new NullPointerException("other is null");
+    }
     if (instance == other) {
       return NoDifferences.getInstance();
-    }
-    else if (instance == null) {
-      checkClass(other, "other");
-      return new DifferenceFromNull(other, onlyOnRight(other, diffProperties));
-    }
-    else if (other == null) {
-      checkClass(instance, "instance");
-      return new DifferenceToNull(instance, onlyOnLeft(instance, diffProperties));
     }
 
     checkClass(instance, "instance");
@@ -260,28 +255,11 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return new PropertyDifferences(differences);
   }
 
-  private Iterable<OnlyOnLeft> onlyOnLeft(T instance, Collection<PropertyElement> diffProperties) {
-    List<OnlyOnLeft> result = new ArrayList<OnlyOnLeft>();
-    for (PropertyElement element : diffProperties) {
-      result.add(new OnlyOnLeft(element.getName(), element.getValue(instance)));
-    }
-    return result;
-  }
-
-  private Iterable<OnlyOnRight> onlyOnRight(Object value,
-      Collection<PropertyElement> diffProperties) {
-    List<OnlyOnRight> result = new ArrayList<OnlyOnRight>();
-    for (PropertyElement element : diffProperties) {
-      result.add(new OnlyOnRight(element.getName(), element.getValue(value)));
-    }
-    return result;
-  }
-
   private void checkClass(T instance, String label) {
-    if (!clazz.isInstance(instance)) {
-      throw new ClassCastException(
+    if (!isCompatibleForEquality(instance.getClass())) {
+      throw new IllegalArgumentException(
         label + " has type " + instance.getClass().getName()
-        + " which is not a subtype of " + clazz.getName());
+        + " which is not compatible for equality with " + clazz.getName());
     }
   }
 

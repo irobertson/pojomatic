@@ -87,11 +87,11 @@ public class Pojomatic {
    * @param <T> the type of the POJO
    * @param pojo the POJO - must not be null
    * @return the {@code toString} representation of {@code pojo}.
-   * @throws IllegalArgumentException if {@code pojo}'s class has no properties annotated for use
-   * with Pojomatic
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties annotated for
+   * use with Pojomatic
    * @see Pojomator#doToString(Object)
    */
-  public static <T> String toString(T pojo) throws IllegalArgumentException {
+  public static <T> String toString(T pojo) throws NoPojomaticPropertiesException {
     return pojomator(getClass(pojo)).doToString(pojo);
   }
 
@@ -100,11 +100,11 @@ public class Pojomatic {
    * @param <T> the type of the POJO
    * @param pojo the POJO - must not be null
    * @return the {@code hashCode} for {@code pojo}.
-   * @throws IllegalArgumentException if {@code pojo}'s class has no properties annotated for use
-   * with Pojomatic
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties annotated for
+   * use with Pojomatic
    * @see Pojomator#doHashCode(Object)
    */
-  public static <T> int hashCode(T pojo) throws IllegalArgumentException {
+  public static <T> int hashCode(T pojo) throws NoPojomaticPropertiesException {
     return pojomator(getClass(pojo)).doHashCode(pojo);
   }
 
@@ -116,11 +116,11 @@ public class Pojomatic {
    * @param other the object to compare to for equality
    * @return whether {@code pojo} and {@code other} are equal to each other in the sense of
    * {@code Object}'s {@code equals} method.
-   * @throws IllegalArgumentException if {@code pojo}'s class has no properties annotated for use
-   * with Pojomatic
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties annotated for
+   * use with Pojomatic
    * @see Pojomator#doEquals(Object, Object)
    */
-  public static <T> boolean equals(T pojo, Object other) throws IllegalArgumentException {
+  public static <T> boolean equals(T pojo, Object other) throws NoPojomaticPropertiesException {
     return pojomator(getClass(pojo)).doEquals(pojo, other);
   }
 
@@ -146,20 +146,20 @@ public class Pojomatic {
    * @param other the instance to diff
    * @return the list of differences (possibly empty) between {@code instance} and {@code other}
    * among the properties examined by {@link #equals(Object, Object)} for type {@code T}.
-   * @throws IllegalArgumentException if {@code pojo}'s class has no properties annotated for use
-   * with Pojomatic
+   * @throws NullPointerException if {@code pojo} or {@other} are null
+   * (this behavior may change in future releases).
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties
+   * annotated for use with Pojomatic, or if the types of {@code pojo} and {@code other} are not
+   * compatible for equality with each other (this behavior may change in future releases).
    */
   public static <T, S extends T> Differences diff(T pojo, S other)
-  throws NullPointerException, IllegalArgumentException {
+  throws NullPointerException, NoPojomaticPropertiesException {
     if (pojo == null) {
-      if (other != null) {
-        return pojomator(getClass(other)).doDiff(null, other);
-      }
-      else { //both null
-        return NoDifferences.getInstance();
-      }
+      throw new NullPointerException("pojo is null");
     }
-
+    if (other == null) {
+      throw new NullPointerException("other is null");
+    }
     return pojomator(getClass(pojo)).doDiff(pojo, other);
   }
 
@@ -169,11 +169,12 @@ public class Pojomatic {
    * @param <T> the type represented by {@code pojoClass}
    * @param pojoClass the class to create a {@code Pojomator} for.
    * @return a {@code Pojomator<T>}
-   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
+   * @throws NoPojomaticPropertiesException if {@code pojoClass} has no properties annotated for use
    * with Pojomatic
    */
   @SuppressWarnings("unchecked") // compiler does not know that the type parameter to Pojomator is T
-  public static <T> Pojomator<T> pojomator(Class<T> pojoClass) throws IllegalArgumentException {
+  public static <T> Pojomator<T> pojomator(Class<T> pojoClass)
+  throws NoPojomaticPropertiesException {
     return (Pojomator<T>) POJOMATORS.get(pojoClass);
   }
 

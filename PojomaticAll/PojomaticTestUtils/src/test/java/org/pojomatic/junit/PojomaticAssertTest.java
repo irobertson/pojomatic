@@ -5,8 +5,8 @@ import org.pojomatic.test.AssertTest;
 public class PojomaticAssertTest extends AssertTest {
 
   @Override
-  protected void performAssertEquals(Object first, Object second, String message) {
-    PojomaticAssert.assertEqualsWithDiff(first, second, message);
+  protected void performAssertEquals(Object expected, Object actual, String message) {
+    PojomaticAssert.assertEqualsWithDiff(expected, actual, message);
   }
 
 }

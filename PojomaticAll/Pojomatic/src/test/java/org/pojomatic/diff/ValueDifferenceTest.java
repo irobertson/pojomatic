@@ -21,15 +21,4 @@ public class ValueDifferenceTest {
   public void testRightValue() {
     assertEquals("that", DIFFERENCE.rightValue());
   }
-
-  @Test
-  public void testExistsOnLeft() {
-    assertTrue(DIFFERENCE.existsOnLeft());
-  }
-
-  @Test
-  public void testExistsOnRight() {
-    assertTrue(DIFFERENCE.existsOnRight());
-  }
-
 }

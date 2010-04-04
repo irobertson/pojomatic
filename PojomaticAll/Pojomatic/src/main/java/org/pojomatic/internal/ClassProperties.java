@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.pojomatic.PropertyElement;
+import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.*;
 
 /**
@@ -50,10 +51,10 @@ public class ClassProperties {
    * repeatedly is not inefficient.
    * @param pojoClass the class to inspect for properties
    * @return The {@code ClassProperties} for {@code pojoClass}.
-   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
+   * @throws NoPojomaticPropertiesException if {@code pojoClass} has no properties annotated for use
    * with Pojomatic.
    */
-  public static ClassProperties forClass(Class<?> pojoClass) throws IllegalArgumentException {
+  public static ClassProperties forClass(Class<?> pojoClass) throws NoPojomaticPropertiesException {
     return INSTANCES.get(pojoClass);
   }
 
@@ -61,10 +62,10 @@ public class ClassProperties {
    * Creates an instance for the given {@code pojoClass}.
    *
    * @param pojoClass the class to inspect for properties
-   * @throws IllegalArgumentException if {@code pojoClass} has no properties annotated for use
+   * @throws NoPojomaticPropertiesException if {@code pojoClass} has no properties annotated for use
    * with Pojomatic.
    */
-  private ClassProperties(Class<?> pojoClass) throws IllegalArgumentException {
+  private ClassProperties(Class<?> pojoClass) throws NoPojomaticPropertiesException {
     if (pojoClass.isInterface()) {
       extractClassProperties(pojoClass, new OverridableMethods(), new ClassContributionTracker());
       equalsParentClass = pojoClass;
@@ -237,8 +238,7 @@ public class ClassProperties {
         return;
       }
     }
-    throw new IllegalArgumentException(
-      "Class " + pojoClass.getName() + " has no Pojomatic properties");
+    throw new NoPojomaticPropertiesException(pojoClass);
   }
 
   private String getPropertyName(Property property) {

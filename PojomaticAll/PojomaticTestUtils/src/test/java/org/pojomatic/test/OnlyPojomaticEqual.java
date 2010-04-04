@@ -20,4 +20,9 @@ public class OnlyPojomaticEqual {
     }
     return false;
   }
+
+  @Override
+  public String toString() {
+    return "toString";
+  }
 }

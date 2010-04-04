@@ -11,12 +11,9 @@ import java.util.List;
 import org.junit.Test;
 import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
+import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.*;
-import org.pojomatic.diff.OnlyOnLeft;
-import org.pojomatic.diff.OnlyOnRight;
 import org.pojomatic.diff.ValueDifference;
-import org.pojomatic.diff.DifferenceFromNull;
-import org.pojomatic.diff.DifferenceToNull;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.PropertyDifferences;
 import org.pojomatic.formatter.DefaultPojoFormatter;
@@ -227,26 +224,21 @@ public class PojomatorImplTest {
       makePojomatorImpl(FormattedObject.class).doToString(new FormattedObject("x")));
   }
 
-  @Test public void testDiffNullInstance() {
+  @Test(expected=NullPointerException.class)
+  public void testDiffNullInstance() {
     ObjectPairProperty other = new ObjectPairProperty("this", "that");
-    Differences actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, other);
-    assertFalse(actual.areEqual());
-    assertTrue(actual instanceof DifferenceFromNull);
-    assertEquals(Sets.newHashSet(new OnlyOnRight("s", "this"), new OnlyOnRight("t", "that")),
-      Sets.newHashSet(actual.differences()));
+    OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, other);
   }
 
-  @Test public void testDiffNullOther() {
+  @Test(expected=NullPointerException.class)
+  public void testDiffNullOther() {
     ObjectPairProperty instance = new ObjectPairProperty("this", "that");
-    Differences actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
-    assertFalse(actual.areEqual());
-    assertTrue(actual instanceof DifferenceToNull);
-    assertEquals(Sets.newHashSet(new OnlyOnLeft("s", "this"), new OnlyOnLeft("t", "that")),
-        Sets.newHashSet(actual.differences()));
+    OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
   }
 
-  @Test public void testDiffNulls() {
-    assertTrue(OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, null).areEqual());
+  @Test(expected=NullPointerException.class)
+  public void testDiffNulls() {
+    OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, null);
   }
 
   @Test public void testDiffSameObject() {
@@ -286,9 +278,9 @@ public class PojomatorImplTest {
       misCastPojomator.doDiff(new ObjectPairProperty(1,2), "wrong");
       fail("exception expcected");
     }
-    catch (ClassCastException e) {
+    catch (IllegalArgumentException e) {
       assertEquals(
-        "other has type java.lang.String which is not a subtype of org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
+        "other has type java.lang.String which is not compatible for equality with org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
         e.getMessage());
     }
   }
@@ -300,14 +292,14 @@ public class PojomatorImplTest {
       misCastPojomator.doDiff("wrong", new ObjectPairProperty(1,2));
       fail("exception expcected");
     }
-    catch (ClassCastException e) {
+    catch (IllegalArgumentException e) {
       assertEquals(
-        "instance has type java.lang.String which is not a subtype of org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
+        "instance has type java.lang.String which is not compatible for equality with org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
         e.getMessage());
     }
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected= NoPojomaticPropertiesException.class)
   public void testNonPojomatedClass() {
     makePojomatorImpl(String.class);
   }

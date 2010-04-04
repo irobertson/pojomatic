@@ -15,20 +15,6 @@ public interface Difference {
   String propertyName();
 
   /**
-   * Whether or not the property exists on the left object.
-   *
-   * @return {@code true} if the property exists on the left object, {@code false} otherwise
-   */
-  boolean existsOnLeft();
-
-  /**
-   * Whether or not the property exists on the right object.
-   *
-   * @return {@code true} if the property exists on the right object, {@code false} otherwise
-   */
-  boolean existsOnRight();
-
-  /**
    * The value from the left instance (possibly {@code null}).
    *
    * @return the value from the left instance (possibly {@code null})

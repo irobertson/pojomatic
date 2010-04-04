@@ -142,7 +142,11 @@ public interface Pojomator<T> {
    * @param other the instance to diff
    * @return the differences between {@code instance} and {@code other}
    * among the properties examined by {@link #doEquals(Object, Object)}.
-   *
+   * @throws NullPointerException if {@code instance} or {@code other} is null
+   * (this behavoir may change in future releases).
+   * @throws IllegalArgumentException the type of {@code instance} or of {@code other} is not a
+   * class which is compatible for equality with {@code T}
+   * (this behavoir may change in future releases).
    * @see #doEquals(Object, Object)
    */
   Differences doDiff(T instance, T other);

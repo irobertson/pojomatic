@@ -29,14 +29,6 @@ public class ValueDifference implements Difference {
     return rightValue;
   }
 
-  public boolean existsOnLeft() {
-    return true;
-  }
-
-  public boolean existsOnRight() {
-    return true;
-  }
-
   @Override
   public boolean equals(Object obj) {
     return Pojomatic.equals(this, obj);
