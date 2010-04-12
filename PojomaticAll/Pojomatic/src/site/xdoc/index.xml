@@ -57,6 +57,6 @@ and <code>hashCode()</code> methods inherited from <code>java.lang.Object</code>
 will result in the following output:
 <source>Person{firstName: {John}, lastName: {Doe}, age: {32}}</source>
 
-<p>For more information, see the <a href="apidocs/index.html">JavaDocs</a>.</p>
+<p>For more information and examples, see the <a href="apidocs/index.html">JavaDocs</a>.</p>
   </body>
 </document>
