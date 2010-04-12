@@ -146,7 +146,7 @@ public class Pojomatic {
    * @param other the instance to diff
    * @return the list of differences (possibly empty) between {@code instance} and {@code other}
    * among the properties examined by {@link #equals(Object, Object)} for type {@code T}.
-   * @throws NullPointerException if {@code pojo} or {@other} are null
+   * @throws NullPointerException if {@code pojo} or {@code other} are null
    * (this behavior may change in future releases).
    * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties
    * annotated for use with Pojomatic, or if the types of {@code pojo} and {@code other} are not
