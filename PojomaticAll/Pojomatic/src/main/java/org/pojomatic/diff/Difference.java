@@ -19,7 +19,6 @@ public interface Difference {
    *
    * @return the value from the left instance (possibly {@code null})
    * @throws NoSuchElementException if the value does not exist on the left instance
-   * @see #existsOnLeft()
    */
   Object leftValue() throws NoSuchElementException;
 
@@ -28,7 +27,6 @@ public interface Difference {
    *
    * @return the value from the right instance (possibly {@code null})
    * @throws NoSuchElementException if the value does not exist on the right instance
-   * @see #existsOnRight()
    */
   Object rightValue() throws NoSuchElementException;
 
