@@ -1,0 +1,62 @@
+<document>
+  <properties>
+    <title>Pojomatic</title>
+  </properties>
+  <head>
+    <style type="text/css">
+    .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+    .s0 { color: rgb(0,0,128); font-weight: bold; }
+    .s1 { }
+    </style>
+  </head>
+  <body>
+<p>
+Pojomatic provides configurable implementations of the <code>equals(Object)</code>, <code>toString()</code>
+and <code>hashCode()</code> methods inherited from <code>java.lang.Object</code>.
+</p>
+<p>For example, the following bean has been "pojomated":</p>
+<div class="source"><pre>
+<span class="s0">import </span><span class="s1">org.pojomatic.Pojomatic;
+</span><span class="s0">import </span><span class="s1">org.pojomatic.annotations.AutoProperty;
+
+@AutoProperty
+</span><span class="s0">public class </span><span class="s1">Person {
+  </span><span class="s0">private final </span><span class="s1">String firstName;
+  </span><span class="s0">private final </span><span class="s1">String lastName;
+  </span><span class="s0">private final int </span><span class="s1">age;
+
+  </span><span class="s0">public </span><span class="s1">Person(String firstName, String lastName, </span><span class="s0">int </span><span class="s1">age) {
+    </span><span class="s0">this</span><span class="s1">.firstName = firstName;
+    </span><span class="s0">this</span><span class="s1">.lastName = lastName;
+    </span><span class="s0">this</span><span class="s1">.age = age;
+  }
+
+  </span><span class="s0">public </span><span class="s1">String getFirstName() { return this</span><span class="s1">.firstName; }
+  </span><span class="s0">public </span><span class="s1">String getLastName() { return this</span><span class="s1">.lastName; }
+  </span><span class="s0">public int </span><span class="s1">getAge() { return this</span><span class="s1">.age; }
+
+  @Override </span><span class="s0">public int </span><span class="s1">hashCode() {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.hashCode(</span><span class="s0">this</span><span class="s1">);
+  }
+
+  @Override </span><span class="s0">public </span><span class="s1">String toString() {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.toString(</span><span class="s0">this</span><span class="s1">);
+  }
+
+  @Override </span><span class="s0">public boolean </span><span class="s1">equals(Object o) {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.equals(</span><span class="s0">this</span><span class="s1">, o);
+  }
+}
+</span></pre></div>
+<p>
+ The above class implements <code>equals</code> and <code>hashCode</code> methods following the best practices
+ outlined in Josh Bloch's <em>Efective Java</em>.  Moreover, running
+</p>
+
+<source>System.out.println(new Person("John", "Doe", 32).toString());</source>
+will result in the following output:
+<source>Person{firstName: {John}, lastName: {Doe}, age: {32}}</source>
+
+<p>For more information, see the <a href="apidocs/index.html">JavaDocs</a>.</p>
+  </body>
+</document>
