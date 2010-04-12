@@ -15,17 +15,9 @@ public class Person {
     this.age = age;
   }
 
-  public String getFirstName() {
-    return this.firstName;
-  }
-
-  public String getLastName() {
-    return this.lastName;
-  }
-
-  public int getAge() {
-    return this.age;
-  }
+  public String getLastName() { return this.lastName; }
+  public String getFirstName() { return this.firstName; }
+  public int getAge() { return this.age; }
 
   @Override public int hashCode() {
     return Pojomatic.hashCode(this);
