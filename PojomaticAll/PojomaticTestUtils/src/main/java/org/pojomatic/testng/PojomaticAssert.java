@@ -10,9 +10,10 @@ import org.pojomatic.test.AssertUtils;
 public class PojomaticAssert {
 
   /**
-   * Asserts that two possibly {@code null} objects are equal according to
-   * {@link Object#equals(Object)}. If not, the differences,
-   * via {@link Pojomatic#diff(Object, Object)}, are included in the failure message.
+   * Asserts that two objects are either both null or are equal according to
+   * {@link Object#equals(Object)}. If not, an {@code AssertionError} is thrown. If the objects are
+   * not equal, but the types of two objects are compatible for equality, then the differences as
+   * determined by {@link Pojomatic#diff(Object, Object)} are included in the failure message.
    *
    * @param expected the expected object
    * @param actual the object which should be tested to equal the expected object
@@ -25,9 +26,10 @@ public class PojomaticAssert {
   }
 
   /**
-   * Asserts that two possibly {@code null} objects are equal according to
-   * {@link Object#equals(Object)}. If not, the differences,
-   * via {@link Pojomatic#diff(Object, Object)}, are included in the failure message.
+   * Asserts that two objects are either both null or are equal according to
+   * {@link Object#equals(Object)}. If not, an {@code AssertionError} is thrown. If the objects are
+   * not equal, but the types of two objects are compatible for equality, then the differences as
+   * determined by {@link Pojomatic#diff(Object, Object)} are included in the failure message.
    *
    * @param expected the expected object
    * @param actual the object which should be tested to equal the expected object

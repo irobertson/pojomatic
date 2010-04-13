@@ -10,7 +10,8 @@ import org.pojomatic.diff.Differences;
 public class AssertUtils {
 
   /**
-   * Determines if two possibly {@code null} objects are equal.
+   * Determines if two objects are both null or are equal according to
+   * {@link Object#equals(Object)}.
    *
    * @return {@code true} if both objects are null,
    * or {@code first} is non-null and {@code first.equals(second)},
@@ -28,7 +29,10 @@ public class AssertUtils {
   }
 
   /**
-   * Asserts that the objects are equal via {@link #equal(Object, Object)}.
+   * Asserts that two objects are either both null or are equal according to
+   * {@link Object#equals(Object)}. If not, an {@code AssertionError} is thrown. If the objects are
+   * not equal, but the types of two objects are compatible for equality, then the differences as
+   * determined by {@link Pojomatic#diff(Object, Object)} are included in the failure message.
    *
    * @param message the message to add if the assertion fails
    * @param expected will be displayed first if the assertion fails
