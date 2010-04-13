@@ -19,13 +19,7 @@ public class AssertUtils {
    * @see Object#equals(Object)
    */
   public static boolean equal(Object first, Object second) {
-    if (first == null && second == null) {
-      return true;
-    }
-    if (first != null && first.equals(second)) {
-      return true;
-    }
-    return false;
+    return first == null ? second == null : first.equals(second);
   }
 
   /**
