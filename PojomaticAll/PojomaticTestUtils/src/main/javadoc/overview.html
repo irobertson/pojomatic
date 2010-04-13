@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC
+  "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Overview</title>
+</head>
+<body>
+<p>
+  Pojomatic Test Utils provide an enhancement to the traditional {@code assertEquals} method seen in
+  unit test libraries, in the form of a new method, {@code assertEqualsWithDiff}.  This new method has
+  the same basic behavior as the original, with the added feature that if the two objects being
+  asserted to be equal are in fact not equal, but have types compatible for equality, then the
+  message of the thrown {@code AssertionError} will include the differences between the two objects
+  as determined by {@link Pojomatic#diff(Object, Object)}.
+</p>
+<p>
+  Because Junit and TestNG disagree as to the order of the expected and actual paramters to
+  {@code assertEquals}, two {@code PojomaticAssert} classes are provided:
+  {@link org.pojomatic.junit.PojomaticAssert} and {@link org.pojomatic.testng.PojomaticAssert}.
+</p>
+</body>
+</html>
