@@ -38,7 +38,7 @@ public class EqualsInheritanceTest {
     assertFalse(child.equals(PARENT));
     assertFalse(PARENT_POJOMATOR.doEquals(PARENT, child));
     assertFalse(childPojomator.doEquals(child, PARENT));
-    // If we expicitely use a PARENT_POJOMATOR to compare child to parent, we'll miss the additional
+    // If we explicitly use a PARENT_POJOMATOR to compare child to parent, we'll miss the additional
     //child property.
     //TODO - document this a as a danger of creating your own Pojomators.
     assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
