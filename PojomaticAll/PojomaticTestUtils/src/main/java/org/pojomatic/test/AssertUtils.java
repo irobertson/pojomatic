@@ -2,7 +2,6 @@ package org.pojomatic.test;
 
 import org.pojomatic.Pojomatic;
 import org.pojomatic.NoPojomaticPropertiesException;
-import org.pojomatic.diff.Differences;
 
 /**
  * This class is not meant to be a part of the public API.

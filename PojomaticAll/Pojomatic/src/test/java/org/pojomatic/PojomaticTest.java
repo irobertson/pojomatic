@@ -61,9 +61,10 @@ public class PojomaticTest {
 
   @Test
   public void testCompatibleForEquality() {
-    class BeanSubClass extends Bean{};
+    class BeanSubClass extends Bean{}
 
     class BeanWithExtraData extends Bean {
+      @SuppressWarnings("unused")
       @Property public int getY() { return 0; }
     }
     assertTrue(Pojomatic.areCompatibleForEquals(Bean.class, BeanSubClass.class));

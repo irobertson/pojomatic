@@ -1,7 +1,6 @@
 package org.pojomatic;
 
 import org.pojomatic.diff.Differences;
-import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorImpl;
 import org.pojomatic.internal.SelfPopulatingMap;
 
