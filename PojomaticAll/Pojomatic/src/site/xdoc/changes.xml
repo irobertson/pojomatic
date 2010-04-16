@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <title>Changes in Pojomatic</title>
+  </properties>
+  <body>
+    <section name="Changes in Pojomatic">
+      <subsection name="Release 1.0-RC3 (2009-12-06)">
+        <ul>
+          <li>
+            <code><a href="apidocs/org/pojomatic/Pojomatic.html#equals%28T,%20java.lang.Object%29">Pojomatic.equals()</a></code>
+            now properly handles inheritance, including comparing instances of two separate child
+            classes of a parent class
+             (<a class="externalLink" href="https://sourceforge.net/tracker/?func=detail&amp;aid=2845939&amp;group_id=239113&amp;atid=1108645">bug 2845939</a>).
+          </li>
+          <li>A <code>Pojomator</code> can now be created for an interface.</li>
+          <li>
+            New annotations,
+            <code><a href="apidocs/index.html?org/pojomatic/annotations/OverridesEquals.html">OverridesEquals</a></code>
+            and
+            <code><a href="apidocs/index.html?org/pojomatic/annotations/SubclassCannotOverrideEquals.html">SubclassCannotOverrideEquals</a></code>
+            <code>SubclassCannotOverrideEquals</code> help control how inheritance is handled.
+          </li>
+          <li>
+            Properties from the parent class now come before those of the child in
+            <code>equals</code> calculations and in the <code>toString()</code> representation.
+          </li>
+          <li>
+            Pojomatic will no longer add a method property multiple times if it is overridden
+            (even if the overridden method is explicitely annotated).
+          </li>
+          <li>
+            <code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>
+            no longer requires a non-null first argument.
+          </li>
+        </ul>
+      </subsection>
+      <subsection name="Release 1.0-RC2 (2009-04-07)">
+        <ul>
+          <li>
+            A new method, <code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>,
+            will show top-level differences between two instances of a pojomated class.
+          </li>
+          <li>
+            The property name derived from a method such as getFoo() is now "foo" instead
+            of "getFoo" in the default <code>toString()</code> representation.
+          </li>
+          <li>
+            Names of properties in the default <code>toString()</code> representation can be overridden
+            via the <code>name</code> attribute on the <code>Property</code> annotation.
+          </li>
+          <li>
+            Static fields and methods are no longer picked up by <code>@AutoProperty</code>
+            (<a class="externalLink" href="https://sourceforge.net/tracker/?func=detail&amp;aid=2739467&amp;group_id=239113&amp;atid=1108645">bug 2739467</a>)
+          </li>
+        </ul>
+      </subsection>
+      <subsection name="Release 1.0-RC1 (2009-01-01)">
+        <ul>
+          <li>Initial Release</li>
+        </ul>
+      </subsection>
+    </section>
+  </body>
+</document>

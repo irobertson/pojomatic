@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <title>Using with eclipse</title>
+  </properties>
+  <body>
+    <p>
+      Adding an eclipse template for pojomatic can make pojomating a class even easier. Open up the
+      Preferences dialog, and then go to Java-&gt;Editor-&gt;Templates. Then add a template named
+      "pojomatic" with the following body:
+    </p>
+    <source>
+@Override public boolean equals(Object other) { return Pojomatic.equals(this, other); }
+@Override public String toString() { return Pojomatic.toString(this); }
+@Override public int hashCode() { return Pojomatic.hashCode(this); }
+${:import(org.pojomatic.Pojomatic)}
+</source>
+    <p>
+      After that, to pojomate a class, simply add an <code>@AutoProperty</code> annotation to the
+      class, and insert the macro in the class body by typing "pojomatic" and hitting Control-space.
+    </p>
+  </body>
+</document>
