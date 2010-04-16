@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+  <properties>
+    <title>Pojomatic Test Utils</title>
+  </properties>
+  <head>
+    <style type="text/css">
+    .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+    .s0 { color: rgb(0,0,128); font-weight: bold; }
+    .s1 { }
+    </style>
+  </head>
+  <body>
+    <p>
+      Pojomatic Test Utils provides utilities to help with writing tests for, or using, classes which
+      use Pojomatic.  This library includes classes with JUnit and TestNG style
+      assertEquals methods which include differences (via Pojomatic.diff(Object, Object))
+      in the error message if the assertion fails.
+    </p>
+
+    <p>For more information and examples, see the <a href="apidocs/index.html">JavaDocs</a>.</p>
+  </body>
+</document>

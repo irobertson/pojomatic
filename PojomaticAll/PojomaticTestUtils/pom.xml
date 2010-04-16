@@ -11,7 +11,7 @@
   <name>PojomaticTestUtils</name>
   <description>
     Utilities to help with writing tests for, or using, classes which use Pojomatic.
-    For example, this library includes classes with JUnit and TestNG style
+    This library includes classes with JUnit and TestNG style
     assertEquals methods which include differences (via Pojomatic.diff(Object, Object))
     in the error message if the assertion fails.
   </description>
