@@ -76,10 +76,9 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     if (other == null) {
       return false;
     }
-    if (!instance.getClass().equals(other.getClass())) {
-      if (!isCompatibleForEquality(other.getClass())) {
-        return false;
-      }
+    if (!instance.getClass().equals(other.getClass())
+        && !isCompatibleForEquality(other.getClass())) {
+      return false;
     }
 
     for (PropertyElement prop: classProperties.getEqualsProperties()) {

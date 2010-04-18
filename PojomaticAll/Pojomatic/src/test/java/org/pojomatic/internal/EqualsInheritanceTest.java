@@ -11,8 +11,13 @@ public class EqualsInheritanceTest {
     @SuppressWarnings("unused") @Property int x = 3;
 
     @Override
-    public boolean equals(Object obj) {
-      return Pojomatic.equals(this, obj);
+    public int hashCode() {
+      return Pojomatic.hashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      return Pojomatic.equals(this, o);
     }
   }
 
