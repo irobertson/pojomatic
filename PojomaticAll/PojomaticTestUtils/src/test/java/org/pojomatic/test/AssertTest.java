@@ -11,9 +11,19 @@ import org.pojomatic.junit.PojomaticAssert;
  */
 public abstract class AssertTest {
 
+
   /**
    * Only the unit under test should throw {@link AssertionError}, so no assertions are allowed
-   * within the implementation of this method.
+   * to be thrown from within the implementation of this method.
+   *
+   * @param expected the expected object
+   * @param actual the actual object
+   */
+  protected abstract void performAssertEquals(Object expected, Object actual);
+
+  /**
+   * Only the unit under test should throw {@link AssertionError}, so no assertions are allowed
+   * to be thrown from within the implementation of this method.
    *
    * @param expected the expected object
    * @param actual the actual object
@@ -34,7 +44,12 @@ public abstract class AssertTest {
 
   @Test
   public final void assertEqualsWhenEqual() {
-    performAssertEquals(new Container(3), new Container(3), "message");  
+    performAssertEquals(new Container(3), new Container(3), "message");
+  }
+
+  @Test
+  public final void assertEqualsWhenEqualNoMessage() {
+    performAssertEquals(new Container(3), new Container(3));
   }
 
   @Test
@@ -43,7 +58,19 @@ public abstract class AssertTest {
   }
 
   @Test
+  public final void assertEqualsBothNullNoMessage() {
+    performAssertEquals(null, null);
+  }
+
+  @Test
   public final void assertEqualsNullExpected() {
+    performAssertEquals(
+      null, new Container(null), null,
+      "expected is null, but actual is Container{test: {null}}");
+  }
+
+  @Test
+  public final void assertEqualsNullExpectedNoMessage() {
     performAssertEquals(
       null, new Container(null), null,
       "expected is null, but actual is Container{test: {null}}");
@@ -71,6 +98,17 @@ public abstract class AssertTest {
 
   @Test
   public final void assertEqualsNoMessage() {
+    try {
+      performAssertEquals(new Container("foo"), new Container("bar"));
+    }
+    catch (AssertionError e) {
+      assertEquals("differences between expected and actual:[test: {foo} versus {bar}]" +
+          " (expected:<Container{test: {foo}}> but was:<Container{test: {bar}}>)", e.getMessage());
+    }
+  }
+
+  @Test
+  public final void assertEqualsNullMessage() {
     performAssertEquals(
       new Container("foo"), new Container("bar"), null,
       "differences between expected and actual:[test: {foo} versus {bar}]" +
@@ -78,7 +116,7 @@ public abstract class AssertTest {
   }
 
   @Test
-  public final void assertEqualsMessag2() {
+  public final void assertEqualsMessage2() {
     String first = "foo";
     String second = "bar";
     performAssertEquals(
