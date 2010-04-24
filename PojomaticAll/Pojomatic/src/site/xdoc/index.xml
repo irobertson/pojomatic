@@ -14,8 +14,8 @@
   </head>
   <body>
 <p>
-Pojomatic provides configurable implementations of the <code>equals(Object)</code>, <code>toString()</code>
-and <code>hashCode()</code> methods inherited from <code>java.lang.Object</code>.
+Pojomatic provides configurable implementations of the <code>equals(Object)</code>, <code>hashCode()</code>
+and <code>toString()</code> methods inherited from <code>java.lang.Object</code>.
 </p>
 <p>For example, the following bean has been "pojomated":</p>
 <div class="source"><pre>
@@ -38,16 +38,16 @@ and <code>hashCode()</code> methods inherited from <code>java.lang.Object</code>
   </span><span class="s0">public </span><span class="s1">String getLastName() { return this</span><span class="s1">.lastName; }
   </span><span class="s0">public int </span><span class="s1">getAge() { return this</span><span class="s1">.age; }
 
+  @Override </span><span class="s0">public boolean </span><span class="s1">equals(Object o) {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.equals(</span><span class="s0">this</span><span class="s1">, o);
+  }
+
   @Override </span><span class="s0">public int </span><span class="s1">hashCode() {
     </span><span class="s0">return </span><span class="s1">Pojomatic.hashCode(</span><span class="s0">this</span><span class="s1">);
   }
 
   @Override </span><span class="s0">public </span><span class="s1">String toString() {
     </span><span class="s0">return </span><span class="s1">Pojomatic.toString(</span><span class="s0">this</span><span class="s1">);
-  }
-
-  @Override </span><span class="s0">public boolean </span><span class="s1">equals(Object o) {
-    </span><span class="s0">return </span><span class="s1">Pojomatic.equals(</span><span class="s0">this</span><span class="s1">, o);
   }
 }
 </span></pre></div>

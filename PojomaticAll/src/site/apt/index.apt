@@ -6,8 +6,8 @@
 
 {{{pojomatic/index.html}Pojomatic}}
 
-   Pojomatic provides configurable implementations of the <<<equals(Object)>>>, <<<toString()>>>
- and <<<hashCode()>>> methods inherited from <<<java.lang.Object>>>.
+   Pojomatic provides configurable implementations of the <<<equals(Object)>>>, <<<hashCode()>>>
+ and <<<toString()>>> methods inherited from <<<java.lang.Object>>>.
 
    For examples and a quick start guide, see the {{{pojomatic/index.html}pojomatic site}}. You can download Pojomatic from the {{{http://repo1.maven.org/maven2/org/pojomatic/}Maven central repository}} or {{{http://sourceforge.net/projects/pojomatic/files/}SourceForge}}. For more information, see the {{{http://sourceforge.net/projects/pojomatic/}SourceForge project page}}.
 
