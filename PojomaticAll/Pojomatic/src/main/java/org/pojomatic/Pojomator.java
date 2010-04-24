@@ -16,7 +16,7 @@ import org.pojomatic.formatter.PropertyFormatter;
 /**
  * A provider of the three standard {@code Object} methods,
  * {@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()}, as
- * well as a usefull method to aid in debugging, {@link #doDiff(Object, Object)}.
+ * well as a useful method to aid in debugging, {@link #doDiff(Object, Object)}.
  *
  * @param <T> the class this {@code Pojomator} is generated for.
  */
