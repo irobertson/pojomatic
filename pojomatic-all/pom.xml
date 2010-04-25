@@ -11,9 +11,9 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/PojomaticAll</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/PojomaticAll</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/PojomaticAll</url>
+    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</connection>
+    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</developerConnection>
+    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</url>
   </scm>
 
   <dependencies>
@@ -136,8 +136,8 @@
   </build>
 
   <modules>
-    <module>Pojomatic</module>
-    <module>PojomaticTestUtils</module>
+    <module>pojomatic</module>
+    <module>pojomatic-test-utils</module>
   </modules>
 
   <reporting>

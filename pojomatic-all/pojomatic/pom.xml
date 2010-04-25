@@ -11,13 +11,8 @@
   <name>Pojomatic</name>
   <description>
     Automatically provides configurable implementations of the
-    equals(Object), toString() and hashCode() methods inherited from java.lang.Object
+    equals(Object), hashCode() and toString() methods inherited from java.lang.Object
   </description>
-  <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all/pojomatic</url>
-  </scm>
 
   <dependencies>
     <dependency>
