@@ -35,6 +35,15 @@
           <includeTests>true</includeTests>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>http://kentbeck.github.com/junit/javadoc/latest/</link>
+            <link>http://testng.org/javadoc/</link>
+          </links>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 </project>

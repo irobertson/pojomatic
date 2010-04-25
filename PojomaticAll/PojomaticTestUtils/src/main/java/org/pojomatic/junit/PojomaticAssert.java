@@ -32,7 +32,7 @@ public class PojomaticAssert {
    *
    * @param expected the expected object
    * @param actual the object which should be tested to equal the expected object
-   * @param message a message (possibly {@code null) to include at the begining of the
+   * @param message a message (possibly {@code null}) to include at the beginning of the
    *   {@code AssertionError} message.
    * @throws AssertionError if the objects are not equal.
    */
