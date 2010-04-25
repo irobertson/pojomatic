@@ -69,7 +69,7 @@ public class DefaultPropertyFormatterTest {
       formatter.format(new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} }));
   }
 
-  @Test public void testFormatDoubleArrayOfPrimatives() {
+  @Test public void testFormatDoubleArrayOfPrimitives() {
     assertEquals(
       "[[1, 2], [3, 4]]",
       formatter.format(new int[][] {new int[] { 1, 2 }, new int[] {3, 4} }));

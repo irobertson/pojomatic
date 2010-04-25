@@ -143,7 +143,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
           else {
             // should NEVER happen
             throw new IllegalStateException(
-              "unknown primative type " + instanceComponentClass.getName());
+              "unknown primitive type " + instanceComponentClass.getName());
           }
         }
       }
@@ -299,7 +299,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
             return false;
           }
         }
-        else { // instanceComponentClass is primative
+        else { // instanceComponentClass is primitive
           if (otherComponentClass != instanceComponentClass) {
             return false;
           }
@@ -347,7 +347,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
           else {
             // should NEVER happen
             throw new IllegalStateException(
-              "unknown primative type " + instanceComponentClass.getName());
+              "unknown primitive type " + instanceComponentClass.getName());
           }
         }
       }

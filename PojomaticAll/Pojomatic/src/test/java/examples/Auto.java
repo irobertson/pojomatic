@@ -11,7 +11,7 @@ public class Auto {
   private boolean test; //included by default
 
   @Property(policy=NONE)
-  private int exlude;
+  private int exclude;
 
   @Property //include a method as well, even though it does not follow the getX convention
   public String derived() {
@@ -39,12 +39,12 @@ public class Auto {
     this.test = test;
   }
 
-  public int getExlude() {
-    return exlude;
+  public int getExclude() {
+    return exclude;
   }
 
-  public void setExlude(int exlude) {
-    this.exlude = exlude;
+  public void setExclude(int exclude) {
+    this.exclude = exclude;
   }
 
 }

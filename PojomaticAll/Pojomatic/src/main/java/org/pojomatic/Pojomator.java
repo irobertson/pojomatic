@@ -121,7 +121,7 @@ public interface Pojomator<T> {
    * </ul>
    * If {@code T} is an interface or is annotated with {@link SubclassCannotOverrideEquals},
    * then all subclasses of {@code T} are automatically assumed by {@code T}'s {@code Pojomator}
-   * to be comapatible for equals with each other and with {@code T}.  Note that in this case.
+   * to be compatible for equals with each other and with {@code T}.  Note that in this case.
    * to add an {@link OverridesEquals} annotation or additional
    * properties for inclusion in {@code equals} to a subclass of {@code T} will
    * result in a violation of the contract for {@link Object#equals(Object)}.
@@ -143,10 +143,10 @@ public interface Pojomator<T> {
    * @return the differences between {@code instance} and {@code other}
    * among the properties examined by {@link #doEquals(Object, Object)}.
    * @throws NullPointerException if {@code instance} or {@code other} is null
-   * (this behavoir may change in future releases).
+   * (this behavior may change in future releases).
    * @throws IllegalArgumentException the type of {@code instance} or of {@code other} is not a
    * class which is compatible for equality with {@code T}
-   * (this behavoir may change in future releases).
+   * (this behavior may change in future releases).
    * @see #doEquals(Object, Object)
    */
   Differences doDiff(T instance, T other);

@@ -11,7 +11,7 @@ public interface PropertyFormatter {
    * Initialize the formatter for use; this method will be called exactly once on an instance, prior
    * to any calls to {@link #format(Object)}.  This method does not need to be
    * thread-safe.
-   * @param element
+   * @param element the field or method this formatter will be used for.
    */
   public void initialize(AnnotatedElement element);
 

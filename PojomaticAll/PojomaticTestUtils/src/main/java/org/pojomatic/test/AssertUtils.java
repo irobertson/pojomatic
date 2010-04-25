@@ -12,6 +12,8 @@ public class AssertUtils {
    * Determines if two objects are both null or are equal according to
    * {@link Object#equals(Object)}.
    *
+   * @param first the first object to compare
+   * @param second the second object to compare
    * @return {@code true} if both objects are null,
    * or {@code first} is non-null and {@code first.equals(second)},
    * {@code false} otherwise

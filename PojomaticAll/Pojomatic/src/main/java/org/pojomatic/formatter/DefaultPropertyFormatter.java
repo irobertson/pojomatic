@@ -65,7 +65,7 @@ public class DefaultPropertyFormatter implements PropertyFormatter {
           return Arrays.toString((double[]) value);
         }
         else {
-          throw new IllegalStateException("unexpected primative array base type: " + componentClass);
+          throw new IllegalStateException("unexpected primitive array base type: " + componentClass);
         }
       }
       else {

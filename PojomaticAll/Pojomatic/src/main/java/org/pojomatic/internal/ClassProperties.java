@@ -106,10 +106,11 @@ public class ClassProperties {
 
   /**
    * Whether instances of {@code otherClass} are candidates for being equal to instances of
-   * {@code pojoClass}
-   * @param otherClass
+   * the class this {@code ClassProperties} instance was created for.
+   * @param otherClass the class to check for compatibility for equals with. 
    * @return {@code true} if instances of {@code otherClass} are candidates for being equal to
-   * instances of {@code pojoClass}, or {@code false} otherwise.
+   * instances of the class this {@code ClassProperties} instance was created for, or {@code false}
+   * otherwise.
    */
   public boolean isCompatibleForEquals(Class<?> otherClass) {
     if (!equalsParentClass.isAssignableFrom(otherClass)) {

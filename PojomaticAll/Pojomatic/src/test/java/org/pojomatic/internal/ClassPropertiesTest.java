@@ -363,12 +363,12 @@ public class ClassPropertiesTest {
 
     // not getters
     public boolean isaEnabled() { return true; }
-    public int gettyIsAMueseum() { return 1; }
+    public int gettyIsAMuseum() { return 1; }
     public String thisIsNotAGetter() { return "really, it's not"; }
 
     // some methods we should not grab
     public void getHello() {}
-    public int getTripple(int arg) { return arg * 3; }
+    public int getTriple(int arg) { return arg * 3; }
 
 
     /* static fields are not detected */

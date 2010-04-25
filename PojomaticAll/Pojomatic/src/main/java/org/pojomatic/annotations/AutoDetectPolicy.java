@@ -21,5 +21,5 @@ public enum AutoDetectPolicy {
    *    a different {@link PojomaticPolicy} in {@link AutoProperty} without enabling
    *    property auto-detection.
    */
-  NONE;
+  NONE
 }

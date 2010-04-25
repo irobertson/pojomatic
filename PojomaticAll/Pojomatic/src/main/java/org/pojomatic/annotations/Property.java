@@ -27,7 +27,7 @@ public @interface Property {
 
   /**
    * The name used to identify the property in the standard {@code toString} representation.  If
-   * empty, the following algorithm is used to determine the name.  For a propertiy referenced by
+   * empty, the following algorithm is used to determine the name.  For a property referenced by
    * field, the name of the field is used.  For a property referenced by a method whose name is of
    * the form {@code getSomeField}, the name {@code someField} will be used.  For a boolean property
    * referenced by a method whose name is of the form {@code isSomeField}, the name

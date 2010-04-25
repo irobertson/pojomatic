@@ -34,7 +34,7 @@ public class PojomatorImplTest {
   private static final Pojomator<AccessCheckedProperties> ACCESS_CHECKED_PROPERTIES_POJOMATOR =
     makePojomatorImpl(AccessCheckedProperties.class);
 
-  private static final List<Class<?>> PRIMATIVE_TYPES = Arrays.<Class<?>>asList(
+  private static final List<Class<?>> PRIMITIVE_TYPES = Arrays.<Class<?>>asList(
     Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
     Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE);
 
@@ -80,7 +80,7 @@ public class PojomatorImplTest {
       new ObjectProperty(null), new ObjectProperty("not null over here")));
   }
 
-  @Test public void testPrimativePropertyEquals() {
+  @Test public void testPrimitivePropertyEquals() {
     assertTrue(INT_PROPERTY_POJOMATOR.doEquals(new IntProperty(3), new IntProperty(3)));
     assertFalse(INT_PROPERTY_POJOMATOR.doEquals(new IntProperty(3), new IntProperty(4)));
   }
@@ -108,7 +108,7 @@ public class PojomatorImplTest {
   @Test public void testPrimitiveArrayEquals() throws Exception {
     final ObjectProperty nullProperty = new ObjectProperty(null);
     final ObjectProperty objectArrayProperty = new ObjectProperty(new String[] {"foo"});
-    for (Class<?> primitiveType : PRIMATIVE_TYPES) {
+    for (Class<?> primitiveType : PRIMITIVE_TYPES) {
       ObjectProperty main = new ObjectProperty(Array.newInstance(primitiveType, 3));
       ObjectProperty other = new ObjectProperty(Array.newInstance(primitiveType, 3));
       ObjectProperty different = new ObjectProperty(Array.newInstance(primitiveType, 4));
@@ -181,7 +181,7 @@ public class PojomatorImplTest {
       OBJECT_PAIR_PROPERTY_POJOMATOR.doHashCode(new ObjectPairProperty("foo", "bar")));
   }
 
-  @Test public void testPrimativeHashCode() {
+  @Test public void testPrimitiveHashCode() {
     assertEquals(
       HASH_CODE_MULTIPLIER * HASH_CODE_SEED + 7,
       INT_PROPERTY_POJOMATOR.doHashCode(new IntProperty(7)));
@@ -194,17 +194,17 @@ public class PojomatorImplTest {
       OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty(strings)));
   }
 
-  @Test public void testPrimativeArrayHashCode() throws Exception {
-    for (Class<?> primitiveType : PRIMATIVE_TYPES) {
-      Object primativeArray = Array.newInstance(primitiveType, 2);
+  @Test public void testPrimitiveArrayHashCode() throws Exception {
+    for (Class<?> primitiveType : PRIMITIVE_TYPES) {
+      Object primitiveArray = Array.newInstance(primitiveType, 2);
       int expected = HASH_CODE_MULTIPLIER * HASH_CODE_SEED +
-        (Integer) Arrays.class.getDeclaredMethod("hashCode", primativeArray.getClass())
-        .invoke(null, primativeArray);
+        (Integer) Arrays.class.getDeclaredMethod("hashCode", primitiveArray.getClass())
+        .invoke(null, primitiveArray);
       assertEquals(
-        "primative type " + primitiveType,
+        "primitive type " + primitiveType,
         expected,
         OBJECT_PROPERTY_POJOMATOR.doHashCode(
-          new ObjectProperty(primativeArray)));
+          new ObjectProperty(primitiveArray)));
     }
   }
 
@@ -276,7 +276,7 @@ public class PojomatorImplTest {
     @SuppressWarnings("unchecked") Pojomator<Object> misCastPojomator = (Pojomator<Object>) pojomator;
     try {
       misCastPojomator.doDiff(new ObjectPairProperty(1,2), "wrong");
-      fail("exception expcected");
+      fail("exception expected");
     }
     catch (IllegalArgumentException e) {
       assertEquals(
@@ -290,7 +290,7 @@ public class PojomatorImplTest {
     @SuppressWarnings("unchecked") Pojomator<Object> misCastPojomator = (Pojomator<Object>) pojomator;
     try {
       misCastPojomator.doDiff("wrong", new ObjectPairProperty(1,2));
-      fail("exception expcected");
+      fail("exception expected");
     }
     catch (IllegalArgumentException e) {
       assertEquals(

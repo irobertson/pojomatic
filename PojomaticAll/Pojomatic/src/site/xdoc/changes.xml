@@ -29,7 +29,7 @@
           </li>
           <li>
             Pojomatic will no longer add a method property multiple times if it is overridden
-            (even if the overridden method is explicitely annotated).
+            (even if the overridden method is explicitly annotated).
           </li>
           <li>
             <code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>

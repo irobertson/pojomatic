@@ -7,7 +7,7 @@ import org.pojomatic.Pojomator;
 /**
  * Declares that a subclass of the annotated type cannot override the behavior of equals.
  *
- * Abent this annotation, it is assumed that subclasses cannot override {@code equals} for interface
+ * Absent this annotation, it is assumed that subclasses cannot override {@code equals} for interface
  * types, and can for other types.
  *
  * @see Pojomator#doEquals(Object, Object)
