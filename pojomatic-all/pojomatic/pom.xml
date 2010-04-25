@@ -2,7 +2,7 @@
   <parent>
     <artifactId>pojomatic-all</artifactId>
     <groupId>org.pojomatic</groupId>
-    <version>1.0</version>
+    <version>trunk-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
