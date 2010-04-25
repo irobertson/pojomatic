@@ -7,6 +7,18 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 1.0 (2010-04-25)">
+        <ul>
+          <li>
+            Simplification of the Differences API.  As part of this simplification,
+            <code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>
+            now requires that both arguments be non-null.
+          </li>
+          <li>
+            Add new method, <a href="apidocs/org/pojomatic/Pojomatic.html#areCompatibleForEquals(java.lang.Class,%20java.lang.Class)">Pojomatic.areCompatibleForEquals</a>.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 1.0-RC3 (2009-12-06)">
         <ul>
           <li>

@@ -7,7 +7,14 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic Test Utils">
-      <subsection name="Version 1.0, released 2010-04-16">
+      <subsection name="Version 1.0, released 2010-04-25">
+        <ul>
+          <li>
+            Updates to handle changes to Pojomatic's differences API.
+          </li>
+        </ul>
+      </subsection>
+      <subsection name="Version 1.0-RC3, released 2009-12-07">
         <ul>
           <li>
             Initial Release.
