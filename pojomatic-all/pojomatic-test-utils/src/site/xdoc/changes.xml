@@ -7,6 +7,15 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic Test Utils">
+      <subsection name="Version ..., released ...">
+        <ul>
+          <li>
+            Changed the signature of org.pojomatic.junit.PojomaticAssert.assertEqualsWithDiff()
+            such that the message parameter appears first in order to match the style of the
+            standard JUnit assertions. Warning: this is a backward-incompatible change.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Version 1.0, released 2010-04-25">
         <ul>
           <li>
