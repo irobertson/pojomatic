@@ -10,7 +10,7 @@ public class PojomaticAssertTest extends AssertTest {
 
   @Override
   protected void performAssertEquals(Object expected, Object actual, String message) {
-    PojomaticAssert.assertEqualsWithDiff(expected, actual, message);
+    PojomaticAssert.assertEqualsWithDiff(message, expected, actual);
   }
 
 
