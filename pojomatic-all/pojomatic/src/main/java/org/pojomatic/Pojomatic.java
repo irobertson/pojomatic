@@ -71,7 +71,7 @@ public class Pojomatic {
   private final static SelfPopulatingMap<Class<?>, Pojomator<?>> POJOMATORS =
     new SelfPopulatingMap<Class<?>, Pojomator<?>>() {
       @Override
-      @SuppressWarnings("unchecked")
+      @SuppressWarnings({ "unchecked", "rawtypes" })
       // compiler does not know that the type parameter to Pojomator is the same as the type
       // parameter to Class
       protected Pojomator<?> create(Class<?> key) {
