@@ -7,17 +7,38 @@
     <version>trunk-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic-benchmark</artifactId>
   <packaging>jar</packaging>
-  <version>trunk-SNAPSHOT</version>
   <name>pojomatic-benchmark</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <groupId>org.pojomatic</groupId>
       <artifactId>pojomatic</artifactId>
-      <version>trunk-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.caliper</groupId>
+      <artifactId>caliper</artifactId>
+      <version>1.0-beta-1</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.google.caliper.Runner</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

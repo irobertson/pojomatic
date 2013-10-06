@@ -19,11 +19,11 @@ public class Bean {
   private List<String> strings;
 
   private static PropertyElement getInteger, getString, getI, getInts, getStrings;
-  
+
   static {
     setUpPojomaticHandrolled();
   }
-  
+
   private static void setUpPojomaticHandrolled() {
     ClassProperties classProperties = ClassProperties.forClass(Bean.class);
     for (PropertyElement prop: classProperties.getHashCodeProperties()) {
@@ -48,7 +48,7 @@ public class Bean {
     }
     System.out.println(classProperties.getHashCodeProperties());
   }
-  
+
   public String getString() {
     return string;
   }
@@ -79,35 +79,35 @@ public class Bean {
   public void setStrings(List<String> strings) {
     this.strings = strings;
   }
-  
+
   public boolean pmequals(Object other) {
     return Pojomatic.equals(this, other);
   }
-  
+
   public int pmHashCode() {
     return Pojomatic.hashCode(this);
   }
-  
+
   private Pojomator<Bean> POJOMATOR = Pojomatic.pojomator(Bean.class);
-  
+
   public boolean pmFastequals(Object other) {
     return POJOMATOR.doEquals(this, other);
   }
-  
+
   public int pmFastHashCode() {
     return POJOMATOR.doHashCode(this);
   }
-  
+
   public int handRolledPmHashCode() {
     int hashCode = 1;
-    hashCode = 31 * hashCode + hashCodeOfValue(getInteger.getValue(this)); 
-    hashCode = 31 * hashCode + hashCodeOfValue(getString.getValue(this)); 
-    hashCode = 31 * hashCode + hashCodeOfValue(getI.getValue(this)); 
-    hashCode = 31 * hashCode + hashCodeOfValue(getInts.getValue(this)); 
-    hashCode = 31 * hashCode + hashCodeOfValue(getStrings.getValue(this)); 
+    hashCode = 31 * hashCode + hashCodeOfValue(getInteger.getValue(this));
+    hashCode = 31 * hashCode + hashCodeOfValue(getString.getValue(this));
+    hashCode = 31 * hashCode + hashCodeOfValue(getI.getValue(this));
+    hashCode = 31 * hashCode + hashCodeOfValue(getInts.getValue(this));
+    hashCode = 31 * hashCode + hashCodeOfValue(getStrings.getValue(this));
     return hashCode;
   }
-  
+
   public boolean handRolledPmEquals(Object other) {
     if (this == other) {
       return true;
@@ -122,7 +122,7 @@ public class Bean {
      && areValuesEqual(getInts.getValue(this), getInts.getValue(other))
      && areValuesEqual(getStrings.getValue(this), getStrings.getValue(other));
   }
-  
+
 private static boolean areValuesEqual(Object instanceValue, Object otherValue) {
   if (instanceValue == null) {
     if (otherValue != null) {
@@ -257,7 +257,7 @@ private static boolean areValuesEqual(Object instanceValue, Object otherValue) {
     }
   }
 
-  
+
   @Override public int hashCode() {
     final int prime = 31;
     int result = 1;
@@ -274,7 +274,7 @@ private static boolean areValuesEqual(Object instanceValue, Object otherValue) {
         : strings.hashCode());
     return result;
   }
-  
+
   @Override public boolean equals(Object obj) {
     if (this == obj)
       return true;
@@ -308,5 +308,5 @@ private static boolean areValuesEqual(Object instanceValue, Object otherValue) {
     return true;
   }
 
-  
+
 }
