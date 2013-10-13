@@ -21,6 +21,11 @@
       <version>1.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>4.1</version>
+    </dependency>
   </dependencies>
 
   <reporting>
@@ -28,7 +33,7 @@
       <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
         <configuration>
-          <targetJdk>1.5</targetJdk>
+          <targetJdk>1.7</targetJdk>
           <rulesets>
             <ruleset>${project.basedir}/src/pmd.xml</ruleset>
           </rulesets>

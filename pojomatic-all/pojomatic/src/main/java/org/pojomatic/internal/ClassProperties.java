@@ -7,6 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -21,7 +23,7 @@ import org.pojomatic.annotations.*;
 public class ClassProperties {
   private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
 
-  private final Map<PropertyRole, Collection<PropertyElement>> properties = makeProperties();
+  private final Map<PropertyRole, List<PropertyElement>> properties = makeProperties();
 
   private final Class<?> equalsParentClass;
 
@@ -46,6 +48,7 @@ public class ClassProperties {
       return clazz;
     }
   }
+
   /**
    * Get an instance for the given {@code pojoClass}.  Instances are cached, so calling this method
    * repeatedly is not inefficient.
@@ -107,7 +110,7 @@ public class ClassProperties {
   /**
    * Whether instances of {@code otherClass} are candidates for being equal to instances of
    * the class this {@code ClassProperties} instance was created for.
-   * @param otherClass the class to check for compatibility for equals with. 
+   * @param otherClass the class to check for compatibility for equals with.
    * @return {@code true} if instances of {@code otherClass} are candidates for being equal to
    * instances of the class this {@code ClassProperties} instance was created for, or {@code false}
    * otherwise.
@@ -149,18 +152,31 @@ public class ClassProperties {
     final AutoDetectPolicy autoDetectPolicy =
       (autoProperty != null) ? autoProperty.autoDetect() : null;
 
-    extractFields(
+    Map<PropertyRole, Map<String, PropertyElement>> fieldsMap = extractFields(
       clazz, classPolicy, autoDetectPolicy, classContributionTracker);
-    extractMethods(
+    Map<PropertyRole, Map<String, PropertyElement>> methodsMap = extractMethods(
       clazz, classPolicy, autoDetectPolicy, overridableMethods, classContributionTracker);
+    PropertyClassVisitor propertyClassVisitor = PropertyClassVisitor.visitClass(clazz, fieldsMap, methodsMap);
+    if (propertyClassVisitor != null) {
+      for (PropertyRole role: PropertyRole.values()) {
+        properties.get(role).addAll(propertyClassVisitor.getSortedProperties().get(role));
+      }
+    }
+    else {
+      for (PropertyRole role: PropertyRole.values()) {
+        properties.get(role).addAll(fieldsMap.get(role).values());
+        properties.get(role).addAll(methodsMap.get(role).values());
+       }
+    }
   }
 
-  private void extractMethods(
+  private Map<PropertyRole, Map<String, PropertyElement>> extractMethods(
     Class<?> clazz,
     final DefaultPojomaticPolicy classPolicy,
     final AutoDetectPolicy autoDetectPolicy,
     final OverridableMethods overridableMethods,
     final ClassContributionTracker classContributionTracker) {
+    Map<PropertyRole, Map<String, PropertyElement>> propertiesMap = makePropertiesMap();
     for (Method method : clazz.getDeclaredMethods()) {
       Property property = method.getAnnotation(Property.class);
       if (isStatic(method)) {
@@ -190,22 +206,25 @@ public class ClassProperties {
       /* add all methods that are explicitly annotated or auto-detected, and not overriding already
        * added methods */
       if (propertyPolicy != null || AutoDetectPolicy.METHOD == autoDetectPolicy) {
+        PropertyAccessor propertyAccessor = new PropertyAccessor(method, getPropertyName(property));
         for (PropertyRole role : overridableMethods.checkAndMaybeAddRolesToMethod(
           method, PropertyFilter.getRoles(propertyPolicy, classPolicy))) {
-          properties.get(role).add(new PropertyAccessor(method, getPropertyName(property)));
+          propertiesMap.get(role).put(method.getName(), propertyAccessor);
           if (PropertyRole.EQUALS == role) {
             classContributionTracker.noteContribution(clazz);
           }
         }
       }
     }
+    return propertiesMap;
   }
 
-  private void extractFields(
+  private Map<PropertyRole, Map<String, PropertyElement>> extractFields(
     Class<?> clazz,
     final DefaultPojomaticPolicy classPolicy,
     final AutoDetectPolicy autoDetectPolicy,
     final ClassContributionTracker classContributionTracker) {
+    Map<PropertyRole, Map<String, PropertyElement>> propertiesMap = makePropertiesMap();
     for (Field field : clazz.getDeclaredFields()) {
       Property property = field.getAnnotation(Property.class);
       if (isStatic(field)) {
@@ -224,13 +243,15 @@ public class ClassProperties {
       /* add all fields that are explicitly annotated or auto-detected */
       if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
         for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-          properties.get(role).add(new PropertyField(field, getPropertyName(property)));
+          PropertyField propertyField = new PropertyField(field, getPropertyName(property));
+          propertiesMap.get(role).put(field.getName(), propertyField);
           if (PropertyRole.EQUALS == role) {
             classContributionTracker.noteContribution(clazz);
           }
         }
       }
     }
+    return propertiesMap;
   }
 
   private void verifyPropertiesNotEmpty(Class<?> pojoClass) {
@@ -264,11 +285,20 @@ public class ClassProperties {
     return Modifier.isStatic(member.getModifiers());
   }
 
-  private static Map<PropertyRole, Collection<PropertyElement>> makeProperties() {
-    Map<PropertyRole, Collection<PropertyElement>> properties =
-      new EnumMap<PropertyRole, Collection<PropertyElement>>(PropertyRole.class);
+  private static Map<PropertyRole, List<PropertyElement>> makeProperties() {
+    Map<PropertyRole, List<PropertyElement>> properties =
+      new EnumMap<>(PropertyRole.class);
     for (PropertyRole role : PropertyRole.values()) {
       properties.put(role, new ArrayList<PropertyElement>());
+    }
+    return properties;
+  }
+
+  private static Map<PropertyRole, Map<String, PropertyElement>> makePropertiesMap() {
+    Map<PropertyRole, Map<String, PropertyElement>> properties =
+        new EnumMap<>(PropertyRole.class);
+    for (PropertyRole role : PropertyRole.values()) {
+      properties.put(role, new LinkedHashMap<String, PropertyElement>());
     }
     return properties;
   }
