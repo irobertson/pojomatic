@@ -340,7 +340,7 @@ public class PojomatorImplTest {
       public String getString() { return null; }
     }.getClass()));
   }
-  
+
   @Test public void testToString() {
     @SuppressWarnings("unused")
     class SimplePojo {
