@@ -2,6 +2,8 @@ package org.pojomatic.internal;
 
 import static org.junit.Assert.*;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.*;
 
 import org.junit.Test;
@@ -305,6 +307,18 @@ public class ClassPropertiesTest {
     class B extends A { @SuppressWarnings("unused") @Property int y; }
     assertTrue(ClassProperties.forClass(A.class).isCompatibleForEquals(B.class));
     assertFalse(ClassProperties.forClass(B.class).isCompatibleForEquals(A.class));
+  }
+
+  @Test
+  public void testMissingClassBytes() throws Exception {
+    class Bean {
+      @Property int a, b, c;
+    }
+
+    ClassOnlyClassLoader classLoader = new ClassOnlyClassLoader(Bean.class.getClassLoader());
+    Class<?> beanClass = classLoader.loadClass(Bean.class.getName());
+    ClassProperties classProperties = ClassProperties.forClass(beanClass);
+    assertEquals(3, classProperties.getEqualsProperties().size());
   }
 
   //Not all classes can be made internal.  In particular, autodetect=FIELD classes cannot, because of the synthetic

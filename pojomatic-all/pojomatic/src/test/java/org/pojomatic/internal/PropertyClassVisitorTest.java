@@ -81,7 +81,21 @@ public class PropertyClassVisitorTest {
   }
 
   @Test
-  public void testMissingClassFile() {
+  public void testMissingCodeSource() {
+    Map<PropertyRole, Map<String, PropertyElement>> roleMaps =
+        makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES);
+    PropertyClassVisitor visitor = PropertyClassVisitor.visitClass(String.class, roleMaps, roleMaps);
+    assertNull(visitor);
+  }
+
+  @Test
+  public void testMissingClassBytes() throws Exception {
+    class Bean {}
+
+    ClassOnlyClassLoader classLoader = new ClassOnlyClassLoader(Bean.class.getClassLoader());
+    Class<?> beanClass = classLoader.loadClass(Bean.class.getName());
+    assertNotSame(beanClass, Bean.class);
+    assertNotNull(beanClass.getProtectionDomain().getCodeSource().getLocation());
     Map<PropertyRole, Map<String, PropertyElement>> roleMaps =
         makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES);
     PropertyClassVisitor visitor = PropertyClassVisitor.visitClass(String.class, roleMaps, roleMaps);
