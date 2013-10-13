@@ -105,10 +105,8 @@ class OverridableMethods {
     }
   }
 
-  private final Map<String, Set<PropertyRole>> publicOrProtectedMethods =
-    new HashMap<String, Set<PropertyRole>>();
-  private final Map<PackageMethod, Set<PropertyRole>> packageMethods =
-    new HashMap<PackageMethod, Set<PropertyRole>>();
+  private final Map<String, Set<PropertyRole>> publicOrProtectedMethods = new HashMap<>();
+  private final Map<PackageMethod, Set<PropertyRole>> packageMethods = new HashMap<>();
 
 
   private static boolean isPackagePrivate(Method method) {

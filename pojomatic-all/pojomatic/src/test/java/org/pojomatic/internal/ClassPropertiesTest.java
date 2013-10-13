@@ -2,8 +2,6 @@ package org.pojomatic.internal;
 
 import static org.junit.Assert.*;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.*;
 
 import org.junit.Test;
@@ -15,7 +13,6 @@ import org.pojomatic.internal.b.C2;
 import org.pojomatic.internal.b.C4;
 
 public class ClassPropertiesTest {
-
   @Test public void testForClass() {
     ClassProperties interfaceProperties = ClassProperties.forClass(Interface.class);
     assertSame(interfaceProperties, ClassProperties.forClass(Interface.class));
@@ -60,9 +57,8 @@ public class ClassPropertiesTest {
   @Test
   public void testAnnotatedMethods() throws Exception {
     class MethodPojo {
-      @SuppressWarnings("unused") @Property public int getInt() { return 0; }
-      @Property @SuppressWarnings("unused") private String privateString() { return null; }
-      @SuppressWarnings("unused")
+      @Property public int getInt() { return 0; }
+      @Property private String privateString() { return null; }
       @Property(policy=PojomaticPolicy.EQUALS) public double onlyForEquals() { return 0.0; }
     }
 
@@ -90,8 +86,7 @@ public class ClassPropertiesTest {
       TestUtils.method(AutoMethodPojo.class, "isBoolean"),
       TestUtils.method(AutoMethodPojo.class, "is_boolean"),
       TestUtils.method(AutoMethodPojo.class, "get_int"));
-    final Set<PropertyElement> equalsHashCodeProperties =
-      new HashSet<PropertyElement>(commonProperties);
+    final Set<PropertyElement> equalsHashCodeProperties = new HashSet<>(commonProperties);
     equalsHashCodeProperties.add(TestUtils.method(AutoMethodPojo.class, "getHashCodeAndEquals"));
 
     ClassProperties classProperties = ClassProperties.forClass(AutoMethodPojo.class);
@@ -103,14 +98,14 @@ public class ClassPropertiesTest {
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodReturningVoid() {
-    class MethodReturnsVoidPojo { @SuppressWarnings("unused") @Property public void noReturn() {} }
+    class MethodReturnsVoidPojo { @Property public void noReturn() {} }
     ClassProperties.forClass(MethodReturnsVoidPojo.class);
   }
 
   @Test(expected=IllegalArgumentException.class)
   public void testAnnotatedMethodTakingArgs() {
     class MethodTakesArgsPojo {
-      @SuppressWarnings("unused") @Property public int takesArgs(String death) {
+      @Property public int takesArgs(String death) {
         return death.length(); }
     }
     ClassProperties.forClass(MethodTakesArgsPojo.class);
@@ -191,7 +186,7 @@ public class ClassPropertiesTest {
   @Test
   public void testAutoInheritanceAutoParentAnnotatedChild() throws Exception {
     class ChildExtendsAutoPojo extends ParentAutoPojo {
-      @SuppressWarnings("unused") @Property public String other;
+      @Property public String other;
       @Override public int getFoo() { return 2; }
       @SuppressWarnings("unused") public String getBar() { return ""; }
     }
@@ -265,13 +260,12 @@ public class ClassPropertiesTest {
   }
 
   @Test public void testIsCompatibleForEquals() {
-    class Parent { @SuppressWarnings("unused") @Property int getX() { return 3; } }
+    class Parent { @Property int getX() { return 3; } }
     class NonContributingChild extends Parent {}
     @OverridesEquals class AnnotatedNonContributingChild extends Parent {}
-    class ContributingChild extends Parent{ @SuppressWarnings("unused") @Property int getY() { return 3; } }
+    class ContributingChild extends Parent{ @Property int getY() { return 3; } }
     class ChildOfContributingChild extends ContributingChild{}
 
-    @SuppressWarnings("unchecked")
     List<List<Class<?>>> partitions = Arrays.asList(
       Arrays.<Class<?>>asList(Parent.class, NonContributingChild.class),
       Arrays.<Class<?>>asList(ContributingChild.class, ChildOfContributingChild.class),
@@ -295,16 +289,19 @@ public class ClassPropertiesTest {
 
   @Test public void testSubclassCannotOverrideEquals() {
     class ChildOfInterface implements Interface {
+      @Override
       public int getFoo() { return 0; }
+      @Override
       public int bar() { return 0; }
+      @Override
       public int baz() { return 0; }
     }
 
     assertTrue(
       ClassProperties.forClass(Interface.class).isCompatibleForEquals(ChildOfInterface.class));
 
-    @SubclassCannotOverrideEquals class A { @SuppressWarnings("unused") @Property int x; }
-    class B extends A { @SuppressWarnings("unused") @Property int y; }
+    @SubclassCannotOverrideEquals class A { @Property int x; }
+    class B extends A { @Property int y; }
     assertTrue(ClassProperties.forClass(A.class).isCompatibleForEquals(B.class));
     assertFalse(ClassProperties.forClass(B.class).isCompatibleForEquals(A.class));
   }
@@ -325,18 +322,15 @@ public class ClassPropertiesTest {
   //$this, and classes requiring static elements cannot.
 
   public static class FieldPojo {
-    @SuppressWarnings("unused")
     @Property
     private String privateString;
 
     @Property
     public int publicInt;
 
-    @SuppressWarnings("unused")
     @Property(policy=PojomaticPolicy.TO_STRING)
     private int onlyForToString;
 
-    @SuppressWarnings("unused")
     @Property(policy=PojomaticPolicy.EQUALS_TO_STRING)
     private int forEqualsAndToString;
   }
@@ -429,11 +423,11 @@ public class ClassPropertiesTest {
   }
 
   private static Set<PropertyElement> asSet(PropertyElement... elements) {
-    return new HashSet<PropertyElement>(Arrays.asList(elements));
+    return new HashSet<>(Arrays.asList(elements));
   }
 
   private static Set<PropertyElement> asSet(Collection<PropertyElement> elements) {
-    return new HashSet<PropertyElement>(elements);
+    return new HashSet<>(elements);
   }
 }
 

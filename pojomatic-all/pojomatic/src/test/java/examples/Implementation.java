@@ -7,6 +7,7 @@ public class Implementation implements Interface {
     this.name = name;
   }
 
+  @Override
   public String getName() {
     return name;
   }

@@ -49,11 +49,11 @@ public abstract class SelfPopulatingMap<K, V> {
   /**
    * The values held by this map.
    */
-  private final ConcurrentMap<K, V> valueMap = new ConcurrentHashMap<K, V>();
+  private final ConcurrentMap<K, V> valueMap = new ConcurrentHashMap<>();
 
   /**
    * Mutexes created on demand to ensure that only a single value is created for each key.
    */
-  private final ConcurrentMap<K, Object> mutexMap = new ConcurrentHashMap<K, Object>();
+  private final ConcurrentMap<K, Object> mutexMap = new ConcurrentHashMap<>();
 }
 

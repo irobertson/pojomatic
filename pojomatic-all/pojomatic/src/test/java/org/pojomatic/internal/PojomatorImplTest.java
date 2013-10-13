@@ -88,7 +88,7 @@ public class PojomatorImplTest {
   @Test public void testObjectArrayPropertyEquals() {
     class StringArrayProperty {
       public StringArrayProperty(String... strings) { this.strings = strings; }
-      @SuppressWarnings("unused") @Property String[] strings;
+      @Property String[] strings;
     }
 
     Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR = makePojomatorImpl(StringArrayProperty.class);
@@ -312,7 +312,9 @@ public class PojomatorImplTest {
   @Test public void testInterface() {
     Pojomator<Interface> pojomator = makePojomatorImpl(Interface.class);
     class Impl1 implements Interface {
+      @Override
       public int getInt() { return 2; }
+      @Override
       public String getString() { return "hello"; }
     }
 
@@ -320,7 +322,9 @@ public class PojomatorImplTest {
       private final String string;
 
       Impl2(String string) { this.string = string; }
+      @Override
       public int getInt() { return 2; }
+      @Override
       public String getString() { return string; }
     }
 
@@ -336,13 +340,14 @@ public class PojomatorImplTest {
     assertTrue(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectProperty.class));
     assertFalse(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectPairProperty.class));
     assertTrue(makePojomatorImpl(Interface.class).isCompatibleForEquality(new Interface() {
+      @Override
       public int getInt() { return 0; }
+      @Override
       public String getString() { return null; }
     }.getClass()));
   }
 
   @Test public void testToString() {
-    @SuppressWarnings("unused")
     class SimplePojo {
       @Property(policy=PojomaticPolicy.EQUALS) int x;
       @Property(policy=PojomaticPolicy.HASHCODE_EQUALS) int y;
@@ -442,6 +447,6 @@ public class PojomatorImplTest {
   }
 
   private static <T> Pojomator<T> makePojomatorImpl(Class<T> clazz) {
-    return new PojomatorImpl<T>(clazz);
+    return new PojomatorImpl<>(clazz);
   }
 }

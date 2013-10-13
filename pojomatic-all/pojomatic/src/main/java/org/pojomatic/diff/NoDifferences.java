@@ -8,6 +8,7 @@ public final class NoDifferences implements Differences {
   private NoDifferences() {
   }
 
+  @Override
   public boolean areEqual() {
     return true;
   }
@@ -21,6 +22,7 @@ public final class NoDifferences implements Differences {
     return INSTANCE;
   }
 
+  @Override
   public Iterable<Difference> differences() {
     return Collections.emptyList();
   }

@@ -14,7 +14,7 @@ public class PojomaticTest {
     public Bean() { x = 0; }
   }
 
-  private static Pojomator<Bean> BEAN_POJOMATOR = new PojomatorImpl<Bean>(Bean.class);
+  private static Pojomator<Bean> BEAN_POJOMATOR = new PojomatorImpl<>(Bean.class);
   private static Bean BEAN = new Bean(1);
 
   @Test
@@ -64,7 +64,6 @@ public class PojomaticTest {
     class BeanSubClass extends Bean{}
 
     class BeanWithExtraData extends Bean {
-      @SuppressWarnings("unused")
       @Property public int getY() { return 0; }
     }
     assertTrue(Pojomatic.areCompatibleForEquals(Bean.class, BeanSubClass.class));

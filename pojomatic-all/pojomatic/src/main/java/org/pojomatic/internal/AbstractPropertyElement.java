@@ -17,10 +17,12 @@ implements PropertyElement {
     this.name = name;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public Object getValue(Object instance) {
     if (instance == null) {
       throw new NullPointerException("Instance is null: cannot get property value");
@@ -44,10 +46,12 @@ implements PropertyElement {
   /* (non-Javadoc)
    * @see org.pojomatic.PropertyElement#getElement()
    */
+  @Override
   public AnnotatedElement getElement() {
     return this.element;
   }
 
+  @Override
   public Class<?> getDeclaringClass() {
     return element.getDeclaringClass();
   }

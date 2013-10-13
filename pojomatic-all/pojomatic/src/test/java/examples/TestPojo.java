@@ -20,7 +20,6 @@ public class TestPojo {
     return String.valueOf(System.currentTimeMillis());
   }
 
-  @SuppressWarnings("unused")
   @Property
   private String privateString() {
     return ignored + derived();

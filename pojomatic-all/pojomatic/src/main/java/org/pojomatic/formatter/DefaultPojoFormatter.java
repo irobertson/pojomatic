@@ -16,6 +16,7 @@ import org.pojomatic.PropertyElement;
 public class DefaultPojoFormatter implements PojoFormatter {
   private boolean firstPropertyPrinted = false;
 
+  @Override
   public String getPropertyPrefix(PropertyElement property) {
     StringBuilder result = new StringBuilder();
     if (firstPropertyPrinted) {
@@ -27,14 +28,17 @@ public class DefaultPojoFormatter implements PojoFormatter {
     return result.append(property.getName()).append(": {").toString();
   }
 
+  @Override
   public String getPropertySuffix(PropertyElement property) {
     return "}";
   }
 
+  @Override
   public String getToStringPrefix(Class<?> pojoClass) {
     return pojoClass.getSimpleName() + "{";
   }
 
+  @Override
   public String getToStringSuffix(Class<?> pojoClass) {
     return "}";
   }

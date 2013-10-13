@@ -10,11 +10,13 @@ import java.util.Arrays;
  * representation of Java arrays.
  */
 public class DefaultPropertyFormatter implements PropertyFormatter {
+  @Override
   public void initialize(AnnotatedElement element) {
     //Not applicable
   }
 
 
+  @Override
   public String format(Object value) {
     if (value == null) {
       return "null";

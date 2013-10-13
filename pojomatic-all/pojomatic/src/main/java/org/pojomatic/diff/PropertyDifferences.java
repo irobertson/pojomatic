@@ -25,10 +25,12 @@ public class PropertyDifferences implements Differences {
     this.differences = Collections.unmodifiableList(differences);
   }
 
+  @Override
   public List<Difference> differences() {
     return differences;
   }
 
+  @Override
   public boolean areEqual() {
     return false;
   }

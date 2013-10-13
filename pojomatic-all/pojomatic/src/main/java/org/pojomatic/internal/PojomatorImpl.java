@@ -66,6 +66,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return format == null ? DefaultPojoFormatter.class : format.value();
   }
 
+  @Override
   public boolean doEquals(T instance, Object other) {
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
@@ -89,10 +90,12 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     return true;
   }
 
+  @Override
   public boolean isCompatibleForEquality(Class<?> otherClass) {
     return classProperties.isCompatibleForEquals(otherClass);
   }
 
+  @Override
   public int doHashCode(T instance) {
     int hashCode = HASH_CODE_SEED;
     if (instance == null) {
@@ -153,6 +156,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     }
   }
 
+  @Override
   public String doToString(T instance) {
     if (instance == null) {
       throw new NullPointerException("instance must not be null");
@@ -210,8 +214,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
   private final Class<T> clazz;
   private final ClassProperties classProperties;
-  private final List<FormattablePropertyElement> formattablePropertyElements =
-    new ArrayList<FormattablePropertyElement>();
+  private final List<FormattablePropertyElement> formattablePropertyElements = new ArrayList<>();
   private final Class<? extends PojoFormatter> pojoFormatterClass;
 
   private static class FormattablePropertyElement {
@@ -225,6 +228,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
     }
   }
 
+  @Override
   public Differences doDiff(T instance, T other) {
     final Collection<PropertyElement> diffProperties = classProperties.getEqualsProperties();
     if (instance == null) {
@@ -239,7 +243,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
 
     checkClass(instance, "instance");
     checkClass(other, "other");
-    final List<Difference> differences = new ArrayList<Difference>();
+    final List<Difference> differences = new ArrayList<>();
     for (PropertyElement prop : diffProperties) {
       final Object instanceValue = prop.getValue(instance);
       final Object otherValue = prop.getValue(other);

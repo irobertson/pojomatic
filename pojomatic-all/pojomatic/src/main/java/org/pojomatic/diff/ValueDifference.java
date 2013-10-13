@@ -14,16 +14,19 @@ public class ValueDifference implements Difference {
     this.rightValue = rhs;
   }
 
+  @Override
   @Property
   public String propertyName() {
     return propertyName;
   }
 
+  @Override
   @Property
   public Object leftValue() {
     return leftValue;
   }
 
+  @Override
   @Property
   public Object rightValue() {
     return rightValue;
