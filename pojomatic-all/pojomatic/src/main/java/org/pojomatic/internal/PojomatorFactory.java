@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.util.CheckClassAdapter;
@@ -69,6 +70,8 @@ public class PojomatorFactory {
     return pojomator;
   }
 
+  //FIXME: bootstrap and arrayHashCode should go on a base class for pojomators, and be made protected
+
   /**
    * Construct a call site for a property accessor. Because {@code pojoClass} might not be a public class, the
    * parameter in {@code methodType} cannot be {@code pojoClass}, but instead must be just {@code Object.class}. The
@@ -90,6 +93,38 @@ public class PojomatorFactory {
       MethodHandles.explicitCastArguments(
         getTypedMethod(caller, name, pojoClass),
         MethodType.methodType(methodType.returnType(), Object.class)));
+  }
+
+  public static int arrayHashCode(Object array) {
+    Class<?> componentType = array.getClass().getComponentType();
+    if (! componentType.isPrimitive()) {
+      return Arrays.hashCode((Object[]) array);
+    }
+    if (componentType == boolean.class) {
+      return Arrays.hashCode((boolean[]) array);
+    }
+    if (componentType == byte.class) {
+      return Arrays.hashCode((byte[]) array);
+    }
+    if (componentType == char.class) {
+      return Arrays.hashCode((char[]) array);
+    }
+    if (componentType == short.class) {
+      return Arrays.hashCode((short[]) array);
+    }
+    if (componentType == int.class) {
+      return Arrays.hashCode((int[]) array);
+    }
+    if (componentType == long.class) {
+      return Arrays.hashCode((long[]) array);
+    }
+    if (componentType == float.class) {
+      return Arrays.hashCode((float[]) array);
+    }
+    if (componentType == double.class) {
+      return Arrays.hashCode((double[]) array);
+    }
+    throw new IllegalStateException("unknown primitive type " + componentType.getName());
   }
 
   /**
@@ -443,9 +478,10 @@ mv.visitEnd();
       mv.visitMethodInsn(
         INVOKESTATIC, pojomatorInternalClassName, accessorName(propertyElement),
         accessorMethodType(propertyElement));
-      if (propertyElement.getPropertyType().isPrimitive()) {
+      Class<?> propertyType = propertyElement.getPropertyType();
+      if (propertyType.isPrimitive()) {
         // need to compute the hash code for this primitive value, based on its type
-        switch (propertyElement.getPropertyType().getName()) {
+        switch (propertyType.getName()) {
           case "boolean":
             Label ifeq = new Label();
             mv.visitJumpInsn(IFEQ, ifeq);
@@ -478,7 +514,7 @@ mv.visitEnd();
             mv.visitInsn(L2I);
             break;
           default:
-            throw new IllegalStateException("unknown primitive class " + propertyElement.getPropertyType().getName());
+            throw new IllegalStateException("unknown primitive type " + propertyType.getName());
         }
       }
       else {
@@ -491,10 +527,47 @@ mv.visitEnd();
         mv.visitInsn(POP); // won't need that duped copy after all
         mv.visitInsn(ICONST_0);
         mv.visitJumpInsn(GOTO, hashCodeDetermined);
-
+        // it's not null
         mv.visitLabel(ifNonNull);
-        mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] {INTEGER, OBJECT_INTERNAL_NAME});
-        mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
+        mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] {INTEGER, Type.getInternalName(propertyType)});
+
+        if(propertyType.isArray()) {
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            Type.getInternalName(Arrays.class),
+            "hashCode",
+            MethodType.methodType(
+              int.class, propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class)
+              .toMethodDescriptorString());
+        }
+        else if (propertyType == Object.class) {
+          mv.visitInsn(DUP);
+          mv.visitMethodInsn(
+            INVOKEVIRTUAL,
+            OBJECT_INTERNAL_NAME,
+            "getClass",
+            MethodType.methodType(Class.class).toMethodDescriptorString());
+          mv.visitMethodInsn(
+            INVOKEVIRTUAL,
+            Type.getInternalName(Class.class),
+            "isArray",
+            MethodType.methodType(boolean.class).toMethodDescriptorString());
+          Label isArray = new Label();
+          mv.visitJumpInsn(IFNE, isArray); // if true
+          mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
+          mv.visitJumpInsn(GOTO, hashCodeDetermined);
+
+          mv.visitLabel(isArray);
+          mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] { INTEGER, Type.getInternalName(propertyType) });
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            Type.getType(PojomatorFactory.class).getInternalName(),
+            "arrayHashCode",
+            MethodType.methodType(int.class, Object.class).toMethodDescriptorString());
+        }
+        else {
+          mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
+        }
 
         mv.visitLabel(hashCodeDetermined);
         mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] {INTEGER, INTEGER});

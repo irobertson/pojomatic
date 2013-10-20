@@ -2,6 +2,8 @@ package org.pojomatic.internal;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
@@ -45,7 +47,29 @@ public class PojomatorFactoryTest {
   }
 
   @Test
-  public void testObjectField() throws Exception {
+  public void testIntArrayField() throws Exception {
+    class Simple {
+      @Property int[] x = new int[] { 3, 4 };
+    }
+
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    assertEquals(31 + Arrays.hashCode(simple.x), pojomator.doHashCode(simple));
+  }
+
+  @Test
+  public void testLongArrayField() throws Exception {
+    class Simple {
+      @Property long[] x = new long[] { 3, 4 };
+    }
+
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    assertEquals(31 + Arrays.hashCode(simple.x), pojomator.doHashCode(simple));
+  }
+
+  @Test
+  public void testStringField() throws Exception {
     class Simple {
       @Property String s;
     }
@@ -55,5 +79,23 @@ public class PojomatorFactoryTest {
     assertEquals(31, pojomator.doHashCode(simple));
     simple.s = "hello";
     assertEquals(31 + simple.s.hashCode(), pojomator.doHashCode(simple));
+  }
+
+  @Test
+  public void testObjectField() throws Exception {
+    class Simple {
+      @Property Object o;
+    }
+
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    simple.o = null;
+    assertEquals(31 + 0, pojomator.doHashCode(simple));
+    simple.o = "hello";
+    assertEquals(31 + simple.o.hashCode(), pojomator.doHashCode(simple));
+    simple.o = new int[] { 2, 3 };
+    assertEquals(31 + Arrays.hashCode((int[])simple.o), pojomator.doHashCode(simple));
+    simple.o = new String[] { "hello", "goodbye"};
+    assertEquals(31 + Arrays.hashCode((Object[])simple.o), pojomator.doHashCode(simple));
   }
 }
