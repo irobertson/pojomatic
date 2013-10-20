@@ -34,4 +34,22 @@ public interface PropertyElement {
    */
   Class<?> getDeclaringClass();
 
+  /**
+   * Get the name of the underlying field or method.
+   * @return the name of the underlying field or method.
+   */
+  String getElementName();
+
+  /**
+   * Get the type of element returns either "field" or "method".
+   * @return the type of element.
+   */
+  String getType();
+
+
+  /**
+   * Get the type of this property - the return type of a method, or the type of a field
+   * @return the type of this property
+   */
+  Class<?> getPropertyType();
 }

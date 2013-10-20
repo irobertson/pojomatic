@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.pojomatic.PropertyElement;
@@ -105,6 +107,17 @@ public class ClassProperties {
    */
   public Collection<PropertyElement> getToStringProperties() {
     return properties.get(PropertyRole.TO_STRING);
+  }
+
+  /**
+   * Get the union of all properties used for any Pojomator methods.
+   * @return the union of all properties used for any Pojomator methods.
+   */
+  public Set<PropertyElement> getAllProperties() {
+    LinkedHashSet<PropertyElement> allProperties = new LinkedHashSet<>();
+    allProperties.addAll(properties.get(PropertyRole.EQUALS));
+    allProperties.addAll(properties.get(PropertyRole.TO_STRING));
+    return allProperties;
   }
 
   /**

@@ -37,6 +37,10 @@ public class ClassPropertiesTest {
     assertEquals(
       asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString),
       asSet(classProperties.getToStringProperties()));
+
+    assertEquals(
+      asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString),
+      classProperties.getAllProperties());
   }
 
   @Test

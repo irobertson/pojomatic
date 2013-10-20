@@ -12,4 +12,19 @@ public class PropertyField extends AbstractPropertyElement<Field> {
   throws IllegalArgumentException, IllegalAccessException {
     return element.get(instance);
   }
+
+  @Override
+  public String getElementName() {
+    return element.getName();
+  }
+
+  @Override
+  public String getType() {
+    return "field";
+  }
+
+  @Override
+  public Class<?> getPropertyType() {
+    return element.getType();
+  }
 }

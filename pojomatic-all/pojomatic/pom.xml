@@ -23,7 +23,7 @@
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
+      <artifactId>asm-debug-all</artifactId> <!-- FIXME - change to just asm -->
       <version>4.1</version>
     </dependency>
   </dependencies>

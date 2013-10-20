@@ -44,4 +44,19 @@ public class PropertyAccessor extends AbstractPropertyElement<Method> {
       throw new RuntimeException(e.getCause());
     }
   }
+
+  @Override
+  public String getElementName() {
+    return element.getName();
+  }
+
+  @Override
+  public String getType() {
+    return "method";
+  }
+
+  @Override
+  public Class<?> getPropertyType() {
+    return element.getReturnType();
+  }
 }
