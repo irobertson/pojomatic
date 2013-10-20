@@ -47,6 +47,17 @@ public class PojomatorFactoryTest {
   }
 
   @Test
+  public void testFloatField() throws Exception {
+    class Simple {
+      @Property float x = 3;
+    }
+
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    assertEquals(31 + Float.floatToIntBits(simple.x), pojomator.doHashCode(simple));
+  }
+
+  @Test
   public void testIntArrayField() throws Exception {
     class Simple {
       @Property int[] x = new int[] { 3, 4 };
@@ -56,6 +67,7 @@ public class PojomatorFactoryTest {
     Simple simple = new Simple();
     assertEquals(31 + Arrays.hashCode(simple.x), pojomator.doHashCode(simple));
   }
+
 
   @Test
   public void testLongArrayField() throws Exception {
@@ -97,5 +109,19 @@ public class PojomatorFactoryTest {
     assertEquals(31 + Arrays.hashCode((int[])simple.o), pojomator.doHashCode(simple));
     simple.o = new String[] { "hello", "goodbye"};
     assertEquals(31 + Arrays.hashCode((Object[])simple.o), pojomator.doHashCode(simple));
+  }
+
+  @Test
+  public void testComplexObject() throws Exception {
+    class Complex {
+      @Property int i = 3;
+      @Property Object o = "hello";
+      @Property float f = 4.0f;
+    }
+    Complex complex = new Complex();
+    Pojomator<Complex> pojomator = PojomatorFactory.makePojomator(Complex.class);
+    assertEquals(
+      31 * (31 * (31  + complex.i) + complex.o.hashCode()) + Float.floatToIntBits(complex.f),
+      pojomator.doHashCode(complex));
   }
 }

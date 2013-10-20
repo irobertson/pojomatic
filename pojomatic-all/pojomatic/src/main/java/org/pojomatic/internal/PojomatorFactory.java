@@ -243,9 +243,16 @@ public class PojomatorFactory {
     visitLineNumber(mv, 102);
     Class<?> propertyType = propertyElement.getPropertyType();
     if (propertyType.isPrimitive()) {
-      if (propertyType == long.class || propertyType == double.class) {
+      if (propertyType == float.class) {
+        mv.visitInsn(FRETURN);
+      }
+      else if (propertyType == long.class) {
         maxStackSize++;
         mv.visitInsn(LRETURN);
+      }
+      else if (propertyType == double.class) {
+        maxStackSize++;
+        mv.visitInsn(DRETURN);
       }
       else {
         mv.visitInsn(IRETURN);
