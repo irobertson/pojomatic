@@ -69,6 +69,21 @@ public class PojomatorFactory {
     return pojomator;
   }
 
+  /**
+   * Construct a call site for a property accessor. Because {@code pojoClass} might not be a public class, the
+   * parameter in {@code methodType} cannot be {@code pojoClass}, but instead must be just {@code Object.class}. The
+   * {@code pojoClass} parameter will be stored as static field in the pojomator class, and passed in from it's
+   * bootstrap method.
+   * @param caller A Lookup from the original call site.
+   * @param name the name of the dynamic method. This should either be "field_&lt;fieldName&gt;" or "method_&lt;methodName&gt;".
+   * @param methodType the type of the dynamic method; the return type should be the type of the aforementioned field
+   *   or method
+   * @param pojoClass the type of the pojo class
+   * @return a CallSite which invokes the method or gets the field value.
+   * @throws NoSuchMethodException
+   * @throws NoSuchFieldException
+   * @throws IllegalAccessException
+   */
   public static CallSite bootstrap(MethodHandles.Lookup caller, String name, MethodType methodType, Class<?> pojoClass)
       throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
     return new ConstantCallSite(
@@ -77,6 +92,16 @@ public class PojomatorFactory {
         MethodType.methodType(methodType.returnType(), Object.class)));
   }
 
+  /**
+   * Get a method handle to access a field or invoke a no-arg method.
+   * @param caller A Lookup from the original call site.
+   * @param name the name of the dynamic method. This should either be "field_&lt;fieldName&gt;" or "method_&lt;methodName&gt;".
+   * @param pojoClass the type of the pojo class
+   * @return
+   * @throws NoSuchFieldException
+   * @throws IllegalAccessException
+   * @throws NoSuchMethodException
+   */
   private static MethodHandle getTypedMethod(MethodHandles.Lookup caller, String name, Class<?> pojoClass)
     throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
     if (name.startsWith(FIELD_PREFIX)) {
@@ -170,6 +195,7 @@ public class PojomatorFactory {
   }
 
   private void makeAccessor(ClassVisitor classWriter, PropertyElement propertyElement) {
+    int maxStackSize = 1;
     String accessorName = accessorName(propertyElement);
     MethodVisitor mv = classWriter.visitMethod(
       ACC_PRIVATE | ACC_STATIC, accessorName, accessorMethodType(propertyElement), null, null);
@@ -180,10 +206,22 @@ public class PojomatorFactory {
     visitLineNumber(mv, 101);
     mv.visitInvokeDynamicInsn(accessorName, accessorMethodType(propertyElement), bootstrapMethod);
     visitLineNumber(mv, 102);
-    mv.visitInsn(IRETURN);
+    Class<?> propertyType = propertyElement.getPropertyType();
+    if (propertyType.isPrimitive()) {
+      if (propertyType == long.class || propertyType == double.class) {
+        maxStackSize++;
+        mv.visitInsn(LRETURN);
+      }
+      else {
+        mv.visitInsn(IRETURN);
+      }
+    }
+    else {
+      mv.visitInsn(ARETURN);
+    }
     Label l1 = visitNewLabel(mv);
     mv.visitLocalVariable("bean", Type.getDescriptor(Object.class), null, l0, l1, 1);
-    mv.visitMaxs(1, 2);
+    mv.visitMaxs(maxStackSize, 2);
     mv.visitEnd();
   }
 
@@ -384,7 +422,9 @@ mv.visitEnd();
 }
  */
   private void makeDoHashCode(ClassVisitor cw) {
-    Object[] localVars = new Object[] {pojomatorInternalClassName, pojoInternalName, INTEGER, INTEGER};
+    int longOrDoubleStackAdjustment = 0;
+
+    Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME, INTEGER, INTEGER};
 
     MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doHashCode", "(" + classDesc(Object.class) + ")I", null, null);
     mv.visitCode();
@@ -430,6 +470,7 @@ mv.visitEnd();
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "doubleToLongBits", "(D)J");
             //$FALL-THROUGH$
           case "long":
+            longOrDoubleStackAdjustment = 3;
             mv.visitInsn(DUP2);
             mv.visitIntInsn(BIPUSH, 32);
             mv.visitInsn(LUSHR);
@@ -442,15 +483,19 @@ mv.visitEnd();
       }
       else {
         Label ifNonNull = new Label();
-        mv.visitJumpInsn(IFNONNULL, ifNonNull);
-
-        mv.visitInsn(ICONST_0);
         Label hashCodeDetermined = new Label();
-        mv.visitJumpInsn(GOTO, hashCodeDetermined);
-        mv.visitLabel(ifNonNull);
 
-        mv.visitFrame(F_FULL, 2, localVars, 1, new Object[] {INTEGER});
+        mv.visitInsn(DUP); // if it's non-null, let's not have to get it a second time.
+        mv.visitJumpInsn(IFNONNULL, ifNonNull);
+        // it's null
+        mv.visitInsn(POP); // won't need that duped copy after all
+        mv.visitInsn(ICONST_0);
+        mv.visitJumpInsn(GOTO, hashCodeDetermined);
+
+        mv.visitLabel(ifNonNull);
+        mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] {INTEGER, OBJECT_INTERNAL_NAME});
         mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
+
         mv.visitLabel(hashCodeDetermined);
         mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] {INTEGER, INTEGER});
       }
@@ -460,7 +505,7 @@ mv.visitEnd();
     Label end = visitNewLabel(mv);
     mv.visitLocalVariable("this", classDesc(pojomatorInternalClassName), null, start, end, 0);
     mv.visitLocalVariable("p", Type.getDescriptor(pojoClass) , null, start, end, 1);
-    mv.visitMaxs(3, 2);
+    mv.visitMaxs(3 + longOrDoubleStackAdjustment, 2);
     mv.visitEnd();
   }
 
