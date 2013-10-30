@@ -217,7 +217,6 @@ public class PojomatorFactory {
   private void makeDoEquals(ClassVisitor cw) {
     int longOrDoubleStackAdjustment = 0;
 
-    // FIXME - make class instance
     Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME};
 
     MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doEquals", DO_EQUALS_DESCRIPTOR, null, null);
@@ -449,7 +448,6 @@ public class PojomatorFactory {
       mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "floatToIntBits", "(F)I");
     }
     else if (propertyElement.getPropertyType().equals(double.class)) {
-      //FIXME - would Double.compare be faster here?
       mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "doubleToLongBits", "(D)J");
     }
   }
