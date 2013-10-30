@@ -50,21 +50,38 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   }
 
   /**
-   * Compare two values for equality
+   * Compare two values with a static type a proper sub-type of Object for equality. In particular, it is assumed that
+   * neither value is an array.
+   * @param instanceValue the first value to compare
+   * @param otherValue the second value to compare
+   * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
+   */
+  protected static boolean areNonArrayValuesEqual(Object instanceValue, Object otherValue) {
+    if (instanceValue == otherValue) {
+      return true;
+    }
+    if (instanceValue == null || otherValue == null) {
+      return false;
+    }
+    return instanceValue.equals(otherValue);
+  }
+
+  /**
+   * Compare two values of static type Object for equality. If both values are arrays of the same primitive component
+   * type, or if both values are arrays of non-primitive component type, then the appropriate {@code equals} method
+   * on {@link Arrays} is used to determine equality.
    * @param instanceValue the first value to compare
    * @param otherValue the second value to compare
    * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
    */
   protected static boolean areObjectValuesEqual(Object instanceValue, Object otherValue) {
-    if (instanceValue == null) {
-      if (otherValue != null) {
-        return false;
-      }
+    if (instanceValue == otherValue) {
+      return true;
     }
-    else { // instanceValue is not null
-      if (otherValue == null) {
-        return false;
-      }
+    if (instanceValue == null || otherValue == null) {
+      return false;
+    }
+    else {
       if (!instanceValue.getClass().isArray()) {
         if (!instanceValue.equals(otherValue)) {
           return false;
@@ -75,10 +92,8 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
           return false;
         }
         final Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
-        final Class<?> otherComponentClass = otherValue.getClass().getComponentType();
-
         if (!instanceComponentClass.isPrimitive()) {
-          if (otherComponentClass.isPrimitive()) {
+          if (otherValue.getClass().getComponentType().isPrimitive()) {
             return false;
           }
           if (!Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue)) {
@@ -86,7 +101,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
           }
         }
         else { // instanceComponentClass is primitive
-          if (otherComponentClass != instanceComponentClass) {
+          if (otherValue.getClass().getComponentType() != instanceComponentClass) {
             return false;
           }
 

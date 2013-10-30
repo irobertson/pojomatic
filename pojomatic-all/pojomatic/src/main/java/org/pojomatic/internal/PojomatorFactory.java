@@ -1,15 +1,14 @@
 package org.pojomatic.internal;
 
-import java.beans.PropertyDescriptor;
 import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -47,8 +46,8 @@ public class PojomatorFactory {
   private static final String BASE_POJOMATOR_INTERNAL_NAME = internalName(BasePojomator.class);
 
   private static final String BOOTSTRAP_METHOD_NAME = "bootstrap";
-  final static int HASH_CODE_SEED = 1;
-  final static int HASH_CODE_MULTIPLIER = 31;
+
+  private static final AtomicLong counter = new AtomicLong();
 
   private static final class DynamicClassLoader extends ClassLoader {
     private DynamicClassLoader(ClassLoader parent) {
@@ -93,7 +92,7 @@ public class PojomatorFactory {
   private final Handle bootstrapMethod;
 
   public PojomatorFactory(Class<?> pojoClass, ClassProperties classProperties) {
-    this.pojomatorClassName = pojoClass.getName() + "$$Pojomator";
+    this.pojomatorClassName = pojoClass.getName() + "$$Pojomator" + "$" + counter.incrementAndGet();
     this.pojomatorInternalClassName = internalName(pojomatorClassName);
     this.pojoClass = pojoClass;
     this.classProperties = classProperties;
@@ -274,21 +273,31 @@ public class PojomatorFactory {
           mv.visitJumpInsn(IF_ICMPNE, returnFalse);
         }
       }
-      else if(propertyType.isArray()) {
-        Class<? extends Object> arrayPropertyType =
-          propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
-        mv.visitMethodInsn(
-          INVOKESTATIC,
-          Type.getInternalName(Arrays.class),
-          "equals",
-          MethodType.methodType(boolean.class, arrayPropertyType, arrayPropertyType).toMethodDescriptorString());
-        mv.visitJumpInsn(IFNE, returnFalse);
-      }
-      else if (propertyType.equals(Object.class)) {
-
-      }
       else {
-        mv.visitJumpInsn(IF_ACMPNE, returnFalse);
+        if(propertyType.isArray()) {
+          Class<? extends Object> arrayPropertyType =
+            propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            Type.getInternalName(Arrays.class),
+            "equals",
+            MethodType.methodType(boolean.class, arrayPropertyType, arrayPropertyType).toMethodDescriptorString());
+        }
+        else if (propertyType.equals(Object.class)) {
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            BASE_POJOMATOR_INTERNAL_NAME,
+            "areObjectValuesEqual",
+            MethodType.methodType(boolean.class, Object.class, Object.class).toMethodDescriptorString());
+        }
+        else {
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            BASE_POJOMATOR_INTERNAL_NAME,
+            "areNonArrayValuesEqual",
+            MethodType.methodType(boolean.class, Object.class, Object.class).toMethodDescriptorString());
+        }
+        mv.visitJumpInsn(IFEQ, returnFalse);
       }
     }
     // everything checks out; return true.
@@ -305,259 +314,6 @@ public class PojomatorFactory {
     mv.visitLocalVariable("p", Type.getDescriptor(pojoClass) , null, start, end, 1);
     mv.visitMaxs(3 + longOrDoubleStackAdjustment, 3);
     mv.visitEnd();
-
-/*
- *{
-mv = cw.visitMethod(ACC_PUBLIC, "equals", "(Ljava/lang/Object;)Z", null, null);
-mv.visitCode();
-Label l0 = new Label();
-mv.visitLabel(l0);
-mv.visitLineNumber(50, l0);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitVarInsn(ALOAD, 1);
-Label l1 = new Label();
-mv.visitJumpInsn(IF_ACMPNE, l1);
-Label l2 = new Label();
-mv.visitLabel(l2);
-mv.visitLineNumber(51, l2);
-mv.visitInsn(ICONST_1);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l1);
-mv.visitLineNumber(52, l1);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 1);
-Label l3 = new Label();
-mv.visitJumpInsn(IFNONNULL, l3);
-Label l4 = new Label();
-mv.visitLabel(l4);
-mv.visitLineNumber(53, l4);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l3);
-mv.visitLineNumber(54, l3);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;");
-mv.visitVarInsn(ALOAD, 1);
-mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;");
-Label l5 = new Label();
-mv.visitJumpInsn(IF_ACMPEQ, l5);
-Label l6 = new Label();
-mv.visitLabel(l6);
-mv.visitLineNumber(55, l6);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l5);
-mv.visitLineNumber(56, l5);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 1);
-mv.visitTypeInsn(CHECKCAST, "beans/Person");
-mv.visitVarInsn(ASTORE, 2);
-Label l7 = new Label();
-mv.visitLabel(l7);
-mv.visitLineNumber(57, l7);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "age", "I");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "age", "I");
-Label l8 = new Label();
-mv.visitJumpInsn(IF_ICMPEQ, l8);
-Label l9 = new Label();
-mv.visitLabel(l9);
-mv.visitLineNumber(58, l9);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l8);
-mv.visitLineNumber(59, l8);
-mv.visitFrame(Opcodes.F_APPEND,1, new Object[] {"beans/Person"}, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "boolVal", "Z");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "boolVal", "Z");
-Label l10 = new Label();
-mv.visitJumpInsn(IF_ICMPEQ, l10);
-Label l11 = new Label();
-mv.visitLabel(l11);
-mv.visitLineNumber(60, l11);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l10);
-mv.visitLineNumber(61, l10);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "byteVal", "B");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "byteVal", "B");
-Label l12 = new Label();
-mv.visitJumpInsn(IF_ICMPEQ, l12);
-Label l13 = new Label();
-mv.visitLabel(l13);
-mv.visitLineNumber(62, l13);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l12);
-mv.visitLineNumber(63, l12);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "charVal", "C");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "charVal", "C");
-Label l14 = new Label();
-mv.visitJumpInsn(IF_ICMPEQ, l14);
-Label l15 = new Label();
-mv.visitLabel(l15);
-mv.visitLineNumber(64, l15);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l14);
-mv.visitLineNumber(65, l14);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "doubleVal", "D");
-mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "doubleToLongBits", "(D)J");
-Label l16 = new Label();
-mv.visitLabel(l16);
-mv.visitLineNumber(66, l16);
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "doubleVal", "D");
-mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "doubleToLongBits", "(D)J");
-Label l17 = new Label();
-mv.visitLabel(l17);
-mv.visitLineNumber(65, l17);
-mv.visitInsn(LCMP);
-Label l18 = new Label();
-mv.visitJumpInsn(IFEQ, l18);
-Label l19 = new Label();
-mv.visitLabel(l19);
-mv.visitLineNumber(67, l19);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l18);
-mv.visitLineNumber(68, l18);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "floatVal", "F");
-mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "floatToIntBits", "(F)I");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "floatVal", "F");
-mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "floatToIntBits", "(F)I");
-Label l20 = new Label();
-mv.visitJumpInsn(IF_ICMPEQ, l20);
-Label l21 = new Label();
-mv.visitLabel(l21);
-mv.visitLineNumber(69, l21);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l20);
-mv.visitLineNumber(70, l20);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "longVal", "J");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "longVal", "J");
-mv.visitInsn(LCMP);
-Label l22 = new Label();
-mv.visitJumpInsn(IFEQ, l22);
-Label l23 = new Label();
-mv.visitLabel(l23);
-mv.visitLineNumber(71, l23);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l22);
-mv.visitLineNumber(72, l22);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "name", "Ljava/lang/String;");
-Label l24 = new Label();
-mv.visitJumpInsn(IFNONNULL, l24);
-Label l25 = new Label();
-mv.visitLabel(l25);
-mv.visitLineNumber(73, l25);
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "name", "Ljava/lang/String;");
-Label l26 = new Label();
-mv.visitJumpInsn(IFNULL, l26);
-Label l27 = new Label();
-mv.visitLabel(l27);
-mv.visitLineNumber(74, l27);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l24);
-mv.visitLineNumber(75, l24);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "name", "Ljava/lang/String;");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "name", "Ljava/lang/String;");
-mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z");
-mv.visitJumpInsn(IFNE, l26);
-Label l28 = new Label();
-mv.visitLabel(l28);
-mv.visitLineNumber(76, l28);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l26);
-mv.visitLineNumber(77, l26);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "publicName", "Ljava/lang/String;");
-Label l29 = new Label();
-mv.visitJumpInsn(IFNONNULL, l29);
-Label l30 = new Label();
-mv.visitLabel(l30);
-mv.visitLineNumber(78, l30);
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "publicName", "Ljava/lang/String;");
-Label l31 = new Label();
-mv.visitJumpInsn(IFNULL, l31);
-Label l32 = new Label();
-mv.visitLabel(l32);
-mv.visitLineNumber(79, l32);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l29);
-mv.visitLineNumber(80, l29);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "publicName", "Ljava/lang/String;");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "publicName", "Ljava/lang/String;");
-mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z");
-mv.visitJumpInsn(IFNE, l31);
-Label l33 = new Label();
-mv.visitLabel(l33);
-mv.visitLineNumber(81, l33);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l31);
-mv.visitLineNumber(82, l31);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "shortVal", "S");
-mv.visitVarInsn(ALOAD, 2);
-mv.visitFieldInsn(GETFIELD, "beans/Person", "shortVal", "S");
-Label l34 = new Label();
-mv.visitJumpInsn(IF_ICMPEQ, l34);
-Label l35 = new Label();
-mv.visitLabel(l35);
-mv.visitLineNumber(83, l35);
-mv.visitInsn(ICONST_0);
-mv.visitInsn(IRETURN);
-mv.visitLabel(l34);
-mv.visitLineNumber(84, l34);
-mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
-mv.visitInsn(ICONST_1);
-mv.visitInsn(IRETURN);
-Label l36 = new Label();
-mv.visitLabel(l36);
-mv.visitLocalVariable("this", "Lbeans/Person;", null, l0, l36, 0);
-mv.visitLocalVariable("obj", "Ljava/lang/Object;", null, l0, l36, 1);
-mv.visitLocalVariable("other", "Lbeans/Person;", null, l7, l36, 2);
-mv.visitMaxs(4, 3);
-mv.visitEnd();
-}
-
- */
   }
 
   private void makeDoHashCode(ClassVisitor cw) {
