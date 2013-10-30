@@ -318,9 +318,7 @@ public class PojomatorFactory {
 
   private void makeDoHashCode(ClassVisitor cw) {
     int longOrDoubleStackAdjustment = 0;
-
-    //FIXME - make class instance
-    Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME, INTEGER, INTEGER};
+    Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME};
 
     MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doHashCode", DO_HASH_CODE_DESCRIPTOR, null, null);
     mv.visitCode();
