@@ -8,13 +8,16 @@ import java.util.Arrays;
  * strategy are subject to change, the general principle is to provide a meaningful representation.
  * In particular, arrays are formatted "deeply", rather than simply showing the default toString
  * representation of Java arrays.
+ *
+ * @deprecated use {@link DefaultEnhancedPropertyFormatter} instead.
  */
+@Deprecated
 public class DefaultPropertyFormatter implements PropertyFormatter {
+  //FIXME - this currently prevents formatter reusability, and for very little benefit.
   @Override
   public void initialize(AnnotatedElement element) {
     //Not applicable
   }
-
 
   @Override
   public String format(Object value) {

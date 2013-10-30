@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+@Deprecated
 public class DefaultPropertyFormatterTest {
   private PropertyFormatter formatter;
 

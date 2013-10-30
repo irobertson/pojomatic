@@ -5,7 +5,11 @@ import java.lang.reflect.AnnotatedElement;
 /**
  * A formatter for a property.
  * Any implementation of {@code PropertyFormatter} must have a public no-argument constructor.
+ *
+ * @deprecated implement {@link EnhancedPropertyFormatter} instead. This class is unaware of primitives, and does not
+ * leverage string buffers.
  */
+@Deprecated
 public interface PropertyFormatter {
   /**
    * Initialize the formatter for use; this method will be called exactly once on an instance, prior
