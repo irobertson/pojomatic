@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.TestUtils;
 
+@Deprecated
 public class DefaultPojoFormatterTest {
 
   private DefaultPojoFormatter formatter;

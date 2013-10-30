@@ -6,6 +6,9 @@ import org.pojomatic.Pojomator;
 /**
  * A formatter to aid in creating a {@code String} representation of a POJO.  A new instance will be
  * created for each time that {@link Pojomator#doToString(Object)} is called.
+ *
+ * @deprecated use {@link EnhancedPojoFormatter} instead. Use of this interface typically requires creating additional
+ * StringBuidler instances.
  */
 public interface PojoFormatter {
 
