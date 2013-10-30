@@ -10,6 +10,7 @@ import org.pojomatic.Pojomator;
  * @deprecated use {@link EnhancedPojoFormatter} instead. Use of this interface typically requires creating additional
  * StringBuidler instances.
  */
+@Deprecated
 public interface PojoFormatter {
 
   /**
