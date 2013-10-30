@@ -17,130 +17,130 @@ public class DefaultEnhancedPropertyFormatterTest {
   }
 
   @Test public void testFormat() {
-    formatter.formatTo(builder, "7");
+    formatter.appendFormatted(builder, "7");
     assertFormatted("7");
   }
 
   @Test public void testFormatNull() {
-    formatter.formatTo(builder, (Object) null);
+    formatter.appendFormatted(builder, (Object) null);
     assertFormatted("null");
   }
 
   @Test public void testFormatList() {
-    formatter.formatTo(builder, Arrays.asList(5, 7));
+    formatter.appendFormatted(builder, Arrays.asList(5, 7));
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfObjects() {
-    formatter.formatTo(builder, new Integer[] {5, 7});
+    formatter.appendFormatted(builder, new Integer[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfBooleans() {
-    formatter.formatTo(builder, new boolean[] {true, false});
+    formatter.appendFormatted(builder, new boolean[] {true, false});
     assertFormatted("[true, false]");
   }
 
   @Test public void testFormatArrayOfBytes() {
-    formatter.formatTo(builder, new byte[] {5, 7});
+    formatter.appendFormatted(builder, new byte[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfChars() {
-    formatter.formatTo(builder, new char[] {5, 'b'});
+    formatter.appendFormatted(builder, new char[] {5, 'b'});
     assertFormatted("['0x5', 'b']");
   }
 
   @Test public void testFormatArrayOfShorts() {
-    formatter.formatTo(builder, new short[] {5, 7});
+    formatter.appendFormatted(builder, new short[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfInts() {
-    formatter.formatTo(builder, new int[] {5, 7});
+    formatter.appendFormatted(builder, new int[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfLongs() {
-    formatter.formatTo(builder, new long[] {5, 7});
+    formatter.appendFormatted(builder, new long[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfFloats() {
-    formatter.formatTo(builder, new float[] {5, 7});
+    formatter.appendFormatted(builder, new float[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @Test public void testFormatArrayOfDoubles() {
-    formatter.formatTo(builder, new double[] {5, 7});
+    formatter.appendFormatted(builder, new double[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @Test public void testFormatDoubleArray() {
-    formatter.formatTo(builder, new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
+    formatter.appendFormatted(builder, new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @Test public void testFormatDoubleArrayOfPrimitives() {
-    formatter.formatTo(builder, new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
+    formatter.appendFormatted(builder, new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatArrayOfObjectsAsObject() {
-    formatter.formatTo(builder, (Object) new Integer[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new Integer[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfBooleansAsObject() {
-    formatter.formatTo(builder, (Object) new boolean[] {true, false});
+    formatter.appendFormatted(builder, (Object) new boolean[] {true, false});
     assertFormatted("[true, false]");
   }
 
   @Test public void testFormatArrayOfBytesAsObject() {
-    formatter.formatTo(builder, (Object) new byte[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new byte[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfCharsAsObject() {
-    formatter.formatTo(builder, (Object) new char[] {5, 'b'});
+    formatter.appendFormatted(builder, (Object) new char[] {5, 'b'});
     assertFormatted("['0x5', 'b']");
   }
 
   @Test public void testFormatArrayOfShortsAsObject() {
-    formatter.formatTo(builder, (Object) new short[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new short[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfIntsAsObject() {
-    formatter.formatTo(builder, (Object) new int[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new int[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfLongsAsObject() {
-    formatter.formatTo(builder, (Object) new long[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new long[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfFloatsAsObject() {
-    formatter.formatTo(builder, (Object) new float[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new float[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @Test public void testFormatArrayOfDoublesAsObject() {
-    formatter.formatTo(builder, (Object) new double[] {5, 7});
+    formatter.appendFormatted(builder, (Object) new double[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayAsObject() {
-    formatter.formatTo(builder, (Object) new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
+    formatter.appendFormatted(builder, (Object) new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayOfPrimitivesAsObject() {
-    formatter.formatTo(builder, (Object) new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
+    formatter.appendFormatted(builder, (Object) new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 

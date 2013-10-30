@@ -19,12 +19,12 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
   @Override
   public String format(Object value) {
     StringBuilder builder = new StringBuilder();
-    formatTo(builder, value);
+    appendFormatted(builder, value);
     return builder.toString();
   }
 
   @Override
-  public void formatTo(StringBuilder builder, Object value) {
+  public void appendFormatted(StringBuilder builder, Object value) {
     if (value == null) {
       builder.append("null");
     }
@@ -33,28 +33,28 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
       Class<?> componentClass = value.getClass().getComponentType();
       if (componentClass.isPrimitive()) {
         if (Boolean.TYPE == componentClass) {
-          formatTo(builder, (boolean[]) value);
+          appendFormatted(builder, (boolean[]) value);
         }
         else if (Character.TYPE == componentClass) {
-          formatTo(builder, (char[]) value);
+          appendFormatted(builder, (char[]) value);
         }
         else if (Byte.TYPE == componentClass) {
-          formatTo(builder, (byte[]) value);
+          appendFormatted(builder, (byte[]) value);
         }
         else if (Short.TYPE == componentClass) {
-          formatTo(builder, (short[]) value);
+          appendFormatted(builder, (short[]) value);
         }
         else if (Integer.TYPE == componentClass) {
-          formatTo(builder, (int[]) value);
+          appendFormatted(builder, (int[]) value);
         }
         else if (Long.TYPE == componentClass) {
-          formatTo(builder, (long[]) value);
+          appendFormatted(builder, (long[]) value);
         }
         else if (Float.TYPE == componentClass) {
-          formatTo(builder, (float[]) value);
+          appendFormatted(builder, (float[]) value);
         }
         else if (Double.TYPE == componentClass) {
-          formatTo(builder, (double[]) value);
+          appendFormatted(builder, (double[]) value);
         }
         else {
           throw new IllegalStateException("unexpected primitive array base type: " + componentClass);
@@ -70,62 +70,62 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
   }
 
   @Override
-  public void formatTo(StringBuilder builder, boolean b) {
+  public void appendFormatted(StringBuilder builder, boolean b) {
     builder.append(b);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, byte b) {
+  public void appendFormatted(StringBuilder builder, byte b) {
     builder.append(b);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, short s) {
+  public void appendFormatted(StringBuilder builder, short s) {
     builder.append(s);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, char c) {
+  public void appendFormatted(StringBuilder builder, char c) {
     builder.append(c);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, int i) {
+  public void appendFormatted(StringBuilder builder, int i) {
     builder.append(i);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, long l) {
+  public void appendFormatted(StringBuilder builder, long l) {
     builder.append(l);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, float f) {
+  public void appendFormatted(StringBuilder builder, float f) {
     builder.append(f);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, double d) {
+  public void appendFormatted(StringBuilder builder, double d) {
     builder.append(d);
   }
 
   @Override
-  public void formatTo(StringBuilder builder, boolean[] booleans) {
+  public void appendFormatted(StringBuilder builder, boolean[] booleans) {
     builder.append(Arrays.toString(booleans));
   }
 
   @Override
-  public void formatTo(StringBuilder builder, byte[] bytes) {
+  public void appendFormatted(StringBuilder builder, byte[] bytes) {
     builder.append(Arrays.toString(bytes));
   }
 
   @Override
-  public void formatTo(StringBuilder builder, short[] shorts) {
+  public void appendFormatted(StringBuilder builder, short[] shorts) {
     builder.append(Arrays.toString(shorts));
   }
 
   @Override
-  public void formatTo(StringBuilder builder, char[] chars) {
+  public void appendFormatted(StringBuilder builder, char[] chars) {
     builder.append("[");
     boolean seenOne = false;
     for (char c: chars) {
@@ -148,22 +148,22 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
   }
 
   @Override
-  public void formatTo(StringBuilder builder, int[] ints) {
+  public void appendFormatted(StringBuilder builder, int[] ints) {
     builder.append(Arrays.toString(ints));
   }
 
   @Override
-  public void formatTo(StringBuilder builder, long[] longs) {
+  public void appendFormatted(StringBuilder builder, long[] longs) {
     builder.append(Arrays.toString(longs));
   }
 
   @Override
-  public void formatTo(StringBuilder builder, float[] floats) {
+  public void appendFormatted(StringBuilder builder, float[] floats) {
     builder.append(Arrays.toString(floats));
   }
 
   @Override
-  public void formatTo(StringBuilder builder, double[] doubles) {
+  public void appendFormatted(StringBuilder builder, double[] doubles) {
     builder.append(Arrays.toString(doubles));
   }
 }
