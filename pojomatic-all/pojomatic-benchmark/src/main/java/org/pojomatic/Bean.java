@@ -9,6 +9,7 @@ import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.AutoDetectPolicy;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.internal.ClassProperties;
+import org.pojomatic.internal.PojomatorFactory;
 
 @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
 public class Bean {
@@ -19,6 +20,8 @@ public class Bean {
   private List<String> strings;
 
   private static PropertyElement getInteger, getString, getI, getInts, getStrings;
+
+  private static Pojomator<Bean> asmPojomator = PojomatorFactory.makePojomator(Bean.class);
 
   static {
     setUpPojomaticHandrolled();
@@ -96,6 +99,10 @@ public class Bean {
 
   public int pmFastHashCode() {
     return POJOMATOR.doHashCode(this);
+  }
+
+  public int asmHashCode() {
+    return asmPojomator.doHashCode(this);
   }
 
   public int handRolledPmHashCode() {

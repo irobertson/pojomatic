@@ -13,9 +13,10 @@ public class BeanSpeedTest extends Benchmark {
   private static final PmFastChecker PM_FAST_CHECKER = new PmFastChecker();
   private static final PmChecker PM_CHECKER = new PmChecker();
   private static final StandardChecker STANDARD_CHECKER = new StandardChecker();
+  private static final AsmChecker ASM_CHECKER = new AsmChecker();
   private final static Random rand = new Random();
   private static Bean[] beans;
-
+/*
   public void timeStandardCheckerEquals(int reps) {
     System.out.println("The beans are " + Arrays.toString(beans));
     STANDARD_CHECKER.checkEquals(beans, reps);
@@ -32,7 +33,7 @@ public class BeanSpeedTest extends Benchmark {
   public void timePojomaticHandRolledCheckerEquals(int reps) {
     PM_HAND_ROLLED_CHECKER.checkEquals(beans, reps);
   }
-
+*/
   public void timeStandardCheckerHashCode(int reps) {
     STANDARD_CHECKER.checkHashCode(beans, reps);
   }
@@ -47,6 +48,10 @@ public class BeanSpeedTest extends Benchmark {
 
   public void timePojomaticHandRolledCheckerHashCode(int reps) {
     PM_HAND_ROLLED_CHECKER.checkHashCode(beans, reps);
+  }
+
+  public void timeAsmHashCode(int reps) {
+    ASM_CHECKER.checkHashCode(beans, reps);
   }
 
   public void setUp() {
@@ -134,6 +139,16 @@ public class BeanSpeedTest extends Benchmark {
 
     @Override protected long hashCode(Bean bean) {
       return bean.hashCode();
+    }
+  }
+
+  public static class AsmChecker extends BaseChecker {
+    @Override protected boolean equals(Bean bean1, Bean bean2) {
+      return bean1.equals(bean2); // FIXME
+    }
+
+    @Override protected long hashCode(Bean bean) {
+      return bean.asmHashCode();
     }
   }
 

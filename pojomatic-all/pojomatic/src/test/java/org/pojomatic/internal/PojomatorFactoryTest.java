@@ -124,4 +124,33 @@ public class PojomatorFactoryTest {
       31 * (31 * (31  + complex.i) + complex.o.hashCode()) + Float.floatToIntBits(complex.f),
       pojomator.doHashCode(complex));
   }
+
+  @Test
+  public void testSameInstanceEquals() throws Exception {
+    class Simple {
+      @Property int x;
+    }
+    Simple instance = new Simple();
+    assertTrue(PojomatorFactory.makePojomator(Simple.class).doEquals(instance, instance));
+  }
+
+  @Test
+  public void testNullEquals() throws Exception {
+    class Simple {
+      @Property int x;
+    }
+    Simple instance = new Simple();
+    assertFalse(PojomatorFactory.makePojomator(Simple.class).doEquals(instance, null));
+  }
+
+  @Test
+  public void testIncompatibleClassEquals() throws Exception {
+    class Simple1 {
+      @Property int x;
+    }
+    class Simple2 {
+      @Property int x;
+    }
+    assertFalse(PojomatorFactory.makePojomator(Simple1.class).doEquals(new Simple1(), new Simple2()));
+  }
 }
