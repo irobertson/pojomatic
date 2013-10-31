@@ -10,7 +10,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
+import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.formatter.DefaultPojoFormatter;
 
 import com.google.common.io.ByteStreams;
 
@@ -25,7 +27,6 @@ public class PojomatorFactoryTest {
     ClassLoader reloader = new ClassLoader(getClass().getClassLoader()) {
       @Override
       protected java.lang.Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        System.out.println("asked for " + name);
         if (name.equals(simpleName)) {
           byte[] bytes;
           try {
@@ -254,5 +255,23 @@ public class PojomatorFactoryTest {
       @Property int x;
     }
     assertFalse(PojomatorFactory.makePojomator(Simple1.class).doEquals(new Simple1(), new Simple2()));
+  }
+
+  @Test
+  public void testSimpleToString() throws Exception {
+    class Simple {
+      @Property public String x() { return "foo"; }
+    }
+    assertEquals("Simple{x: {foo}}", PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()));
+  }
+
+  @Test
+  public void testNonEnhancedPojoFormatter() throws Exception {
+    @SuppressWarnings("deprecation")
+    @PojoFormat(DefaultPojoFormatter.class)
+    class Simple {
+      @Property public String x() { return "foo"; }
+    }
+    assertEquals("Simple{x: {foo}}", PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()));
   }
 }
