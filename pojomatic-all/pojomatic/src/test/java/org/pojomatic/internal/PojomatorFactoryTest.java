@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
-import org.pojomatic.formatter.DefaultPojoFormatter;
 
 import com.google.common.io.ByteStreams;
 
@@ -268,7 +267,7 @@ public class PojomatorFactoryTest {
   @Test
   public void testNonEnhancedPojoFormatter() throws Exception {
     @SuppressWarnings("deprecation")
-    @PojoFormat(DefaultPojoFormatter.class)
+    @PojoFormat(org.pojomatic.formatter.DefaultPojoFormatter.class)
     class Simple {
       @Property public String x() { return "foo"; }
     }

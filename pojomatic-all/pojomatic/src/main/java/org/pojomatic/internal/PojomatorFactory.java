@@ -22,10 +22,8 @@ import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
 import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
-import org.pojomatic.formatter.DefaultPojoFormatter;
 import org.pojomatic.formatter.EnhancedPojoFormatter;
 import org.pojomatic.formatter.EnhancedPropertyFormatter;
-import org.pojomatic.formatter.PojoFormatter;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -34,7 +32,9 @@ import static org.objectweb.asm.Opcodes.*;
  */
 
 public class PojomatorFactory {
-  private static final String ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME = internalName(EnhancedPojoFormatterWrapper.class);
+  @Deprecated
+  private static final String ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME =
+    internalName(org.pojomatic.internal.EnhancedPojoFormatterWrapper.class);
   private static final Object[] NO_STACK = new Object[] {};
   private static final String CLASS_PROPERTIES_DESCRIPTOR = classDesc(ClassProperties.class);
   private static final String BOOTSTRAP_METHOD_DESCRIPTOR =
@@ -67,9 +67,9 @@ public class PojomatorFactory {
     Type.getDescriptor(EnhancedPropertyFormatter.class);
   private static final String PROPERTY_ELEMENT_DESCRIPTOR = Type.getDescriptor(PropertyElement.class);
 
-  @SuppressWarnings("deprecation")
+  @Deprecated
   private static final String ENHANCED_POJO_FORMATTER_WRAPPER_CONSTRUCTOR_DESCRIPTOR =
-    MethodType.methodType(void.class, PojoFormatter.class).toMethodDescriptorString();
+    MethodType.methodType(void.class, org.pojomatic.formatter.PojoFormatter.class).toMethodDescriptorString();
 
   private static final String BOOTSTRAP_METHOD_NAME = "bootstrap";
 
@@ -600,7 +600,7 @@ public class PojomatorFactory {
     }
     else {
       @SuppressWarnings("deprecation")
-      Class<? extends PojoFormatter> pojoFormatterClass = format.value();
+      Class<? extends org.pojomatic.formatter.PojoFormatter> pojoFormatterClass = format.value();
       boolean isEnhancedFormatter = EnhancedPojoFormatter.class.isAssignableFrom(pojoFormatterClass);
       if (! isEnhancedFormatter) {
         mv.visitTypeInsn(NEW, ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME);
