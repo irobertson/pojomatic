@@ -6,7 +6,11 @@ import org.pojomatic.formatter.PojoFormatter;
 
 @Deprecated
 public class EnhancedPojoFormatterWrapper implements EnhancedPojoFormatter {
-  private PojoFormatter delegate;
+  private final PojoFormatter delegate;
+
+  public EnhancedPojoFormatterWrapper(PojoFormatter delegate) {
+    this.delegate = delegate;
+  }
 
   @Override
   public String getToStringPrefix(Class<?> pojoClass) {
