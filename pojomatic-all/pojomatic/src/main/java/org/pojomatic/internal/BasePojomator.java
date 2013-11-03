@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import org.pojomatic.Pojomator;
+import org.pojomatic.PropertyElement;
 
 public abstract class BasePojomator<T> implements Pojomator<T> {
   private static final String FIELD_PREFIX = "field_";
@@ -24,6 +25,33 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   @Override
   public boolean isCompatibleForEquality(Class<?> otherClass) {
     return classProperties.isCompatibleForEquals(otherClass);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Pojomator for ").append("FIXME: clazz.getName()").append(" with equals properties ");
+    propertiesList(builder, classProperties.getEqualsProperties());
+    builder.append(", hashCodeProperties ");
+    propertiesList(builder, classProperties.getHashCodeProperties());
+    builder.append(", and toStringProperties ");
+    propertiesList(builder, classProperties.getToStringProperties());
+    return builder.toString();
+  }
+
+  private void propertiesList(StringBuilder builder, final Iterable<PropertyElement> properties) {
+    builder.append("{");
+    boolean firstElement = true;
+    for (PropertyElement prop: properties) {
+      if (!firstElement) {
+        builder.append(",");
+      }
+      else {
+        firstElement = false;
+      }
+      builder.append(prop.getName());
+    }
+    builder.append("}");
   }
 
   /**
@@ -193,6 +221,19 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
       return Arrays.hashCode((double[]) array);
     }
     throw new IllegalStateException("unknown primitive type " + componentType.getName());
+  }
+
+  protected static <T> T checkNotNull(T reference) {
+    if (reference == null) {
+      throw new NullPointerException();
+    }
+    return reference;
+  }
+
+  protected static void checkNotNullPop(Object reference) {
+    if (reference == null) {
+      throw new NullPointerException();
+    }
   }
 
   /**

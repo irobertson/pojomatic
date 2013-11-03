@@ -284,6 +284,13 @@ public class PojomatorFactory {
   }
 
   private void makeDoEquals(ClassVisitor cw) {
+    /*
+     * Local vars in this method:
+     * 0: this
+     * 1: the pojo instance to check against for equality
+     * 2: the object being checked for equality (i.e. "other")
+     */
+
     int longOrDoubleStackAdjustment = 0;
 
     Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME};
@@ -294,6 +301,7 @@ public class PojomatorFactory {
     mv.visitCode();
     Label start = visitNewLabel(mv);
     mv.visitVarInsn(ALOAD, 0);
+    checkNotNull(mv, true);
     mv.visitVarInsn(ALOAD, 1);
     Label notSameInstance = new Label();
     mv.visitJumpInsn(IF_ACMPNE, notSameInstance);
@@ -378,7 +386,27 @@ public class PojomatorFactory {
     mv.visitEnd();
   }
 
+  /**
+   * Invoke checkNotNull on the top of the stack.
+   * @param mv the current methodVisitor
+   * @param keepStack whether or not the current top element on the stack should be there after this method is called.
+   */
+  private void checkNotNull(MethodVisitor mv, boolean keepStack) {
+    mv.visitMethodInsn(
+      INVOKESTATIC,
+      BASE_POJOMATOR_INTERNAL_NAME,
+      keepStack ? "checkNotNull" : "checkNotNullPop",
+      keepStack ? "(Ljava/lang/Object;)Ljava/lang/Object;" : "(Ljava/lang/Object;)V");
+  }
+
   private void makeDoHashCode(ClassVisitor cw) {
+    /*
+     * Local vars in this method:
+     * 0: this
+     * 1: the pojo instance to check against for equality
+     * 2: the object being checked for equality (i.e. "other")
+     */
+
     int longOrDoubleStackAdjustment = 0;
     Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME};
 
@@ -386,6 +414,8 @@ public class PojomatorFactory {
     mv.visitCode();
     Label start = visitNewLabel(mv);
     visitLineNumber(mv, 1);
+    mv.visitVarInsn(ALOAD, 1);
+    checkNotNull(mv, false);
     mv.visitInsn(ICONST_1);
 
     for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
@@ -497,6 +527,8 @@ public class PojomatorFactory {
     MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doToString", DO_TO_STRING_DESCRIPTOR, null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
+    mv.visitVarInsn(ALOAD, 1);
+    checkNotNull(mv, false);
 
     constructEnhancedPojoFormatter(mv);
     mv.visitVarInsn(ASTORE, 2);
