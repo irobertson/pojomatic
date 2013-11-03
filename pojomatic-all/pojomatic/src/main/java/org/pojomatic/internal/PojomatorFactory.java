@@ -43,7 +43,8 @@ public class PojomatorFactory {
   private static final String EXTENDED_BOOTSTRAP_METHOD_DESCRIPTOR =
     MethodType.methodType(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class)
     .toMethodDescriptorString();
-  private static final String CONSTRUCTOR_DESCRIPTOR = "(" + CLASS_PROPERTIES_DESCRIPTOR + ")V";
+  private static final String CONSTRUCTOR_DESCRIPTOR =
+    MethodType.methodType(void.class, Class.class, ClassProperties.class).toMethodDescriptorString();
   private static final String DO_HASH_CODE_DESCRIPTOR = MethodType.methodType(int.class, Object.class)
     .toMethodDescriptorString();
   private static final String DO_TO_STRING_DESCRIPTOR = MethodType.methodType(String.class, Object.class)
@@ -105,8 +106,8 @@ public class PojomatorFactory {
       pojomatorFactory.pojomatorClassName, pojomatorFactory.makeClassBytes());
     setStaticField(pojomatorClass, POJO_CLASS_FIELD_NAME, pojoClass);
     @SuppressWarnings("unchecked")
-    Pojomator<T> pojomator =
-      (Pojomator<T>) pojomatorClass.getConstructor(ClassProperties.class).newInstance(classProperties);
+    Pojomator<T> pojomator = (Pojomator<T>) pojomatorClass.getConstructor(Class.class, ClassProperties.class)
+      .newInstance(pojoClass, classProperties);
     for (PropertyElement propertyElement: classProperties.getToStringProperties()) {
       setStaticField(
         pojomatorClass,
@@ -274,12 +275,14 @@ public class PojomatorFactory {
     Label l0 = visitNewLabel(mv);
     mv.visitVarInsn(ALOAD, 0);
     mv.visitVarInsn(ALOAD, 1);
+    mv.visitVarInsn(ALOAD, 2);
     mv.visitMethodInsn(INVOKESPECIAL, BASE_POJOMATOR_INTERNAL_NAME, "<init>", CONSTRUCTOR_DESCRIPTOR);
     mv.visitInsn(RETURN);
     Label l1 = visitNewLabel(mv);
     mv.visitLocalVariable("this", classDesc(pojomatorClassName), null, l0, l1, 0);
+    mv.visitLocalVariable("pojoClass", CLASS_DESCRIPTOR, null, l0, l1, 0);
     mv.visitLocalVariable("classProperties", CLASS_PROPERTIES_DESCRIPTOR, null, l0, l1, 0);
-    mv.visitMaxs(2, 2);
+    mv.visitMaxs(3, 3);
     mv.visitEnd();
   }
 
@@ -300,9 +303,10 @@ public class PojomatorFactory {
     Label compatibleTypes = new Label();
     mv.visitCode();
     Label start = visitNewLabel(mv);
-    mv.visitVarInsn(ALOAD, 0);
-    checkNotNull(mv, true);
     mv.visitVarInsn(ALOAD, 1);
+    checkNotNull(mv, true);
+    mv.visitVarInsn(ALOAD, 2);
+    visitLineNumber(mv, 1);
     Label notSameInstance = new Label();
     mv.visitJumpInsn(IF_ACMPNE, notSameInstance);
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
@@ -314,6 +318,7 @@ public class PojomatorFactory {
     // if other is null, return false.
     mv.visitLabel(notSameInstance);
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
+    visitLineNumber(mv, 2);
 
     mv.visitVarInsn(ALOAD, 2);
     mv.visitJumpInsn(IFNULL, returnFalse);

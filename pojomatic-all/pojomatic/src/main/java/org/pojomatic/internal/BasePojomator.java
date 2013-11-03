@@ -16,9 +16,11 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   private static final String FIELD_PREFIX = "field_";
   private static final String METHOD_PREFIX = "method_";
 
+  private final Class<?> pojoClass;
   private final ClassProperties classProperties;
 
-  protected BasePojomator(ClassProperties classProperties) {
+  protected BasePojomator(Class<?> pojoClass, ClassProperties classProperties) {
+    this.pojoClass = pojoClass;
     this.classProperties = classProperties;
   }
 
@@ -30,7 +32,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("Pojomator for ").append("FIXME: clazz.getName()").append(" with equals properties ");
+    builder.append("Pojomator for ").append(pojoClass.getName()).append(" with equals properties ");
     propertiesList(builder, classProperties.getEqualsProperties());
     builder.append(", hashCodeProperties ");
     propertiesList(builder, classProperties.getHashCodeProperties());
