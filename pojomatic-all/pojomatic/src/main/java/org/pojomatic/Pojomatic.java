@@ -1,6 +1,7 @@
 package org.pojomatic;
 
 import org.pojomatic.diff.Differences;
+import org.pojomatic.internal.PojomatorFactory;
 import org.pojomatic.internal.PojomatorImpl;
 import org.pojomatic.internal.SelfPopulatingMap;
 
@@ -75,7 +76,8 @@ public class Pojomatic {
       // compiler does not know that the type parameter to Pojomator is the same as the type
       // parameter to Class
       protected Pojomator<?> create(Class<?> key) {
-        return new PojomatorImpl(key);
+        return PojomatorFactory.makePojomator(key);
+        //return new PojomatorImpl(key);
       }
   };
 

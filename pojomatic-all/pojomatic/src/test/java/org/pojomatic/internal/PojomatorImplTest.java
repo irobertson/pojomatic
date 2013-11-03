@@ -447,6 +447,6 @@ public class PojomatorImplTest {
   }
 
   private static <T> Pojomator<T> makePojomatorImpl(Class<T> clazz) {
-    return new PojomatorImpl<>(clazz);
+    return PojomatorFactory.makePojomator(clazz);
   }
 }
