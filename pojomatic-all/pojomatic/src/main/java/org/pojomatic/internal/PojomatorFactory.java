@@ -42,7 +42,6 @@ public class PojomatorFactory {
   private static final String ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME =
     internalName(org.pojomatic.internal.EnhancedPojoFormatterWrapper.class);
   private static final Object[] NO_STACK = new Object[] {};
-  private static final String CLASS_PROPERTIES_DESCRIPTOR = classDesc(ClassProperties.class);
   private static final String BOOTSTRAP_METHOD_DESCRIPTOR =
     methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class)
     ;
@@ -62,9 +61,7 @@ public class PojomatorFactory {
   private static final String POJO_CLASS_FIELD_NAME = "pojoClass";
   private static final String POJOMATOR_SIG = internalName(Pojomator.class);
   private static final String OBJECT_INTERNAL_NAME = internalName(Object.class);
-  private static final String OBJECT_DESCRIPTOR = Type.getDescriptor(Object.class);
   private static final String ARRAYS_INTERNAL_NAME = internalName(Arrays.class);
-  private static final Object LIST_INTERNAL_NAME = internalName(Arrays.class);
   private static final String CLASS_INTERNAL_NAME = internalName(Class.class);
   private static final String CLASS_DESCRIPTOR = Type.getDescriptor(Class.class);
   private static final String BASE_POJOMATOR_INTERNAL_NAME = internalName(BasePojomator.class);
@@ -574,8 +571,8 @@ public class PojomatorFactory {
     }
     mv.visitInsn(IRETURN);
     Label end = visitNewLabel(mv);
-    mv.visitLocalVariable("this", classDesc(pojomatorInternalClassName), null, start, end, 0);
-    mv.visitLocalVariable("p", pojoDescriptor, null, start, end, 1);
+    varThis.withScope(start, end).acceptLocalVariable(mv);
+    varPojo.withScope(start, end).acceptLocalVariable(mv);
     mv.visitMaxs(3 + longOrDoubleStackAdjustment, 2);
     mv.visitEnd();
   }
