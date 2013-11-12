@@ -232,9 +232,24 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
     return reference;
   }
 
+  protected static <T> T checkNotNull(T reference, String message) {
+    if (reference == null) {
+      throw new NullPointerException(message);
+    }
+    return reference;
+  }
+
   protected static void checkNotNullPop(Object reference) {
     if (reference == null) {
       throw new NullPointerException();
+    }
+  }
+
+  protected void checkClass(T instance, String label) {
+    if (!isCompatibleForEquality(instance.getClass())) {
+      throw new IllegalArgumentException(
+        label + " has type " + instance.getClass().getName()
+        + " which is not compatible for equality with " + pojoClass.getName());
     }
   }
 
