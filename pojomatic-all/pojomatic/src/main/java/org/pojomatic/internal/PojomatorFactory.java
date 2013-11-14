@@ -691,11 +691,10 @@ public class PojomatorFactory {
     Object[] localVarsPreListInstantiation = new Object[] {
       pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME };
 
-    //FIXME - why can't we make position 4 a List instead of an Object?
     Object[] localVars = new Object[] {
-      pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME };
+      pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME, internalName(List.class) };
     Object[] localVarsWithProperties = new Object[] {
-      pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME, null, null};
+      pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME, internalName(List.class), null, null};
 
     MethodVisitor mv = cw.visitMethod(
       ACC_PUBLIC, "doDiff", methodDesc(Differences.class, Object.class, Object.class), null, null);
