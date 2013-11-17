@@ -219,9 +219,12 @@ public class ClassProperties {
       /* add all methods that are explicitly annotated or auto-detected, and not overriding already
        * added methods */
       if (propertyPolicy != null || AutoDetectPolicy.METHOD == autoDetectPolicy) {
-        PropertyAccessor propertyAccessor = new PropertyAccessor(method, getPropertyName(property));
+        PropertyAccessor propertyAccessor = null;
         for (PropertyRole role : overridableMethods.checkAndMaybeAddRolesToMethod(
           method, PropertyFilter.getRoles(propertyPolicy, classPolicy))) {
+          if (propertyAccessor == null) {
+            propertyAccessor = new PropertyAccessor(method, getPropertyName(property));
+          }
           propertiesMap.get(role).put(method.getName(), propertyAccessor);
           if (PropertyRole.EQUALS == role) {
             classContributionTracker.noteContribution(clazz);
@@ -255,8 +258,11 @@ public class ClassProperties {
 
       /* add all fields that are explicitly annotated or auto-detected */
       if (propertyPolicy != null || AutoDetectPolicy.FIELD == autoDetectPolicy) {
+        PropertyField propertyField = null;
         for (PropertyRole role : PropertyFilter.getRoles(propertyPolicy, classPolicy)) {
-          PropertyField propertyField = new PropertyField(field, getPropertyName(property));
+          if (propertyField == null) {
+            propertyField = new PropertyField(field, getPropertyName(property));
+          }
           propertiesMap.get(role).put(field.getName(), propertyField);
           if (PropertyRole.EQUALS == role) {
             classContributionTracker.noteContribution(clazz);
