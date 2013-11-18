@@ -43,16 +43,12 @@ public class PojomatorFactory {
     internalName(org.pojomatic.internal.EnhancedPojoFormatterWrapper.class);
   private static final Object[] NO_STACK = new Object[] {};
   private static final String BOOTSTRAP_METHOD_DESCRIPTOR =
-    methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class)
-    ;
+    methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class);
   private static final String EXTENDED_BOOTSTRAP_METHOD_DESCRIPTOR =
-    methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class)
-    ;
+    methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class);
   private static final String CONSTRUCTOR_DESCRIPTOR = methodDesc(void.class, Class.class, ClassProperties.class);
-  private static final String DO_HASH_CODE_DESCRIPTOR = methodDesc(int.class, Object.class)
-    ;
-  private static final String DO_TO_STRING_DESCRIPTOR = methodDesc(String.class, Object.class)
-    ;
+  private static final String DO_HASH_CODE_DESCRIPTOR = methodDesc(int.class, Object.class);
+  private static final String DO_TO_STRING_DESCRIPTOR = methodDesc(String.class, Object.class);
   private static final String ARRAY_HASHCODE_DESCRIPTOR =
     methodDesc(int.class, Object.class);
   private static final String OBJECT_TO_OBJECT_DESCRIPTOR = methodDesc(Object.class, Object.class);
@@ -118,7 +114,8 @@ public class PojomatorFactory {
         pojomatorClass,
         propertyFormatterName(propertyElement),
         createPropertyFormatter(propertyElement.getElement().getAnnotation(PropertyFormat.class)));
-
+    }
+    for (PropertyElement propertyElement: classProperties.getAllProperties()) {
       setStaticField(pojomatorClass, propertyElementName(propertyElement), propertyElement);
     }
     return pojomator;
@@ -194,11 +191,13 @@ public class PojomatorFactory {
 
   private void makeFields(ClassVisitor classVisitor) {
     visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, CLASS_DESCRIPTOR);
-    for (PropertyElement propertyElement: classProperties.getToStringProperties()) {
+    for (PropertyElement property: classProperties.getToStringProperties()) {
       visitField(
-        classVisitor, ACC_STATIC, propertyFormatterName(propertyElement), ENHANCED_PROPERTY_FORMATTER_DESCRIPTOR);
+        classVisitor, ACC_STATIC, propertyFormatterName(property), ENHANCED_PROPERTY_FORMATTER_DESCRIPTOR);
+    }
+    for (PropertyElement property: classProperties.getAllProperties()) {
       visitField(
-        classVisitor, ACC_STATIC, propertyElementName(propertyElement), PROPERTY_ELEMENT_DESCRIPTOR);
+        classVisitor, ACC_STATIC, propertyElementName(property), PROPERTY_ELEMENT_DESCRIPTOR);
     }
   }
 
@@ -221,7 +220,7 @@ public class PojomatorFactory {
     name.acceptLoad(mv);
     type.acceptLoad(mv);
     visitLineNumber(mv, 200);
-    loadPojoClass(mv);
+    mv.visitLdcInsn(Type.getObjectType(pojomatorInternalClassName));
     visitLineNumber(mv, 201);
     mv.visitMethodInsn(
       INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME,
@@ -239,7 +238,7 @@ public class PojomatorFactory {
   private void makeAccessor(ClassVisitor classWriter, PropertyElement propertyElement) {
     LocalVariable pojo = new LocalVariable("pojo", Object.class, null, 0);
     int maxStackSize = 1;
-    String accessorName = propertyName(propertyElement);
+    String accessorName = propertyAccessorName(propertyElement);
     MethodVisitor mv = classWriter.visitMethod(
       ACC_PRIVATE | ACC_STATIC, accessorName, accessorMethodType(propertyElement), null, null);
     mv.visitCode();
@@ -615,11 +614,7 @@ public class PojomatorFactory {
       }
       varPojoFormatter.acceptLoad(mv);
       varBuilder.acceptLoad(mv);
-      mv.visitFieldInsn(
-        GETSTATIC,
-        pojomatorInternalClassName,
-        propertyElementName(propertyElement),
-        Type.getDescriptor(PropertyElement.class));
+      loadPropertyElementField(mv, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
         ENHANCED_POJO_FORMATTER_INTERNAL_NAME,
@@ -645,11 +640,7 @@ public class PojomatorFactory {
 
       varPojoFormatter.acceptLoad(mv);
       varBuilder.acceptLoad(mv);
-      mv.visitFieldInsn(
-        GETSTATIC,
-        pojomatorInternalClassName,
-        propertyElementName(propertyElement),
-        Type.getDescriptor(PropertyElement.class));
+      loadPropertyElementField(mv, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
         ENHANCED_POJO_FORMATTER_INTERNAL_NAME,
@@ -674,6 +665,14 @@ public class PojomatorFactory {
     varBuilder.withScope(start, end).acceptLocalVariable(mv);
     mv.visitMaxs(3 + longOrDoubleStackAdjustment, 4);
     mv.visitEnd();
+  }
+
+  private void loadPropertyElementField(MethodVisitor mv, PropertyElement propertyElement) {
+    mv.visitFieldInsn(
+      GETSTATIC,
+      pojomatorInternalClassName,
+      propertyElementName(propertyElement),
+      Type.getDescriptor(PropertyElement.class));
   }
 
   private void makeDoDiff(ClassVisitor cw) {
@@ -889,7 +888,7 @@ public class PojomatorFactory {
   private void visitAccessor(MethodVisitor mv, LocalVariable var, PropertyElement propertyElement) {
     var.acceptLoad(mv);
     mv.visitMethodInsn(
-      INVOKESTATIC, pojomatorInternalClassName, propertyName(propertyElement),
+      INVOKESTATIC, pojomatorInternalClassName, propertyAccessorName(propertyElement),
       accessorMethodType(propertyElement));
   }
 
@@ -940,15 +939,21 @@ public class PojomatorFactory {
     return MethodType.methodType(returnType, parameterType0, parameterTypes).toMethodDescriptorString();
   }
 
-  private static String propertyName(PropertyElement propertyElement) {
-    return propertyElement.getType() + "_" + propertyElement.getElementName();
+  private static String propertyAccessorName(PropertyElement property) {
+    return "get_" + qualifiedPropertyName(property);
   }
 
-  private static String propertyElementName(PropertyElement propertyElement) {
-    return "element_" + propertyElement.getType() + "_" + propertyElement.getElementName();
+  private static String propertyElementName(PropertyElement property) {
+    return "element_" + qualifiedPropertyName(property);
   }
 
-  private static String propertyFormatterName(PropertyElement propertyElement) {
-    return "formatter_" + propertyElement.getType() + "_" + propertyElement.getElementName();
+  private static String propertyFormatterName(PropertyElement property) {
+    return "formatter_" + qualifiedPropertyName(property);
+  }
+
+  private static String qualifiedPropertyName(PropertyElement property) {
+    return property.getType()
+      + "_" + property.getDeclaringClass().getName().replace('.', '$')
+      + "_" + property.getElementName();
   }
 }

@@ -5,6 +5,7 @@ import java.lang.invoke.ConstantCallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -13,9 +14,6 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 
 public abstract class BasePojomator<T> implements Pojomator<T> {
-  private static final String FIELD_PREFIX = "field_";
-  private static final String METHOD_PREFIX = "method_";
-
   private final Class<?> pojoClass;
   private final ClassProperties classProperties;
 
@@ -71,11 +69,12 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * @throws NoSuchFieldException
    * @throws IllegalAccessException
    */
-  protected static CallSite bootstrap(MethodHandles.Lookup caller, String name, MethodType methodType, Class<?> pojoClass)
+  protected static CallSite bootstrap(
+      MethodHandles.Lookup caller, String name, MethodType methodType, Class<?> pojomatorClass)
       throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
     return new ConstantCallSite(
       MethodHandles.explicitCastArguments(
-        getTypedMethod(caller, name, pojoClass),
+        getTypedMethod(caller, name, pojomatorClass),
         MethodType.methodType(methodType.returnType(), Object.class)));
   }
 
@@ -257,28 +256,33 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * Get a method handle to access a field or invoke a no-arg method.
    * @param caller A Lookup from the original call site.
    * @param name the name of the dynamic method. This should either be "field_&lt;fieldName&gt;" or "method_&lt;methodName&gt;".
-   * @param pojoClass the type of the pojo class
+   * @param pojomatorClass the type of the pojomator class
    * @return
    * @throws NoSuchFieldException
    * @throws IllegalAccessException
    * @throws NoSuchMethodException
    */
-  private static MethodHandle getTypedMethod(MethodHandles.Lookup caller, String name, Class<?> pojoClass)
+  private static MethodHandle getTypedMethod(MethodHandles.Lookup caller, String name, Class<?> pojomatorClass)
     throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
-    if (name.startsWith(FIELD_PREFIX)) {
-      String fieldName = name.substring(FIELD_PREFIX.length());
-      Field field = pojoClass.getDeclaredField(fieldName);
+    String elementName = "element_" + name.substring(4);
+    Field elementField = pojomatorClass.getDeclaredField(elementName);
+    elementField.setAccessible(true);
+    PropertyElement property = (PropertyElement) elementField.get(null);
+    AnnotatedElement element = property.getElement();
+    if (element instanceof Field) {
+      Field field = (Field) element;
       field.setAccessible(true);
       return caller.unreflectGetter(field);
     }
-    else if (name.startsWith(METHOD_PREFIX)) {
-      String methodName = name.substring(METHOD_PREFIX.length());
-      Method method = pojoClass.getDeclaredMethod(methodName);
+    else if (element instanceof Method) {
+      Method method = (Method) element;
       method.setAccessible(true);
       return caller.unreflect(method);
     }
     else {
-      throw new IllegalArgumentException("Cannot handle method named " + name);
+      throw new IllegalArgumentException("Cannot handle element of type " + element.getClass().getName());
     }
+
   }
+
 }
