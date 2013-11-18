@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.diff.NoDifferences;
+import org.pojomatic.internal.PojomatorFactory;
 import org.pojomatic.internal.PojomatorImpl;
 
 public class PojomaticTest {
@@ -14,7 +15,7 @@ public class PojomaticTest {
     public Bean() { x = 0; }
   }
 
-  private static Pojomator<Bean> BEAN_POJOMATOR = new PojomatorImpl<>(Bean.class);
+  private static Pojomator<Bean> BEAN_POJOMATOR = PojomatorFactory.makePojomator(Bean.class);
   private static Bean BEAN = new Bean(1);
 
   @Test

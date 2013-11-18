@@ -35,7 +35,7 @@ public class PojomatorImpl<T> implements Pojomator<T>{
    * @throws NoPojomaticPropertiesException if {@code clazz} has no properties annotated for use
    * with Pojomatic
    */
-  public PojomatorImpl(Class<T> clazz) throws NoPojomaticPropertiesException {
+  private PojomatorImpl(Class<T> clazz) throws NoPojomaticPropertiesException {
     this.clazz = clazz;
     classProperties = ClassProperties.forClass(clazz);
     pojoFormatterClass = findPojoFormatterClass(clazz);
