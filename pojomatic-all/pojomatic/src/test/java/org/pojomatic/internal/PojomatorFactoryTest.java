@@ -273,4 +273,19 @@ public class PojomatorFactoryTest {
     }
     assertEquals("Simple{x: {foo}}", PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()));
   }
+
+  @Test
+  public void testRepeatedFieldNames() {
+    class Parent {
+      protected Parent(int x) { this.x = x; }
+      @Property private int x;
+    }
+    class Child extends Parent {
+      public Child(int x1, int x2) { super(x1); this.x = x2; }
+      @Property private int x;
+    }
+    Pojomator<Child> pojomator = PojomatorFactory.makePojomator(Child.class);
+    assertTrue(pojomator.doEquals(new Child(1, 2), new Child(1, 2)));
+    assertFalse(pojomator.doEquals(new Child(1, 2), new Child(2, 1)));
+  }
 }
