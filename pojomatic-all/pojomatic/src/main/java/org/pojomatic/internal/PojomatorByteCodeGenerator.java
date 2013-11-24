@@ -53,10 +53,10 @@ class PojomatorByteCodeGenerator {
   private final Handle bootstrapMethod;
 
   PojomatorByteCodeGenerator(Class<?> pojoClass, ClassProperties classProperties) {
-    this.pojomatorClassName = PojomatorByteCodeGenerator.class.getName() + "$Pojomator$" + counter.incrementAndGet();
+    this.pojomatorClassName = getClass().getName() + "$Pojomator$" + counter.incrementAndGet();
     this.pojomatorInternalClassName = internalName(pojomatorClassName);
     this.pojoClass = pojoClass;
-    this.pojoDescriptor = PojomatorByteCodeGenerator.classDesc(pojoClass);
+    this.pojoDescriptor = classDesc(pojoClass);
     this.classProperties = classProperties;
     this.bootstrapMethod = new Handle(
       H_INVOKESTATIC,
@@ -74,30 +74,35 @@ class PojomatorByteCodeGenerator {
   private void acceptClassVisitor(ClassVisitor classWriter) {
     classWriter.visit(V1_7, ACC_PUBLIC + ACC_SUPER, pojomatorInternalClassName, null,
         BASE_POJOMATOR_INTERNAL_NAME, new String[] { internalName(Pojomator.class) });
+
     classWriter.visitSource("Look for visitLineNumber", null);
+
     makeFields(classWriter);
 
     makeConstructor(classWriter);
     makeBootstrapMethod(classWriter);
+
     for (PropertyElement propertyElement: classProperties.getAllProperties()) {
       makeAccessor(classWriter, propertyElement);
     }
+
     makeDoEquals(classWriter);
     makeDoHashCode(classWriter);
     makeDoToString(classWriter);
     makeDoDiff(classWriter);
+
     classWriter.visitEnd();
   }
 
   private void makeFields(ClassVisitor classVisitor) {
-    visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, PojomatorByteCodeGenerator.classDesc(Class.class));
+    visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
     for (PropertyElement property: classProperties.getToStringProperties()) {
       visitField(
-        classVisitor, ACC_STATIC, propertyFormatterName(property), PojomatorByteCodeGenerator.classDesc(EnhancedPropertyFormatter.class));
+        classVisitor, ACC_STATIC, propertyFormatterName(property), classDesc(EnhancedPropertyFormatter.class));
     }
     for (PropertyElement property: classProperties.getAllProperties()) {
       visitField(
-        classVisitor, ACC_STATIC, propertyElementName(property), PojomatorByteCodeGenerator.classDesc(PropertyElement.class));
+        classVisitor, ACC_STATIC, propertyElementName(property), classDesc(PropertyElement.class));
     }
   }
 
@@ -530,7 +535,7 @@ class PojomatorByteCodeGenerator {
         GETSTATIC,
         pojomatorInternalClassName,
         propertyFormatterName(propertyElement),
-        PojomatorByteCodeGenerator.classDesc(EnhancedPropertyFormatter.class));
+        classDesc(EnhancedPropertyFormatter.class));
       varBuilder.acceptLoad(mv);
       visitAccessor(mv, varPojo, propertyElement);
       mv.visitMethodInsn(
@@ -577,7 +582,7 @@ class PojomatorByteCodeGenerator {
       GETSTATIC,
       pojomatorInternalClassName,
       propertyElementName(propertyElement),
-      PojomatorByteCodeGenerator.classDesc(PropertyElement.class));
+      classDesc(PropertyElement.class));
   }
 
   private void makeDoDiff(ClassVisitor cw) {
@@ -733,7 +738,7 @@ class PojomatorByteCodeGenerator {
   }
 
   private void loadPojoClass(MethodVisitor mv) {
-    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, PojomatorByteCodeGenerator.classDesc(Class.class));
+    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
   }
 
   /**
