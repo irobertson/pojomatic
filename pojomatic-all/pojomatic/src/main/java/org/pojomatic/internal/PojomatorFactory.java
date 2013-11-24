@@ -42,36 +42,13 @@ public class PojomatorFactory {
   private static final String ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME =
     internalName(org.pojomatic.internal.EnhancedPojoFormatterWrapper.class);
   private static final Object[] NO_STACK = new Object[] {};
-  private static final String BOOTSTRAP_METHOD_DESCRIPTOR =
-    methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class);
-  private static final String EXTENDED_BOOTSTRAP_METHOD_DESCRIPTOR =
-    methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class);
-  private static final String CONSTRUCTOR_DESCRIPTOR = methodDesc(void.class, Class.class, ClassProperties.class);
-  private static final String DO_HASH_CODE_DESCRIPTOR = methodDesc(int.class, Object.class);
-  private static final String DO_TO_STRING_DESCRIPTOR = methodDesc(String.class, Object.class);
-  private static final String ARRAY_HASHCODE_DESCRIPTOR =
-    methodDesc(int.class, Object.class);
-  private static final String OBJECT_TO_OBJECT_DESCRIPTOR = methodDesc(Object.class, Object.class);
-  private static final String OBJECT_OBJECT_TO_BOOL_DESCRIPTOR =
-    methodDesc(boolean.class, Object.class, Object.class);
-  private static final String POJO_CLASS_FIELD_NAME = "pojoClass";
-  private static final String POJOMATOR_SIG = internalName(Pojomator.class);
   private static final String OBJECT_INTERNAL_NAME = internalName(Object.class);
-  private static final String ARRAYS_INTERNAL_NAME = internalName(Arrays.class);
-  private static final String CLASS_INTERNAL_NAME = internalName(Class.class);
-  private static final String CLASS_DESCRIPTOR = Type.getDescriptor(Class.class);
   private static final String BASE_POJOMATOR_INTERNAL_NAME = internalName(BasePojomator.class);
-  private static final String STRING_BUILDER_INTERNAL_NAME = internalName(StringBuilder.class);
-  private static final String ENHANCED_POJO_FORMATTER_INTERNAL_NAME = internalName(EnhancedPojoFormatter.class);
-  private static final String ENHANCED_PROPERTY_FORMATTER_INTERNAL_NAME = internalName(EnhancedPropertyFormatter.class);
-  private static final String ENHANCED_PROPERTY_FORMATTER_DESCRIPTOR =
-    Type.getDescriptor(EnhancedPropertyFormatter.class);
-  private static final String PROPERTY_ELEMENT_DESCRIPTOR = Type.getDescriptor(PropertyElement.class);
-
   @Deprecated
   private static final String ENHANCED_POJO_FORMATTER_WRAPPER_CONSTRUCTOR_DESCRIPTOR =
     methodDesc(void.class, org.pojomatic.formatter.PojoFormatter.class);
 
+  private static final String POJO_CLASS_FIELD_NAME = "pojoClass";
   private static final String BOOTSTRAP_METHOD_NAME = "bootstrap";
 
   private static final AtomicLong counter = new AtomicLong();
@@ -156,13 +133,13 @@ public class PojomatorFactory {
     this.pojomatorClassName = PojomatorFactory.class.getName() + "$Pojomator$" + counter.incrementAndGet();
     this.pojomatorInternalClassName = internalName(pojomatorClassName);
     this.pojoClass = pojoClass;
-    this.pojoDescriptor = Type.getDescriptor(pojoClass);
+    this.pojoDescriptor = PojomatorFactory.classDesc(pojoClass);
     this.classProperties = classProperties;
     this.bootstrapMethod = new Handle(
       H_INVOKESTATIC,
       pojomatorInternalClassName,
       "bootstrap",
-      BOOTSTRAP_METHOD_DESCRIPTOR);
+      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class));
   }
 
   private byte[] makeClassBytes() {
@@ -173,7 +150,7 @@ public class PojomatorFactory {
 
   private void acceptClassVisitor(ClassVisitor classWriter) {
     classWriter.visit(V1_7, ACC_PUBLIC + ACC_SUPER, pojomatorInternalClassName, null,
-        BASE_POJOMATOR_INTERNAL_NAME, new String[] { POJOMATOR_SIG });
+        BASE_POJOMATOR_INTERNAL_NAME, new String[] { internalName(Pojomator.class) });
     classWriter.visitSource("Look for visitLineNumber", null);
     makeFields(classWriter);
 
@@ -190,14 +167,14 @@ public class PojomatorFactory {
   }
 
   private void makeFields(ClassVisitor classVisitor) {
-    visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, CLASS_DESCRIPTOR);
+    visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, PojomatorFactory.classDesc(Class.class));
     for (PropertyElement property: classProperties.getToStringProperties()) {
       visitField(
-        classVisitor, ACC_STATIC, propertyFormatterName(property), ENHANCED_PROPERTY_FORMATTER_DESCRIPTOR);
+        classVisitor, ACC_STATIC, propertyFormatterName(property), PojomatorFactory.classDesc(EnhancedPropertyFormatter.class));
     }
     for (PropertyElement property: classProperties.getAllProperties()) {
       visitField(
-        classVisitor, ACC_STATIC, propertyElementName(property), PROPERTY_ELEMENT_DESCRIPTOR);
+        classVisitor, ACC_STATIC, propertyElementName(property), PojomatorFactory.classDesc(PropertyElement.class));
     }
   }
 
@@ -211,7 +188,9 @@ public class PojomatorFactory {
     LocalVariable name = new LocalVariable("name", String.class, null, 1);
     LocalVariable type = new LocalVariable("type", MethodType.class, null, 2);
     MethodVisitor mv = classWriter.visitMethod(
-       ACC_STATIC, BOOTSTRAP_METHOD_NAME, BOOTSTRAP_METHOD_DESCRIPTOR,
+       ACC_STATIC,
+       BOOTSTRAP_METHOD_NAME,
+       methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class),
        null,
        null);
     mv.visitCode();
@@ -225,7 +204,7 @@ public class PojomatorFactory {
     mv.visitMethodInsn(
       INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME,
       "bootstrap",
-      EXTENDED_BOOTSTRAP_METHOD_DESCRIPTOR);
+      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class));
     mv.visitInsn(ARETURN);
     Label end = visitNewLabel(mv);
     caller.withScope(start, end).acceptLocalVariable(mv);
@@ -282,13 +261,15 @@ public class PojomatorFactory {
     LocalVariable varThis = new LocalVariable("this", classDesc(pojomatorInternalClassName), null, 0);
     LocalVariable varPojoClass = new LocalVariable("pojoClass", Class.class, null, 1);
     LocalVariable varClassProperties = new LocalVariable("classProperties", ClassProperties.class, null, 2);
-    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", CONSTRUCTOR_DESCRIPTOR, null, null);
+    MethodVisitor mv = cw.visitMethod(
+      ACC_PUBLIC, "<init>", methodDesc(void.class, Class.class, ClassProperties.class), null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
     varThis.acceptLoad(mv);
     varPojoClass.acceptLoad(mv);
     varClassProperties.acceptLoad(mv);
-    mv.visitMethodInsn(INVOKESPECIAL, BASE_POJOMATOR_INTERNAL_NAME, "<init>", CONSTRUCTOR_DESCRIPTOR);
+    mv.visitMethodInsn(
+      INVOKESPECIAL, BASE_POJOMATOR_INTERNAL_NAME, "<init>", methodDesc(void.class, Class.class, ClassProperties.class));
     mv.visitInsn(RETURN);
     Label end = visitNewLabel(mv);
     varThis.withScope(start, end).acceptLocalVariable(mv);
@@ -307,7 +288,8 @@ public class PojomatorFactory {
 
     Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME};
 
-    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doEquals", OBJECT_OBJECT_TO_BOOL_DESCRIPTOR, null, null);
+    MethodVisitor mv = cw.visitMethod(
+      ACC_PUBLIC, "doEquals", methodDesc(boolean.class, Object.class, Object.class), null, null);
     Label returnFalse = new Label();
     Label compatibleTypes = new Label();
     mv.visitCode();
@@ -342,7 +324,8 @@ public class PojomatorFactory {
     varThis.acceptLoad(mv);
     varPojo2.acceptLoad(mv);
     invokeGetClass(mv);
-    mv.visitMethodInsn(INVOKEVIRTUAL, BASE_POJOMATOR_INTERNAL_NAME, "isCompatibleForEquality", methodDesc(boolean.class, Class.class));
+    mv.visitMethodInsn(
+      INVOKEVIRTUAL, BASE_POJOMATOR_INTERNAL_NAME, "isCompatibleForEquality", methodDesc(boolean.class, Class.class));
     mv.visitJumpInsn(IFEQ, returnFalse);
     mv.visitLabel(compatibleTypes);
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
@@ -392,17 +375,16 @@ public class PojomatorFactory {
           propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
         mv.visitMethodInsn(
           INVOKESTATIC,
-          ARRAYS_INTERNAL_NAME,
+          internalName(Arrays.class),
           "equals",
           methodDesc(boolean.class, arrayPropertyType, arrayPropertyType));
       }
-      else if (propertyType.equals(Object.class)) {
-        mv.visitMethodInsn(
-          INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME, "areObjectValuesEqual", OBJECT_OBJECT_TO_BOOL_DESCRIPTOR);
-      }
       else {
         mv.visitMethodInsn(
-          INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME, "areNonArrayValuesEqual", OBJECT_OBJECT_TO_BOOL_DESCRIPTOR);
+          INVOKESTATIC,
+          BASE_POJOMATOR_INTERNAL_NAME,
+          propertyType.equals(Object.class) ? "areObjectValuesEqual" : "areNonArrayValuesEqual",
+          methodDesc(boolean.class, Object.class, Object.class));
       }
       mv.visitJumpInsn(IFEQ, notEqualLabel);
     }
@@ -430,7 +412,7 @@ public class PojomatorFactory {
       INVOKESTATIC,
       BASE_POJOMATOR_INTERNAL_NAME,
       "checkNotNull",
-      OBJECT_TO_OBJECT_DESCRIPTOR);
+      methodDesc(Object.class, Object.class));
   }
 
   /**
@@ -472,7 +454,7 @@ public class PojomatorFactory {
     int longOrDoubleStackAdjustment = 0;
     Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME};
 
-    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doHashCode", DO_HASH_CODE_DESCRIPTOR, null, null);
+    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doHashCode", methodDesc(int.class, Object.class), null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
     visitLineNumber(mv, 1);
@@ -540,7 +522,7 @@ public class PojomatorFactory {
         if(propertyType.isArray()) {
           mv.visitMethodInsn(
             INVOKESTATIC,
-            ARRAYS_INTERNAL_NAME,
+            internalName(Arrays.class),
             "hashCode",
             methodDesc(
               int.class, propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class)
@@ -549,7 +531,7 @@ public class PojomatorFactory {
         else if (propertyType == Object.class) {
           mv.visitInsn(DUP);
           invokeGetClass(mv);
-          mv.visitMethodInsn(INVOKEVIRTUAL, CLASS_INTERNAL_NAME, "isArray", "()Z");
+          mv.visitMethodInsn(INVOKEVIRTUAL, internalName(Class.class), "isArray", "()Z");
           Label isArray = new Label();
           mv.visitJumpInsn(IFNE, isArray); // if true
           mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
@@ -557,7 +539,7 @@ public class PojomatorFactory {
 
           mv.visitLabel(isArray);
           mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] { INTEGER, Type.getInternalName(propertyType) });
-          mv.visitMethodInsn(INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME, "arrayHashCode", ARRAY_HASHCODE_DESCRIPTOR);
+          mv.visitMethodInsn(INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME, "arrayHashCode", methodDesc(int.class, Object.class));
         }
         else {
           mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
@@ -585,7 +567,7 @@ public class PojomatorFactory {
     LocalVariable varBuilder= new LocalVariable("builder", classDesc(String.class), null, 3);
 
 
-    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doToString", DO_TO_STRING_DESCRIPTOR, null, null);
+    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doToString", methodDesc(String.class, Object.class), null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
     varPojo.acceptLoad(mv);
@@ -594,9 +576,9 @@ public class PojomatorFactory {
     constructEnhancedPojoFormatter(mv);
     varPojoFormatter.acceptStore(mv);
 
-    mv.visitTypeInsn(NEW, STRING_BUILDER_INTERNAL_NAME);
+    mv.visitTypeInsn(NEW, internalName(StringBuilder.class));
     mv.visitInsn(DUP);
-    mv.visitMethodInsn(INVOKESPECIAL, STRING_BUILDER_INTERNAL_NAME, "<init>", "()V");
+    mv.visitMethodInsn(INVOKESPECIAL, internalName(StringBuilder.class), "<init>", "()V");
     varBuilder.acceptStore(mv);
 
     varPojoFormatter.acceptLoad(mv);
@@ -605,7 +587,7 @@ public class PojomatorFactory {
 
     visitLineNumber(mv, 200);
 
-    mv.visitMethodInsn(INVOKEINTERFACE, ENHANCED_POJO_FORMATTER_INTERNAL_NAME, "appendToStringPrefix",
+    mv.visitMethodInsn(INVOKEINTERFACE, internalName(EnhancedPojoFormatter.class), "appendToStringPrefix",
       methodDesc(void.class, StringBuilder.class, Class.class));
 
     for(PropertyElement propertyElement: classProperties.getToStringProperties()) {
@@ -617,7 +599,7 @@ public class PojomatorFactory {
       loadPropertyElementField(mv, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
-        ENHANCED_POJO_FORMATTER_INTERNAL_NAME,
+        internalName(EnhancedPojoFormatter.class),
         "appendPropertyPrefix",
         methodDesc(void.class, StringBuilder.class, PropertyElement.class));
 
@@ -625,12 +607,12 @@ public class PojomatorFactory {
         GETSTATIC,
         pojomatorInternalClassName,
         propertyFormatterName(propertyElement),
-        Type.getDescriptor(EnhancedPropertyFormatter.class));
+        PojomatorFactory.classDesc(EnhancedPropertyFormatter.class));
       varBuilder.acceptLoad(mv);
       visitAccessor(mv, varPojo, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
-        ENHANCED_PROPERTY_FORMATTER_INTERNAL_NAME,
+        internalName(EnhancedPropertyFormatter.class),
         "appendFormatted",
         methodDesc(
           void.class,
@@ -643,7 +625,7 @@ public class PojomatorFactory {
       loadPropertyElementField(mv, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
-        ENHANCED_POJO_FORMATTER_INTERNAL_NAME,
+        internalName(EnhancedPojoFormatter.class),
         "appendPropertySuffix",
         methodDesc(void.class, StringBuilder.class, PropertyElement.class));
     }
@@ -651,11 +633,11 @@ public class PojomatorFactory {
     varPojoFormatter.acceptLoad(mv);
     varBuilder.acceptLoad(mv);
     loadPojoClass(mv);
-    mv.visitMethodInsn(INVOKEINTERFACE, ENHANCED_POJO_FORMATTER_INTERNAL_NAME, "appendToStringSuffix",
+    mv.visitMethodInsn(INVOKEINTERFACE, internalName(EnhancedPojoFormatter.class), "appendToStringSuffix",
       methodDesc(void.class, StringBuilder.class, Class.class));
 
     varBuilder.acceptLoad(mv);
-    mv.visitMethodInsn(INVOKEVIRTUAL, STRING_BUILDER_INTERNAL_NAME, "toString", "()Ljava/lang/String;");
+    mv.visitMethodInsn(INVOKEVIRTUAL, internalName(StringBuilder.class), "toString", "()Ljava/lang/String;");
 
     mv.visitInsn(ARETURN);
     Label end = visitNewLabel(mv);
@@ -672,7 +654,7 @@ public class PojomatorFactory {
       GETSTATIC,
       pojomatorInternalClassName,
       propertyElementName(propertyElement),
-      Type.getDescriptor(PropertyElement.class));
+      PojomatorFactory.classDesc(PropertyElement.class));
   }
 
   private void makeDoDiff(ClassVisitor cw) {
@@ -796,7 +778,8 @@ public class PojomatorFactory {
     mv.visitTypeInsn(NEW, internalName(PropertyDifferences.class));
     mv.visitInsn(DUP);
     varDifferencesList.acceptLoad(mv);
-    mv.visitMethodInsn(INVOKESPECIAL, internalName(PropertyDifferences.class), "<init>", methodDesc(void.class, List.class));
+    mv.visitMethodInsn(
+      INVOKESPECIAL, internalName(PropertyDifferences.class), "<init>", methodDesc(void.class, List.class));
     mv.visitInsn(ARETURN);
 
     Label end = visitNewLabel(mv);
@@ -827,7 +810,7 @@ public class PojomatorFactory {
   }
 
   private void loadPojoClass(MethodVisitor mv) {
-    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, CLASS_DESCRIPTOR);
+    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, PojomatorFactory.classDesc(Class.class));
   }
 
   /**
@@ -920,7 +903,7 @@ public class PojomatorFactory {
   }
 
   private static String classDesc(Class<?> clazz) {
-    return clazz.isPrimitive() ? Primitives.getLabel(clazz) : classDesc(clazz.getName());
+    return Type.getDescriptor(clazz);
   }
 
   private static String classDesc(String className) {
