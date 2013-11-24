@@ -255,7 +255,8 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   /**
    * Get a method handle to access a field or invoke a no-arg method.
    * @param caller A Lookup from the original call site.
-   * @param name the name of the dynamic method. This should either be "field_&lt;fieldName&gt;" or "method_&lt;methodName&gt;".
+   * @param name the name of the dynamic method. This should be of the form "get_xxx", where "element_xxx" will be a
+   * static field containing a {@link PropertyElement} instance referring to the property to be accessed.
    * @param pojomatorClass the type of the pojomator class
    * @return
    * @throws NoSuchFieldException

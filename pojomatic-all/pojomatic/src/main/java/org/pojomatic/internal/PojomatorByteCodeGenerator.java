@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -61,7 +60,7 @@ class PojomatorByteCodeGenerator {
     this.bootstrapMethod = new Handle(
       H_INVOKESTATIC,
       pojomatorInternalClassName,
-      "bootstrap",
+      BOOTSTRAP_METHOD_NAME,
       methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class));
   }
 
@@ -110,6 +109,14 @@ class PojomatorByteCodeGenerator {
     classVisitor.visitField(flags, name, classDescriptor, null, null).visitEnd();
   }
 
+  /**
+   * Generate a bootstrap method that allows us to access properties without reflection, even though they may not be
+   * public. While the bulk of the work will be done by {@link BasePojomator}, we need to implement a shim which can
+   * provide our classname to
+   * {@link BasePojomator#bootstrap(java.lang.invoke.MethodHandles.Lookup, String, MethodType, Class)},
+   * so that it can in turn access the {@link PropertyElement} field on the class we are generating.
+   * @param classWriter
+   */
   private void makeBootstrapMethod(ClassVisitor classWriter) {
     LocalVariable caller = new LocalVariable("caller", MethodHandles.Lookup.class, null, 0);
     LocalVariable name = new LocalVariable("name", String.class, null, 1);
@@ -122,6 +129,7 @@ class PojomatorByteCodeGenerator {
        null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
+
     caller.acceptLoad(mv);
     name.acceptLoad(mv);
     type.acceptLoad(mv);
@@ -141,6 +149,12 @@ class PojomatorByteCodeGenerator {
     mv.visitEnd();
   }
 
+  /**
+   * Generate an accessor method for a property. The generated method uses InvokeDynamic, calling the method generated
+   * by {@link #makeBootstrapMethod(ClassVisitor)}
+   * @param classWriter
+   * @param propertyElement the property to generate the accessor for
+   */
   private void makeAccessor(ClassVisitor classWriter, PropertyElement propertyElement) {
     LocalVariable pojo = new LocalVariable("pojo", Object.class, null, 0);
     int maxStackSize = 1;
@@ -149,11 +163,12 @@ class PojomatorByteCodeGenerator {
       ACC_PRIVATE | ACC_STATIC, accessorName, accessorMethodType(propertyElement), null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
-    visitLineNumber(mv, 100);
     pojo.acceptLoad(mv);
     visitLineNumber(mv, 101);
     mv.visitInvokeDynamicInsn(accessorName, accessorMethodType(propertyElement), bootstrapMethod);
     visitLineNumber(mv, 102);
+
+    // return using the appropriate return byte code, based on type
     Class<?> propertyType = propertyElement.getPropertyType();
     if (propertyType.isPrimitive()) {
       if (propertyType == float.class) {
@@ -174,14 +189,11 @@ class PojomatorByteCodeGenerator {
     else {
       mv.visitInsn(ARETURN);
     }
+
     Label end = visitNewLabel(mv);
     pojo.withScope(start, end).acceptLocalVariable(mv);
     mv.visitMaxs(maxStackSize, 2);
     mv.visitEnd();
-  }
-
-  private String accessorMethodType(PropertyElement propertyElement) {
-    return methodDesc(propertyElement.getPropertyType(), Object.class);
   }
 
   private void makeConstructor(ClassVisitor cw) {
@@ -217,8 +229,12 @@ class PojomatorByteCodeGenerator {
 
     MethodVisitor mv = cw.visitMethod(
       ACC_PUBLIC, "doEquals", methodDesc(boolean.class, Object.class, Object.class), null, null);
+
+    // where to jump if we should return false
     Label returnFalse = new Label();
+    // where to jump if we determine that pojo1 and pojo2 have types which are compatible for equality
     Label compatibleTypes = new Label();
+
     mv.visitCode();
     Label start = visitNewLabel(mv);
     varPojo1.acceptLoad(mv);
@@ -227,46 +243,48 @@ class PojomatorByteCodeGenerator {
     visitLineNumber(mv, 1);
     Label notSameInstance = new Label();
     mv.visitJumpInsn(IF_ACMPNE, notSameInstance);
-    mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
 
     // same instance; return true
     mv.visitInsn(ICONST_1);
     mv.visitInsn(IRETURN);
 
-    // if other is null, return false.
     mv.visitLabel(notSameInstance);
+
+    // if other is null, return false.
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
     visitLineNumber(mv, 2);
-
     varPojo2.acceptLoad(mv);
     mv.visitJumpInsn(IFNULL, returnFalse);
-    // if both types are equal, they are compatible
+
+    // common case: if both types are the same, they are compatible for equality
     varThis.acceptLoad(mv);
     invokeGetClass(mv);
     varPojo1.acceptLoad(mv);
     invokeGetClass(mv);
     mv.visitJumpInsn(IF_ACMPEQ, compatibleTypes);
-    mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
-    // types are not equals; check for compatibility
+
+    // types are not the same; check for compatibility
     varThis.acceptLoad(mv);
     varPojo2.acceptLoad(mv);
     invokeGetClass(mv);
     mv.visitMethodInsn(
       INVOKEVIRTUAL, BASE_POJOMATOR_INTERNAL_NAME, "isCompatibleForEquality", methodDesc(boolean.class, Class.class));
     mv.visitJumpInsn(IFEQ, returnFalse);
+
+    // types are compatible, so start comparing properties
     mv.visitLabel(compatibleTypes);
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
 
-    // compare properties
+    // Compare properties
     for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
 
       visitAccessorAndCompact(mv, varPojo1, propertyElement);
       visitAccessorAndCompact(mv, varPojo2, propertyElement);
       if(compareProperties(mv, returnFalse, propertyElement)) {
-        longOrDoubleStackAdjustment = 1; // why doesn't this need to be 2? There are two of them...
+        longOrDoubleStackAdjustment = 2;
       }
     }
-    // everything checks out; return true.
+    // If we have gotten this far, all properties are equal, so return true.
     mv.visitInsn(ICONST_1);
     mv.visitInsn(IRETURN);
 
@@ -279,10 +297,19 @@ class PojomatorByteCodeGenerator {
     varThis.withScope(start, end).acceptLocalVariable(mv);
     varPojo1.withScope(start, end).acceptLocalVariable(mv);
     varPojo2.withScope(start, end).acceptLocalVariable(mv);
-    mv.visitMaxs(3 + longOrDoubleStackAdjustment, 3);
+    mv.visitMaxs(2 + longOrDoubleStackAdjustment, 3);
     mv.visitEnd();
   }
 
+  /**
+   * Compare a property from each pojo. It is assumed when this method is called that both property values have been
+   * loaded onto the stack. In the event the property value is a float or double, it is further assumed that it has
+   * been converted to an int or long.
+   * @param mv
+   * @param notEqualLabel where to jump if the property values are not equal
+   * @param propertyElement the property being compared
+   * @return {@code true} if the value of the property will take two positions on the stack (i.e. is a long or double)
+   */
   private boolean compareProperties(MethodVisitor mv, Label notEqualLabel, PropertyElement propertyElement) {
     boolean propertyRequiresTwoStackFrames = false;
     Class<?> propertyType = propertyElement.getPropertyType();
@@ -298,6 +325,7 @@ class PojomatorByteCodeGenerator {
     }
     else {
       if(propertyType.isArray()) {
+        // Comopare array values element by element
         Class<? extends Object> arrayPropertyType =
           propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
         mv.visitMethodInsn(
@@ -316,62 +344,6 @@ class PojomatorByteCodeGenerator {
       mv.visitJumpInsn(IFEQ, notEqualLabel);
     }
     return propertyRequiresTwoStackFrames;
-  }
-
-  /**
-   * Pop the top element off of the stack and invoke checkNotNull on it.
-   * @param mv the current methodVisitor
-   */
-  private void checkNotNullPop(MethodVisitor mv) {
-    mv.visitMethodInsn(
-      INVOKESTATIC,
-      BASE_POJOMATOR_INTERNAL_NAME,
-      "checkNotNullPop",
-      methodDesc(void.class, Object.class));
-  }
-
-  /**
-   * Invoke checkNotNull on the top element of the stack, leaving that element there.
-   * @param mv the current methodVisitor
-   */
-  private void checkNotNull(MethodVisitor mv) {
-    mv.visitMethodInsn(
-      INVOKESTATIC,
-      BASE_POJOMATOR_INTERNAL_NAME,
-      "checkNotNull",
-      methodDesc(Object.class, Object.class));
-  }
-
-  /**
-   * Invoke checkNotNull(message) on the top element of the stack, leaving that element there.
-   * @param mv the current methodVisitor
-   * @param message the message to include in the {@link NullPointerException} if the top element is null
-   */
-  private void checkNotNull(MethodVisitor mv, String message) {
-    mv.visitLdcInsn(message);
-    mv.visitMethodInsn(
-      INVOKESTATIC,
-      BASE_POJOMATOR_INTERNAL_NAME,
-      "checkNotNull",
-      methodDesc(Object.class, Object.class, String.class));
-  }
-
-  /**
-   * invoke checkClass(message) on the specified variable
-   * @param mv the current methodVisitor
-   * @param varNumber the variable number to check
-   * @param message the message to include in the {@link IllegalArgumentException} if the variable fails the
-   * class test
-   */
-  private void checkClass(MethodVisitor mv, LocalVariable varThis, LocalVariable var, String message) {
-    varThis.acceptLoad(mv);
-    var.acceptLoad(mv);
-    mv.visitLdcInsn(message);
-    mv.visitMethodInsn(
-      INVOKEVIRTUAL,
-      BASE_POJOMATOR_INTERNAL_NAME,
-      "checkClass",
-      methodDesc(void.class, Object.class, String.class));
   }
 
   private void makeDoHashCode(ClassVisitor cw) {
@@ -535,8 +507,12 @@ class PojomatorByteCodeGenerator {
         pojomatorInternalClassName,
         propertyFormatterName(propertyElement),
         classDesc(EnhancedPropertyFormatter.class));
+      visitLineNumber(mv, 201);
+
       varBuilder.acceptLoad(mv);
+      visitLineNumber(mv, 202);
       visitAccessor(mv, varPojo, propertyElement);
+      visitLineNumber(mv, 203);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
         internalName(EnhancedPropertyFormatter.class),
@@ -546,6 +522,7 @@ class PojomatorByteCodeGenerator {
           StringBuilder.class,
           propertyElement.getPropertyType().isPrimitive() ? propertyElement.getPropertyType() : Object.class)
           );
+      visitLineNumber(mv, 204);
 
       varPojoFormatter.acceptLoad(mv);
       varBuilder.acceptLoad(mv);
@@ -722,6 +699,23 @@ class PojomatorByteCodeGenerator {
     mv.visitEnd();
   }
 
+  /**
+   * Invoke {@link BasePojomator#checkClass(Object, String)} on the specified variable
+   * @param mv the current methodVisitor
+   * @param varNumber the variable number to check
+   * @param message the message to include in the {@link IllegalArgumentException} if the variable fails the
+   * class test
+   */
+  private void checkClass(MethodVisitor mv, LocalVariable varThis, LocalVariable var, String message) {
+    varThis.acceptLoad(mv);
+    var.acceptLoad(mv);
+    mv.visitLdcInsn(message);
+    mv.visitMethodInsn(
+      INVOKEVIRTUAL,
+      BASE_POJOMATOR_INTERNAL_NAME,
+      "checkClass",
+      methodDesc(void.class, Object.class, String.class));
+  }
 
   /**
    * If the parameter on the stack (of type propertyType) is primitive, convert it to the appropriate wrapper object.
@@ -736,6 +730,11 @@ class PojomatorByteCodeGenerator {
     }
   }
 
+  /**
+   * Load a reference to the pojo class. We cannot refer to this directly, since the class may not be visible to us,
+   * so instead, we store a reference in a static field which is populated by {@link PojomatorFactory}
+   * @param mv
+   */
   private void loadPojoClass(MethodVisitor mv) {
     mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
   }
@@ -802,6 +801,10 @@ class PojomatorByteCodeGenerator {
       accessorMethodType(propertyElement));
   }
 
+  private String accessorMethodType(PropertyElement propertyElement) {
+    return methodDesc(propertyElement.getPropertyType(), Object.class);
+  }
+
   private static void invokeGetClass(MethodVisitor mv) {
     mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "getClass", "()Ljava/lang/Class;");
   }
@@ -819,6 +822,44 @@ class PojomatorByteCodeGenerator {
   private static boolean isWide(PropertyElement propertyElement) {
     Class<?> type = propertyElement.getPropertyType();
     return type == long.class || type == double.class;
+  }
+
+  /**
+   * Pop the top element off of the stack and invoke {@link BasePojomator#checkNotNull(Object)} on it.
+   * @param mv the current methodVisitor
+   */
+  private void checkNotNullPop(MethodVisitor mv) {
+    mv.visitMethodInsn(
+      INVOKESTATIC,
+      BASE_POJOMATOR_INTERNAL_NAME,
+      "checkNotNullPop",
+      methodDesc(void.class, Object.class));
+  }
+
+  /**
+   * Invoke {@link BasePojomator#checkNotNull(Object)} on the top element of the stack, leaving that element there.
+   * @param mv the current methodVisitor
+   */
+  private void checkNotNull(MethodVisitor mv) {
+    mv.visitMethodInsn(
+      INVOKESTATIC,
+      BASE_POJOMATOR_INTERNAL_NAME,
+      "checkNotNull",
+      methodDesc(Object.class, Object.class));
+  }
+
+  /**
+   * Invoke {@link BasePojomator#checkNotNull(Object, String)} on the top element of the stack, leaving that element there.
+   * @param mv the current methodVisitor
+   * @param message the message to include in the {@link NullPointerException} if the top element is null
+   */
+  private void checkNotNull(MethodVisitor mv, String message) {
+    mv.visitLdcInsn(message);
+    mv.visitMethodInsn(
+      INVOKESTATIC,
+      BASE_POJOMATOR_INTERNAL_NAME,
+      "checkNotNull",
+      methodDesc(Object.class, Object.class, String.class));
   }
 
   private static String internalName(Class<?> clazz) {
