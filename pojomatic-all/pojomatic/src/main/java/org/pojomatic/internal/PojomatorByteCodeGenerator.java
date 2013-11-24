@@ -72,7 +72,7 @@ class PojomatorByteCodeGenerator {
   }
 
   private void acceptClassVisitor(ClassVisitor classWriter) {
-    classWriter.visit(V1_7, ACC_PUBLIC + ACC_SUPER, pojomatorInternalClassName, null,
+    classWriter.visit(V1_7, ACC_PUBLIC + ACC_SUPER + ACC_SYNTHETIC, pojomatorInternalClassName, null,
         BASE_POJOMATOR_INTERNAL_NAME, new String[] { internalName(Pojomator.class) });
 
     classWriter.visitSource("Look for visitLineNumber", null);
@@ -107,8 +107,7 @@ class PojomatorByteCodeGenerator {
   }
 
   private static void visitField(ClassVisitor classVisitor, int flags, String name, String classDescriptor) {
-    FieldVisitor fieldVisitor = classVisitor.visitField(flags, name, classDescriptor, null, null);
-    fieldVisitor.visitEnd();
+    classVisitor.visitField(flags, name, classDescriptor, null, null).visitEnd();
   }
 
   private void makeBootstrapMethod(ClassVisitor classWriter) {
