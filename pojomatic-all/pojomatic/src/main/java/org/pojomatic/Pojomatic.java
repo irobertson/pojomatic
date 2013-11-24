@@ -67,6 +67,7 @@ import org.pojomatic.internal.SelfPopulatingMap;
  *
  * @see Pojomator
  */
+@SuppressWarnings("unused")
 public class Pojomatic {
 
   private final static SelfPopulatingMap<Class<?>, Pojomator<?>> POJOMATORS =

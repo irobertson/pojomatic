@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorFactory;
-import org.pojomatic.internal.PojomatorImpl;
 
 public class PojomaticTest {
   public static class Bean {
