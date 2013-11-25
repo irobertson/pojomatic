@@ -437,7 +437,8 @@ class PojomatorByteCodeGenerator {
 
         // it's not null
         mv.visitLabel(ifNonNull);
-        mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] {INTEGER, Type.getInternalName(propertyType)});
+        mv.visitFrame(
+          F_FULL, 2, localVars, 2, new Object[] {INTEGER, Type.getInternalName(effectiveType(propertyType))});
 
         if(propertyType.isArray()) {
           //FIXME - for object arrays, should we do Arrays.deepHashCode? Perhaps an annotation to control this?
@@ -708,10 +709,9 @@ class PojomatorByteCodeGenerator {
 
       mv.visitLabel(propertiesNotEqual);
 
-      localVarTypes[4] = propertyType.isPrimitive()
+      localVarTypes[5] = localVarTypes[4] = propertyType.isPrimitive()
         ? Primitives.getOpcode(propertyType)
-        : internalName(propertyType);
-      localVarTypes[5] = localVarTypes[4];
+        : internalName(effectiveType(propertyType));
       mv.visitFrame(F_FULL, 6, localVarTypes, 0, NO_STACK);
 
       // Create a ValueDifference instance, initialized with the property name and the two values, and add it to our list
@@ -841,7 +841,16 @@ class PojomatorByteCodeGenerator {
   }
 
   private String accessorMethodType(PropertyElement propertyElement) {
-    return methodDesc(propertyElement.getPropertyType(), Object.class);
+    return methodDesc(effectiveType(propertyElement.getPropertyType()), Object.class);
+  }
+
+  private Class<?> effectiveType(Class<?> propertyClass) {
+    if (propertyClass.isArray()) {
+      return propertyClass.getComponentType().isPrimitive() ? propertyClass : Object[].class;
+    }
+    else {
+      return propertyClass.isPrimitive() ? propertyClass : Object.class;
+    }
   }
 
   private static void invokeGetClass(MethodVisitor mv) {

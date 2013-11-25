@@ -54,6 +54,30 @@ public class PojomatorFactoryTest {
   }
 
   @Test
+  public void testBoolean() throws Exception{
+    class Simple {
+        @Property boolean x;
+    }
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    assertEquals(31 + Boolean.FALSE.hashCode(), pojomator.doHashCode(simple));
+    simple.x = true;
+    assertEquals(31 + Boolean.TRUE.hashCode(), pojomator.doHashCode(simple));
+  }
+
+  @Test
+  public void testByte() throws Exception{
+    class Simple {
+      @Property byte x;
+    }
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    assertEquals(31 + Byte.valueOf(simple.x).hashCode(), pojomator.doHashCode(simple));
+    simple.x = -5;
+    assertEquals(31 + Byte.valueOf(simple.x).hashCode(), pojomator.doHashCode(simple));
+  }
+
+  @Test
   public void testIntField() throws Exception {
     class Simple {
       @Property int x = 3;
@@ -96,7 +120,33 @@ public class PojomatorFactoryTest {
 
     Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
     Simple simple = new Simple();
-    assertEquals(31 + Float.floatToIntBits(simple.x), pojomator.doHashCode(simple));
+    assertEquals(31 + Float.valueOf(simple.x).hashCode(), pojomator.doHashCode(simple));
+  }
+
+  @Test
+  public void testDoubleField() throws Exception {
+    class Simple {
+      @Property double x = Math.PI;
+    }
+
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    Simple simple = new Simple();
+    assertEquals(31 + Double.valueOf(simple.x).hashCode(), pojomator.doHashCode(simple));
+  }
+
+  private static class Inaccessible {
+    @Override
+    public int hashCode() {
+      return 7;
+    }
+  }
+
+  @Test
+  public void testFieldWithInaccessibleType() throws Exception {
+    class Simple {
+      @Property Inaccessible x = new Inaccessible();
+    }
+    assertEquals (31 + 7, PojomatorFactory.makePojomator(Simple.class).doHashCode(new Simple()));
   }
 
   @Test
