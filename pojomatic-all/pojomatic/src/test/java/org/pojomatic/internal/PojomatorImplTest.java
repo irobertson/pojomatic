@@ -211,6 +211,8 @@ public class PojomatorImplTest {
   @Test public void testSimpleToString() {
     String actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doToString(new ObjectPairProperty("ess", "tee"));
     assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
+    // check that we use a new formatter each time
+    assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
   }
 
   @Test public void testToStringNames() {
