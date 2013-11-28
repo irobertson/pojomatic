@@ -244,7 +244,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
     }
   }
 
-  protected void checkClass(T instance, String label) {
+  protected void checkCompatibleForEquality(T instance, String label) {
     if (!isCompatibleForEquality(instance.getClass())) {
       throw new IllegalArgumentException(
         label + " has type " + instance.getClass().getName()

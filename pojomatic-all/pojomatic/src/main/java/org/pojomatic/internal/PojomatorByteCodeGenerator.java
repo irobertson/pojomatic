@@ -46,6 +46,7 @@ class PojomatorByteCodeGenerator {
 
   final String pojomatorClassName;
   private final String pojomatorInternalClassName;
+  private final String pojomatorInternalClassDesc;
   private final Class<?> pojoClass;
   private final String pojoDescriptor;
   private final ClassProperties classProperties;
@@ -54,6 +55,7 @@ class PojomatorByteCodeGenerator {
   PojomatorByteCodeGenerator(Class<?> pojoClass, ClassProperties classProperties) {
     this.pojomatorClassName = getClass().getName() + "$Pojomator$" + counter.incrementAndGet();
     this.pojomatorInternalClassName = internalName(pojomatorClassName);
+    this.pojomatorInternalClassDesc = "L" + pojomatorInternalClassName + ";";
     this.pojoClass = pojoClass;
     this.pojoDescriptor = classDesc(pojoClass);
     this.classProperties = classProperties;
@@ -160,12 +162,12 @@ class PojomatorByteCodeGenerator {
     int maxStackSize = 1;
     String accessorName = propertyAccessorName(propertyElement);
     MethodVisitor mv = classWriter.visitMethod(
-      ACC_PRIVATE | ACC_STATIC, accessorName, accessorMethodType(propertyElement), null, null);
+      ACC_PRIVATE | ACC_STATIC, accessorName, accessorMethodDescription(propertyElement), null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
     pojo.acceptLoad(mv);
     visitLineNumber(mv, 101);
-    mv.visitInvokeDynamicInsn(accessorName, accessorMethodType(propertyElement), bootstrapMethod);
+    mv.visitInvokeDynamicInsn(accessorName, accessorMethodDescription(propertyElement), bootstrapMethod);
     visitLineNumber(mv, 102);
 
     // return using the appropriate return byte code, based on type
@@ -197,7 +199,7 @@ class PojomatorByteCodeGenerator {
   }
 
   private void makeConstructor(ClassVisitor cw) {
-    LocalVariable varThis = new LocalVariable("this", classDesc(pojomatorInternalClassName), null, 0);
+    LocalVariable varThis = new LocalVariable("this", pojomatorInternalClassDesc, null, 0);
     LocalVariable varPojoClass = new LocalVariable("pojoClass", Class.class, null, 1);
     LocalVariable varClassProperties = new LocalVariable("classProperties", ClassProperties.class, null, 2);
     MethodVisitor mv = cw.visitMethod(
@@ -223,7 +225,7 @@ class PojomatorByteCodeGenerator {
    * @param cw
    */
   private void makeDoEquals(ClassVisitor cw) {
-    LocalVariable varThis = new LocalVariable("this", classDesc(pojomatorInternalClassName), null, 0);
+    LocalVariable varThis = new LocalVariable("this", pojomatorInternalClassDesc, null, 0);
     LocalVariable varPojo1 = new LocalVariable("pojo1", pojoClass, pojoDescriptor, 1);
     LocalVariable varPojo2 = new LocalVariable("pojo2", pojoClass, pojoDescriptor, 2);
 
@@ -355,7 +357,7 @@ class PojomatorByteCodeGenerator {
    * @param cw
    */
   private void makeDoHashCode(ClassVisitor cw) {
-    LocalVariable varThis = new LocalVariable("this", classDesc(pojomatorInternalClassName), null, 0);
+    LocalVariable varThis = new LocalVariable("this", pojomatorInternalClassDesc, null, 0);
     LocalVariable varPojo = new LocalVariable("pojo", pojoClass, pojoDescriptor, 1);
 
     int longOrDoubleStackAdjustment = 0;
@@ -491,7 +493,7 @@ class PojomatorByteCodeGenerator {
    */
   private void makeDoToString(ClassVisitor cw) {
     int longOrDoubleStackAdjustment = 1;
-    LocalVariable varThis = new LocalVariable("this", classDesc(pojomatorInternalClassName), null, 0);
+    LocalVariable varThis = new LocalVariable("this", pojomatorInternalClassDesc, null, 0);
     LocalVariable varPojo = new LocalVariable("pojo", pojoClass, null, 1);
     LocalVariable varPojoFormatter=
       new LocalVariable("pojoFormattor", classDesc(EnhancedPojoFormatter.class), null, 2);
@@ -635,11 +637,20 @@ class PojomatorByteCodeGenerator {
   }
 
   /**
+   * Load a reference to the pojo class. We cannot refer to this directly, since the class may not be visible to us,
+   * so instead, we store a reference in a static field which is populated by {@link PojomatorFactory}
+   * @param mv
+   */
+  private void loadPojoClass(MethodVisitor mv) {
+    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
+  }
+
+  /**
    * Generate {@link Pojomator#doDiff(Object, Object)
    * @param cw
    */
   private void makeDoDiff(ClassVisitor cw) {
-    LocalVariable varThis = new LocalVariable("this", classDesc(pojomatorInternalClassName), null, 0);
+    LocalVariable varThis = new LocalVariable("this", pojomatorInternalClassDesc, null, 0);
     LocalVariable varPojo1 = new LocalVariable("instance", pojoClass, pojoDescriptor, 1);
     LocalVariable varPojo2 = new LocalVariable("other", pojoClass, pojoDescriptor, 2);
     LocalVariable varDifferencesList = new LocalVariable(
@@ -667,8 +678,8 @@ class PojomatorByteCodeGenerator {
     // not the same instance, some work to do
     mv.visitLabel(notSameInstance);
     mv.visitFrame(F_FULL, 3, localVarTypes, 0, NO_STACK);
-    checkClass(mv, varThis, varPojo1, "instance");
-    checkClass(mv, varThis, varPojo2, "other");
+    checkCompatibleForEquality(mv, varThis, varPojo1, "instance");
+    checkCompatibleForEquality(mv, varThis, varPojo2, "other");
 
     Label makeDiferences = notSameInstance;
     mv.visitTypeInsn(NEW, "java/util/ArrayList");
@@ -772,20 +783,20 @@ class PojomatorByteCodeGenerator {
   }
 
   /**
-   * Invoke {@link BasePojomator#checkClass(Object, String)} on the specified variable
+   * Invoke {@link BasePojomator#checkCompatibleForEquality(Object, String)} on the specified variable
    * @param mv the current methodVisitor
    * @param varNumber the variable number to check
    * @param message the message to include in the {@link IllegalArgumentException} if the variable fails the
    * class test
    */
-  private void checkClass(MethodVisitor mv, LocalVariable varThis, LocalVariable var, String message) {
+  private void checkCompatibleForEquality(MethodVisitor mv, LocalVariable varThis, LocalVariable var, String message) {
     varThis.acceptLoad(mv);
     var.acceptLoad(mv);
     mv.visitLdcInsn(message);
     mv.visitMethodInsn(
       INVOKEVIRTUAL,
       BASE_POJOMATOR_INTERNAL_NAME,
-      "checkClass",
+      "checkCompatibleForEquality",
       methodDesc(void.class, Object.class, String.class));
   }
 
@@ -800,15 +811,6 @@ class PojomatorByteCodeGenerator {
       Class<?> wrapperClass = Primitives.getWrapperClass(propertyType);
       mv.visitMethodInsn(INVOKESTATIC, internalName(wrapperClass), "valueOf", methodDesc(wrapperClass, propertyType));
     }
-  }
-
-  /**
-   * Load a reference to the pojo class. We cannot refer to this directly, since the class may not be visible to us,
-   * so instead, we store a reference in a static field which is populated by {@link PojomatorFactory}
-   * @param mv
-   */
-  private void loadPojoClass(MethodVisitor mv) {
-    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
   }
 
   /**
@@ -837,13 +839,20 @@ class PojomatorByteCodeGenerator {
     var.acceptLoad(mv);
     mv.visitMethodInsn(
       INVOKESTATIC, pojomatorInternalClassName, propertyAccessorName(propertyElement),
-      accessorMethodType(propertyElement));
+      accessorMethodDescription(propertyElement));
   }
 
-  private String accessorMethodType(PropertyElement propertyElement) {
+  private String accessorMethodDescription(PropertyElement propertyElement) {
     return methodDesc(effectiveType(propertyElement.getPropertyType()), Object.class);
   }
 
+  /**
+   * Determine what, for our purposes, is the effective type of a property. Since a property type may be a class which
+   * is not visible to us, we'll treat any type which is neither primitive nor an array to be of type Object.
+   * A primitive type or array of primitives will be returned as is. All other array types will be returned as Object[].
+   * @param propertyClass the class to determine the effective type for.
+   * @return the effective type of {@code propertyClass}
+   */
   private Class<?> effectiveType(Class<?> propertyClass) {
     if (propertyClass.isArray()) {
       return propertyClass.getComponentType().isPrimitive() ? propertyClass : Object[].class;
@@ -857,6 +866,11 @@ class PojomatorByteCodeGenerator {
     mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "getClass", "()Ljava/lang/Class;");
   }
 
+  /**
+   * Create a new label and visit it.
+   * @param mv the MethodVisitor
+   * @return the new label
+   */
   private static Label visitNewLabel(MethodVisitor mv) {
     Label label = new Label();
     mv.visitLabel(label);
@@ -867,6 +881,11 @@ class PojomatorByteCodeGenerator {
     mv.visitLineNumber(lineNumber, visitNewLabel(mv));
   }
 
+  /**
+   * Determine if the type of a property is "wide" - i.e. is a long or double.
+   * @param propertyElement
+   * @return
+   */
   private static boolean isWide(PropertyElement propertyElement) {
     Class<?> type = propertyElement.getPropertyType();
     return type == long.class || type == double.class;
@@ -920,10 +939,6 @@ class PojomatorByteCodeGenerator {
 
   private static String classDesc(Class<?> clazz) {
     return Type.getDescriptor(clazz);
-  }
-
-  private static String classDesc(String className) {
-    return "L" + internalName(className) + ";";
   }
 
   private static String methodDesc(Class<?> returnType) {
