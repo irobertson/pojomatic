@@ -1,7 +1,11 @@
 package org.pojomatic.formatter;
 
+import java.lang.reflect.AnnotatedElement;
+
 @SuppressWarnings("deprecation")
 public interface EnhancedPropertyFormatter extends PropertyFormatter {
+  @Override // avoid deprecation warning
+  void initialize(AnnotatedElement element);
   void appendFormatted(StringBuilder builder, Object o);
   void appendFormatted(StringBuilder builder, boolean b);
   void appendFormatted(StringBuilder builder, byte b);

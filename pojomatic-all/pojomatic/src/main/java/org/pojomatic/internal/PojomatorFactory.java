@@ -1,5 +1,6 @@
 package org.pojomatic.internal;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
@@ -47,7 +48,7 @@ public class PojomatorFactory {
       setStaticField(
         pojomatorClass,
         PojomatorByteCodeGenerator.propertyFormatterName(propertyElement),
-        createPropertyFormatter(propertyElement.getElement().getAnnotation(PropertyFormat.class)));
+        createPropertyFormatter(propertyElement.getElement()));
     }
     for (PropertyElement propertyElement: classProperties.getAllProperties()) {
       setStaticField(pojomatorClass, PojomatorByteCodeGenerator.propertyElementName(propertyElement), propertyElement);
@@ -62,21 +63,29 @@ public class PojomatorFactory {
     field.set(null, value);
   }
 
-  private static EnhancedPropertyFormatter createPropertyFormatter(PropertyFormat format)
+  private static EnhancedPropertyFormatter createPropertyFormatter(AnnotatedElement annotatedElement)
     throws InstantiationException, IllegalAccessException {
-    if (format == null) {
+    PropertyFormat propertyFormat = annotatedElement.getAnnotation(PropertyFormat.class);
+    EnhancedPropertyFormatter propertyFormatter = constructPropertyFormatter(propertyFormat);
+    propertyFormatter.initialize(annotatedElement);
+    return propertyFormatter;
+
+  }
+
+  private static EnhancedPropertyFormatter constructPropertyFormatter(PropertyFormat propertyFormat)
+    throws InstantiationException, IllegalAccessException {
+    if (propertyFormat == null) {
       return new DefaultEnhancedPropertyFormatter();
     }
     else {
-      if (EnhancedPropertyFormatter.class.isAssignableFrom(format.value())) {
-        return (EnhancedPropertyFormatter) format.value().newInstance();
+      if (EnhancedPropertyFormatter.class.isAssignableFrom(propertyFormat.value())) {
+        return (EnhancedPropertyFormatter) propertyFormat.value().newInstance();
       }
       else {
         @SuppressWarnings("deprecation")
-        EnhancedPropertyFormatterWrapper wrapper = new EnhancedPropertyFormatterWrapper(format.value().newInstance());
+        EnhancedPropertyFormatterWrapper wrapper = new EnhancedPropertyFormatterWrapper(propertyFormat.value().newInstance());
         return wrapper;
       }
     }
-
   }
 }

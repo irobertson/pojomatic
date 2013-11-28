@@ -6,12 +6,16 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.annotations.PropertyFormat;
+import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
+import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 
 import com.google.common.io.ByteStreams;
 
@@ -337,5 +341,32 @@ public class PojomatorFactoryTest {
     Pojomator<Child> pojomator = PojomatorFactory.makePojomator(Child.class);
     assertTrue(pojomator.doEquals(new Child(1, 2), new Child(1, 2)));
     assertFalse(pojomator.doEquals(new Child(1, 2), new Child(2, 1)));
+  }
+
+  static class InitializablePropertyFormatter extends DefaultEnhancedPropertyFormatter {
+    private boolean initCalled;
+
+    @Override
+    public void initialize(AnnotatedElement element) {
+      initCalled = true;
+    }
+
+    @Override
+    public void appendFormatted(StringBuilder builder, int i) {
+      super.appendFormatted(builder, initCalled ? i * 2 : i);
+    }
+  }
+
+  @Test
+  public void testPropertyFormatterRequringIntialization() {
+
+    class Simple {
+      @Property
+      @PropertyFormat(InitializablePropertyFormatter.class)
+      int i = 3;
+    }
+
+    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
+    assertEquals("Simple{i: {6}}", pojomator.doToString(new Simple()));
   }
 }
