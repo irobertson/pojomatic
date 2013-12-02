@@ -17,6 +17,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
+import org.pojomatic.annotations.CanBeArray;
+import org.pojomatic.annotations.DeepArray;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
@@ -331,20 +333,20 @@ class PojomatorByteCodeGenerator {
     }
     else {
       if(propertyType.isArray()) {
-        // Comopare array values element by element
+        // Compare array values element by element
         Class<? extends Object> arrayPropertyType =
           propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
         mv.visitMethodInsn(
           INVOKESTATIC,
           internalName(Arrays.class),
-          "equals",
+          isDeepArray(propertyElement) ? "deepEquals" : "equals",
           methodDesc(boolean.class, arrayPropertyType, arrayPropertyType));
       }
       else {
         mv.visitMethodInsn(
           INVOKESTATIC,
           BASE_POJOMATOR_INTERNAL_NAME,
-          propertyType.equals(Object.class) ? "areObjectValuesEqual" : "areNonArrayValuesEqual",
+          canBeArray(propertyElement) ? "areObjectValuesEqual" : "areNonArrayValuesEqual",
           methodDesc(boolean.class, Object.class, Object.class));
       }
       mv.visitJumpInsn(IFEQ, notEqualLabel);
@@ -443,11 +445,10 @@ class PojomatorByteCodeGenerator {
           F_FULL, 2, localVars, 2, new Object[] {INTEGER, Type.getInternalName(effectiveType(propertyType))});
 
         if(propertyType.isArray()) {
-          //FIXME - for object arrays, should we do Arrays.deepHashCode? Perhaps an annotation to control this?
           mv.visitMethodInsn(
             INVOKESTATIC,
             internalName(Arrays.class),
-            "hashCode",
+            isDeepArray(propertyElement) ? "deepHashCode" : "hashCode",
             methodDesc(
               int.class, propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class)
               );
@@ -798,6 +799,30 @@ class PojomatorByteCodeGenerator {
       BASE_POJOMATOR_INTERNAL_NAME,
       "checkCompatibleForEquality",
       methodDesc(void.class, Object.class, String.class));
+  }
+
+  /**
+   * Determine if the given propertyElement should be treated as possibly containing a multi-level array.
+   * This will be the case if it is annotated with {@link DeepArray}, and is not of a primitive type or array of
+   * primitive type.
+   * @param propertyElement
+   * @return {@code true} if the given propertyElement should be treated as possibly containing a multi-level array,
+   * or {@code false} otherwise.
+   */
+  private boolean isDeepArray(PropertyElement propertyElement) {
+    return propertyElement.getElement().isAnnotationPresent(DeepArray.class)
+      && !propertyElement.getPropertyType().isPrimitive()
+      && !(propertyElement.getPropertyType().isArray()
+           && propertyElement.getPropertyType().getComponentType().isPrimitive());
+  }
+
+  /**
+   * Determine if the given propertyElement should be treated as one that could be an array.
+   * @param propertyElement
+   * @return {@code true} if the given propertyElement is annotated with {@link CanBeArray}, or {@code false} otherwise.
+   */
+  private boolean canBeArray(PropertyElement propertyElement) {
+    return propertyElement.getElement().isAnnotationPresent(CanBeArray.class);
   }
 
   /**

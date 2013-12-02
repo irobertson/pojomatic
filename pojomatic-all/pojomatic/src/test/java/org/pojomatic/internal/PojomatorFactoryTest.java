@@ -14,7 +14,6 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
-import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
 import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 
 import com.google.common.io.ByteStreams;
@@ -279,21 +278,6 @@ public class PojomatorFactoryTest {
     Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
     assertFalse(pojomator.doEquals(new Simple("2"), new Simple("3")));
     assertTrue(pojomator.doEquals(new Simple("2"), new Simple(new String("2"))));
-    assertTrue(pojomator.doEquals(new Simple(null), new Simple(null)));
-    assertFalse(pojomator.doEquals(new Simple(null), new Simple("x")));
-    assertFalse(pojomator.doEquals(new Simple("x"), new Simple(null)));
-  }
-
-  @Test
-  public void testObjectEquals() throws Exception {
-    class Simple {
-      @Property Object x;
-      Simple(Object x) { this.x = x; }
-    }
-    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
-    assertFalse(pojomator.doEquals(new Simple("2"), new Simple("3")));
-    assertTrue(pojomator.doEquals(new Simple("2"), new Simple("2")));
-    assertTrue(pojomator.doEquals(new Simple(new int[] { 1, 2, 3 }), new Simple(new int[] { 1, 2, 3 })));
     assertTrue(pojomator.doEquals(new Simple(null), new Simple(null)));
     assertFalse(pojomator.doEquals(new Simple(null), new Simple("x")));
     assertFalse(pojomator.doEquals(new Simple("x"), new Simple(null)));

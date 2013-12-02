@@ -2,18 +2,24 @@ package org.pojomatic.formatter;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pojomatic.annotations.DeepArray;
 
 public class DefaultEnhancedPropertyFormatterTest {
   private EnhancedPropertyFormatter formatter;
   private StringBuilder builder;
 
-  @Before public void setUp() {
+  @DeepArray
+  private Field deepArrayAnnotated;
+
+  @Before public void setUp() throws Exception {
     formatter = new DefaultEnhancedPropertyFormatter();
     builder = new StringBuilder();
+    deepArrayAnnotated = getClass().getDeclaredField("deepArrayAnnotated");
   }
 
   @Test public void testFormat() {
@@ -77,11 +83,13 @@ public class DefaultEnhancedPropertyFormatterTest {
   }
 
   @Test public void testFormatDoubleArray() {
+    formatter.initialize(deepArrayAnnotated);
     formatter.appendFormatted(builder, new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @Test public void testFormatDoubleArrayOfPrimitives() {
+    formatter.initialize(deepArrayAnnotated);
     formatter.appendFormatted(builder, new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
@@ -134,12 +142,14 @@ public class DefaultEnhancedPropertyFormatterTest {
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayAsObject() {
+    formatter.initialize(deepArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayOfPrimitivesAsObject() {
+    formatter.initialize(deepArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }

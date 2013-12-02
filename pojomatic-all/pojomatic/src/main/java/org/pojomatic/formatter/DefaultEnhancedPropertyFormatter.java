@@ -3,6 +3,9 @@ package org.pojomatic.formatter;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
+import org.pojomatic.annotations.CanBeArray;
+import org.pojomatic.annotations.DeepArray;
+
 /**
  * The default property formatter used by Pojomatic.  While the particulars of the formatting
  * strategy are subject to change, the general principle is to provide a meaningful representation.
@@ -10,10 +13,12 @@ import java.util.Arrays;
  * representation of Java arrays.
  */
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
+  private boolean isDeepArray;
+
   //FIXME - this currently prevents formatter reusability, and for very little benefit.
   @Override
   public void initialize(AnnotatedElement element) {
-    //Not applicable
+    isDeepArray = element.isAnnotationPresent(DeepArray.class);
   }
 
   @Override
@@ -61,7 +66,12 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
         }
       }
       else {
-        builder.append( Arrays.deepToString((Object[]) value));
+        if (isDeepArray) {
+          builder.append( Arrays.deepToString((Object[]) value));
+        }
+        else {
+          builder.append( Arrays.toString((Object[]) value));
+        }
       }
     }
     else {
