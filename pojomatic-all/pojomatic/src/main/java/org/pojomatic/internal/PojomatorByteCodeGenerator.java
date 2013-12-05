@@ -54,6 +54,25 @@ class PojomatorByteCodeGenerator {
   private final ClassProperties classProperties;
   private final Handle bootstrapMethod;
 
+  /**
+   * Class for tracking adjustments to be made to the max stack and/or localvariable size
+   */
+  private static class StackAdjustments {
+    /**
+     * At least one "wide" property (long or double) has been encountered
+     */
+    boolean wideProperty;
+
+    /**
+     * At least one call has been made to {@link BasePojomator#areObjectValuesEqual(Object, Object, boolean)}
+     */
+    boolean callAreObjectValuesEqual;
+
+    int adjustments(int widePropertyWeight, int callAreObjectValuesEqualWeight) {
+      return (wideProperty ? widePropertyWeight : 0) + (callAreObjectValuesEqual ? callAreObjectValuesEqualWeight : 0);
+    }
+  }
+
   PojomatorByteCodeGenerator(Class<?> pojoClass, ClassProperties classProperties) {
     this.pojomatorClassName = getClass().getName() + "$Pojomator$" + counter.incrementAndGet();
     this.pojomatorInternalClassName = internalName(pojomatorClassName);
@@ -231,7 +250,7 @@ class PojomatorByteCodeGenerator {
     LocalVariable varPojo1 = new LocalVariable("pojo1", pojoClass, pojoDescriptor, 1);
     LocalVariable varPojo2 = new LocalVariable("pojo2", pojoClass, pojoDescriptor, 2);
 
-    int longOrDoubleStackAdjustment = 0;
+    StackAdjustments stackAdjustments = new StackAdjustments();
 
     Object[] localVars = new Object[] {pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME};
 
@@ -285,12 +304,9 @@ class PojomatorByteCodeGenerator {
 
     // Compare properties
     for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
-
       visitAccessorAndConvert(mv, varPojo1, propertyElement);
       visitAccessorAndConvert(mv, varPojo2, propertyElement);
-      if(compareProperties(mv, returnFalse, propertyElement)) {
-        longOrDoubleStackAdjustment = 2;
-      }
+      compareProperties(mv, returnFalse, propertyElement, stackAdjustments);
     }
     // If we have gotten this far, all properties are equal, so return true.
     mv.visitInsn(ICONST_1);
@@ -305,7 +321,7 @@ class PojomatorByteCodeGenerator {
     varThis.withScope(start, end).acceptLocalVariable(mv);
     varPojo1.withScope(start, end).acceptLocalVariable(mv);
     varPojo2.withScope(start, end).acceptLocalVariable(mv);
-    mv.visitMaxs(2 + longOrDoubleStackAdjustment, 3);
+    mv.visitMaxs(2 + stackAdjustments.adjustments(2,  1), 3);
     mv.visitEnd();
   }
 
@@ -316,14 +332,15 @@ class PojomatorByteCodeGenerator {
    * @param mv
    * @param notEqualLabel where to jump if the property values are not equal
    * @param propertyElement the property being compared
+   * @param stackAdjustments adjustments to be made to the max stack size, based on property type
    * @return {@code true} if the value of the property will take two positions on the stack (i.e. is a long or double)
    */
-  private boolean compareProperties(MethodVisitor mv, Label notEqualLabel, PropertyElement propertyElement) {
-    boolean propertyRequiresTwoStackFrames = false;
+  private void compareProperties(
+      MethodVisitor mv, Label notEqualLabel, PropertyElement propertyElement, StackAdjustments stackAdjustments) {
     Class<?> propertyType = propertyElement.getPropertyType();
     if (propertyType.isPrimitive()) {
       if (isWide(propertyElement)) {
-        propertyRequiresTwoStackFrames = true;
+        stackAdjustments.wideProperty = true;
         mv.visitInsn(LCMP);
         mv.visitJumpInsn(IFNE, notEqualLabel);
       }
@@ -343,15 +360,25 @@ class PojomatorByteCodeGenerator {
           methodDesc(boolean.class, arrayPropertyType, arrayPropertyType));
       }
       else {
-        mv.visitMethodInsn(
-          INVOKESTATIC,
-          BASE_POJOMATOR_INTERNAL_NAME,
-          canBeArray(propertyElement) ? "areObjectValuesEqual" : "areNonArrayValuesEqual",
-          methodDesc(boolean.class, Object.class, Object.class));
+        if (canBeArray(propertyElement)) {
+          stackAdjustments.callAreObjectValuesEqual = true;
+          mv.visitInsn(isDeepArray(propertyElement) ? ICONST_1 : ICONST_0);
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            BASE_POJOMATOR_INTERNAL_NAME,
+            "areObjectValuesEqual",
+            methodDesc(boolean.class, Object.class, Object.class, boolean.class));
+        }
+        else {
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            BASE_POJOMATOR_INTERNAL_NAME,
+            "areNonArrayValuesEqual",
+            methodDesc(boolean.class, Object.class, Object.class));
+        }
       }
       mv.visitJumpInsn(IFEQ, notEqualLabel);
     }
-    return propertyRequiresTwoStackFrames;
   }
 
   /**
@@ -657,7 +684,7 @@ class PojomatorByteCodeGenerator {
     LocalVariable varDifferencesList = new LocalVariable(
       "differences", List.class, "Ljava/util/List<Lorg/pojomatic/diff/Difference;>;", 3);
 
-    int longOrDoubleStackAdjustment = 0;
+    StackAdjustments stackAdjustments = new StackAdjustments();
     Object[] localVarTypes = new Object[] {
       pojomatorInternalClassName, OBJECT_INTERNAL_NAME, OBJECT_INTERNAL_NAME, internalName(List.class), null, null };
 
@@ -692,9 +719,6 @@ class PojomatorByteCodeGenerator {
     // compare properties
     for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
       int width = isWide(propertyElement) ? 2 : 1;
-      if (width > 1) {
-        longOrDoubleStackAdjustment = 2; // one extra slot each for the value from instance and from other
-      }
       Class<?> propertyType = propertyElement.getPropertyType();
       LocalVariable varProp1 = new LocalVariable(
         "property_" + propertyElement.getName() + "_1", propertyType, null, 4);
@@ -716,7 +740,7 @@ class PojomatorByteCodeGenerator {
 
       Label propertiesNotEqual = new Label();
       Label next = new Label();
-      compareProperties(mv, propertiesNotEqual, propertyElement);
+      compareProperties(mv, propertiesNotEqual, propertyElement, stackAdjustments);
       mv.visitJumpInsn(GOTO, next); // there were no differences.
 
       mv.visitLabel(propertiesNotEqual);
@@ -779,7 +803,7 @@ class PojomatorByteCodeGenerator {
     for (LocalVariable var: propertyVariables) {
       var.acceptLocalVariable(mv);
     }
-    mv.visitMaxs(6 + longOrDoubleStackAdjustment, 6 + longOrDoubleStackAdjustment);
+    mv.visitMaxs(6 + stackAdjustments.adjustments(2, 1), 6 + stackAdjustments.adjustments(2, 1));
     mv.visitEnd();
   }
 

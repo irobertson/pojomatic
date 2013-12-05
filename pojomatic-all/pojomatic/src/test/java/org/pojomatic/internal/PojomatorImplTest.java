@@ -267,15 +267,77 @@ public class PojomatorImplTest {
     assertEquals("Simple{x: {[1.0, 2.0]}}", pojomator.doToString(new Simple(1, 2)));
   }
 
-  @Test public void testDeepObjectArrayEquals() {
-    //tests array of arrays, and that .equals is being called per element
-    assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(
-      new ObjectProperty(new Object[] { "foo", new String[] {"bar"} }),
-      new ObjectProperty(new Object[] { new String("foo"), new String[] {new String("bar")} })));
+  @Test public void testDeepObjectArrayAsObjectEquals() {
+    class Simple {
+      @Property @CanBeArray @DeepArray Object x;
+      public Simple(Object val) { x = val; }
+    }
 
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
-      new ObjectProperty(new Object[] { "foo", new String[] {"bar"} }),
-      new ObjectProperty(new Object[] { new String("foo"), new String[] {new String("baz")} })));
+    Pojomator<Simple> pojomator = makePojomator(Simple.class);
+
+    //tests array of arrays, and that .equals is being called per element
+    assertTrue(pojomator.doEquals(
+      new Simple(new Object[] { "foo", new String[] {"bar"} }),
+      new Simple(new Object[] { new String("foo"), new String[] {new String("bar")} })));
+
+    assertFalse(pojomator.doEquals(
+      new Simple(new Object[] { "foo", new String[] {"bar"} }),
+      new Simple(new Object[] { new String("foo"), new String[] {new String("baz")} })));
+  }
+
+  @Test public void testDeepObjectArrayAsArrayEquals() {
+    class Simple {
+      @Property @DeepArray Object[] x;
+      public Simple(Object[] val) { x = val; }
+    }
+
+    Pojomator<Simple> pojomator = makePojomator(Simple.class);
+
+    //tests array of arrays, and that .equals is being called per element
+    assertTrue(pojomator.doEquals(
+      new Simple(new Object[] { "foo", new String[] {"bar"} }),
+      new Simple(new Object[] { new String("foo"), new String[] {new String("bar")} })));
+
+    assertFalse(pojomator.doEquals(
+      new Simple(new Object[] { "foo", new String[] {"bar"} }),
+      new Simple(new Object[] { new String("foo"), new String[] {new String("baz")} })));
+  }
+
+  @Test public void testShallowObjectArrayAsObjectEquals() {
+    class Simple {
+      @Property @CanBeArray Object x;
+      public Simple(Object val) { x = val; }
+    }
+
+    Pojomator<Simple> pojomator = makePojomator(Simple.class);
+
+    assertTrue(pojomator.doEquals(new Simple(null), new Simple(null)));
+    assertFalse(pojomator.doEquals(
+      new Simple(new Object[] { "foo", new String[] {"bar"} }),
+      new Simple(new Object[] { "foo", new String[] {"bar"} })));
+
+    String[] array = new String[] { "baz" };
+    assertTrue(pojomator.doEquals(
+      new Simple(new Object[] { "foo", array }),
+      new Simple(new Object[] { new String("foo"), array })));
+  }
+
+  @Test public void testShallowObjectArrayAsArrayEquals() {
+    class Simple {
+      @Property Object[] x;
+      public Simple(Object[] val) { x = val; }
+    }
+
+    Pojomator<Simple> pojomator = makePojomator(Simple.class);
+
+    assertFalse(pojomator.doEquals(
+      new Simple(new Object[] { "foo", new String[] {"bar"} }),
+      new Simple(new Object[] { "foo", new String[] {"bar"} })));
+
+    String[] array = new String[] { "baz" };
+    assertTrue(pojomator.doEquals(
+      new Simple(new Object[] { "foo", array }),
+      new Simple(new Object[] { new String("foo"), array })));
   }
 
   @Test

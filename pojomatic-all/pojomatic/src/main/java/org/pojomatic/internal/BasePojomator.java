@@ -103,7 +103,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * @param otherValue the second value to compare
    * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
    */
-  protected static boolean areObjectValuesEqual(Object instanceValue, Object otherValue) {
+  protected static boolean areObjectValuesEqual(Object instanceValue, Object otherValue, boolean deepArray) {
     if (instanceValue == otherValue) {
       return true;
     }
@@ -125,8 +125,15 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
           if (otherValue.getClass().getComponentType().isPrimitive()) {
             return false;
           }
-          if (!Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue)) {
-            return false;
+          if (deepArray) {
+            if (!Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue)) {
+              return false;
+            }
+          }
+          else {
+            if (!Arrays.equals((Object[]) instanceValue, (Object[]) otherValue)) {
+              return false;
+            }
           }
         }
         else { // instanceComponentClass is primitive
