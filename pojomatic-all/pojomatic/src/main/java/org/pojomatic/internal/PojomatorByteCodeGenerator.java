@@ -803,7 +803,7 @@ class PojomatorByteCodeGenerator {
     for (LocalVariable var: propertyVariables) {
       var.acceptLocalVariable(mv);
     }
-    mv.visitMaxs(6 + stackAdjustments.adjustments(2, 1), 6 + stackAdjustments.adjustments(2, 1));
+    mv.visitMaxs(6 + stackAdjustments.adjustments(2, 0), 6 + stackAdjustments.adjustments(2, 0));
     mv.visitEnd();
   }
 
