@@ -27,6 +27,9 @@ public class PojomatorImplTest {
   private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
     makePojomator(ObjectProperty.class);
 
+  private static Pojomator<ArrayObjectProperty> ARRAY_OBJECT_PROPERTY_POJOMATOR =
+    makePojomator(ArrayObjectProperty.class);
+
   private static Pojomator<ObjectPairProperty> OBJECT_PAIR_PROPERTY_POJOMATOR =
     makePojomator(ObjectPairProperty.class);
 
@@ -341,28 +344,60 @@ public class PojomatorImplTest {
   }
 
   @Test
-  public void testDeepVersusShallowArrays() {
-    class Shallow { @Property Object[] x; public Shallow(Object[] x) { this.x = x; } }
-    class Deep { @Property @DeepArray Object[] x; public Deep(Object[] x) { this.x = x; } }
+  public void testDeepVersusShallowArrays() throws Exception {
+    class ObjectShallow { @Property @CanBeArray Object x; }
+    class ObjectDeep { @Property @CanBeArray @DeepArray Object x; }
+    class ArrayShallow { @Property Object[] x; }
+    class ArrayDeep { @Property @DeepArray Object[] x; }
 
-    Pojomator<Shallow> shallowPojomator = makePojomator(Shallow.class);
-    Pojomator<Deep> deepPojomator = makePojomator(Deep.class);
+    class ArrayClassStrategy<T> {
+      private Class<T> clazz;
+      Pojomator<T> pojomator;
+      public ArrayClassStrategy(Class<T> pojoClass) {
+        clazz = pojoClass;
+        pojomator = makePojomator(clazz);
+      }
+
+      private T instance(Object[] arg) throws Exception {
+        T instance = clazz.getDeclaredConstructor(PojomatorImplTest.class).newInstance(PojomatorImplTest.this);
+        clazz.getDeclaredField("x").set(instance, arg);
+        return instance;
+      }
+
+      public boolean doEquals(Object[] arg1, Object[] arg2) throws Exception {
+        return pojomator.doEquals(instance(arg1), instance(arg2));
+      }
+
+      public int doHashCode(Object[] arg) throws Exception {
+        return pojomator.doHashCode(instance(arg));
+      }
+
+      public String doToString(Object[] arg) throws Exception {
+        return pojomator.doToString(instance(arg));
+      }
+    }
 
     Object[] array1 = { new Object[] { "a", "b" }, new Object[] { "c", "d" } };
     Object[] array2 = { new Object[] { "a", "b" }, new Object[] { "c", "d" } };
     Object[] otherArray = new Object[][] { new Object[] { "a", "b" }, new Object[] { "c", "other" } };
 
-    assertFalse(shallowPojomator.doEquals(new Shallow(array1), new Shallow(array2)));
-    assertNotEquals(shallowPojomator.doHashCode(new Shallow(array1)), shallowPojomator.doHashCode(new Shallow(array2)));
-    assertNotEquals(shallowPojomator.doToString(new Shallow(array1)), shallowPojomator.doToString(new Shallow(array2)));
+    for (ArrayClassStrategy<?> strategy: new ArrayClassStrategy[] {
+        new ArrayClassStrategy<>(ObjectShallow.class), new ArrayClassStrategy<>(ArrayShallow.class) }) {
+      assertFalse(strategy.doEquals(array1, array2));
+      assertNotEquals(strategy.doHashCode(array1), strategy.doHashCode(array2));
+      assertNotEquals(strategy.doToString(array1), strategy.doToString(array2));
+    }
 
-    assertTrue(deepPojomator.doEquals(new Deep(array1), new Deep(array2)));
-    assertEquals(deepPojomator.doHashCode(new Deep(array1)), deepPojomator.doHashCode(new Deep(array2)));
-    assertEquals(deepPojomator.doToString(new Deep(array1)), deepPojomator.doToString(new Deep(array2)));
+    for (ArrayClassStrategy<?> strategy: new ArrayClassStrategy[] {
+        new ArrayClassStrategy<>(ObjectDeep.class), new ArrayClassStrategy<>(ArrayDeep.class) }) {
+      assertTrue(strategy.doEquals(array1, array2));
+      assertEquals(strategy.doHashCode(array1), strategy.doHashCode(array2));
+      assertEquals(strategy.doToString(array1), strategy.doToString(array2));
 
-    assertFalse(deepPojomator.doEquals(new Deep(array1), new Deep(otherArray)));
-    assertNotEquals(deepPojomator.doHashCode(new Deep(array1)), deepPojomator.doHashCode(new Deep(otherArray)));
-    assertNotEquals(deepPojomator.doToString(new Deep(array1)), deepPojomator.doToString(new Deep(otherArray)));
+      assertFalse(strategy.doEquals(array1, otherArray));
+      assertNotEquals(strategy.doHashCode(array1), strategy.doHashCode(otherArray));
+      assertNotEquals(strategy.doToString(array1), strategy.doToString(otherArray));
+    }
   }
 
   @Test
@@ -433,7 +468,7 @@ public class PojomatorImplTest {
     String[] strings = new String[] {"hello", "world" };
     assertEquals(
       HASH_CODE_MULTIPLIER *  HASH_CODE_SEED + Arrays.hashCode(strings),
-      OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty(strings)));
+      ARRAY_OBJECT_PROPERTY_POJOMATOR.doHashCode(new ArrayObjectProperty(strings)));
   }
 
   @Test public void testPrimitiveArrayHashCode() throws Exception {
@@ -445,8 +480,8 @@ public class PojomatorImplTest {
       assertEquals(
         "primitive type " + primitiveType,
         expected,
-        OBJECT_PROPERTY_POJOMATOR.doHashCode(
-          new ObjectProperty(primitiveArray)));
+        ARRAY_OBJECT_PROPERTY_POJOMATOR.doHashCode(
+          new ArrayObjectProperty(primitiveArray)));
     }
   }
 
@@ -635,6 +670,13 @@ public class PojomatorImplTest {
       this.s = s;
     }
     @Property public Object s;
+  }
+
+  public static class ArrayObjectProperty {
+    public ArrayObjectProperty(Object s) {
+      this.s = s;
+    }
+    @Property @CanBeArray public Object s;
   }
 
   public static class ObjectPairProperty {

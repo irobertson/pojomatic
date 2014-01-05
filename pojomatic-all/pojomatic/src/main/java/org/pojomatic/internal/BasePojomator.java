@@ -101,6 +101,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * on {@link Arrays} is used to determine equality.
    * @param instanceValue the first value to compare
    * @param otherValue the second value to compare
+   * @param deepArray whether to do a deep array check for Object arrays
    * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
    */
   protected static boolean areObjectValuesEqual(Object instanceValue, Object otherValue, boolean deepArray) {
@@ -197,12 +198,13 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * Given an object which is of array type, compute it's hashCode by calling the appropriate signature of
    * {@link Arrays}{@code .hashCode()}
    * @param array
+   * @param deepArray whether to do a deep hashCode for Object arrays.
    * @return
    */
-  protected static int arrayHashCode(Object array) {
+  protected static int arrayHashCode(Object array, boolean deepArray) {
     Class<?> componentType = array.getClass().getComponentType();
     if (! componentType.isPrimitive()) {
-      return Arrays.hashCode((Object[]) array);
+      return deepArray ? Arrays.deepHashCode((Object[]) array) : Arrays.hashCode((Object[]) array);
     }
     if (componentType == boolean.class) {
       return Arrays.hashCode((boolean[]) array);

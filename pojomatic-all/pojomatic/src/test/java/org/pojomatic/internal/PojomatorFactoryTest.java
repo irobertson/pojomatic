@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
+import org.pojomatic.annotations.CanBeArray;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
@@ -191,6 +192,7 @@ public class PojomatorFactoryTest {
   @Test
   public void testObjectField() throws Exception {
     class Simple {
+      //@CanBeArray
       @Property Object o;
     }
 

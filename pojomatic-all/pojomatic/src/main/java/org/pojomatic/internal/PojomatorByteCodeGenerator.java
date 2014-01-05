@@ -480,7 +480,7 @@ class PojomatorByteCodeGenerator {
               int.class, propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class)
               );
         }
-        else if (propertyType == Object.class) {
+        else if (propertyType == Object.class && canBeArray(propertyElement)) { // FIXME - should canBeArray check propertyType?
           // it *could* be an array; if so, we want to do an array hashCode. (or do we?)
 
           mv.visitInsn(DUP); // we'll still want the property value handy after calling getClass().isArray()
@@ -493,9 +493,16 @@ class PojomatorByteCodeGenerator {
           mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
           mv.visitJumpInsn(GOTO, hashCodeDetermined);
 
+          // add a deep parameter to arrayHashCode, like we did for compareProperties
           mv.visitLabel(isArray);
           mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] { INTEGER, Type.getInternalName(propertyType) });
-          mv.visitMethodInsn(INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME, "arrayHashCode", methodDesc(int.class, Object.class));
+
+          mv.visitInsn(isDeepArray(propertyElement) ? ICONST_1 : ICONST_0);
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            BASE_POJOMATOR_INTERNAL_NAME,
+            "arrayHashCode",
+            methodDesc(int.class, Object.class, boolean.class));
         }
         else {
           mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
