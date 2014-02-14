@@ -1,5 +1,7 @@
 package org.pojomatic.internal.factory;
 
+import java.lang.annotation.Annotation;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -75,6 +77,9 @@ public class PojoClassFactory {
       null,
       null);
     fv.visitAnnotation(Type.getDescriptor(Property.class), true).visitEnd();
+    for (Class<? extends Annotation> annotationClass: property.annotations) {
+      fv.visitAnnotation(Type.getDescriptor(annotationClass), true).visitEnd();
+    }
     fv.visitEnd();
   }
 }
