@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import org.pojomatic.annotations.CanBeArray;
 import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
-import org.pojomatic.internal.factory.Access;
 import org.pojomatic.internal.factory.PojoDescriptor;
 import org.pojomatic.internal.factory.PojoFactory;
 import org.pojomatic.internal.factory.PropertyDescriptor;
