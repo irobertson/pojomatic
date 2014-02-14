@@ -192,7 +192,7 @@ public class PojomatorFactoryTest {
   @Test
   public void testObjectField() throws Exception {
     class Simple {
-      //@CanBeArray
+      @CanBeArray
       @Property Object o;
     }
 
