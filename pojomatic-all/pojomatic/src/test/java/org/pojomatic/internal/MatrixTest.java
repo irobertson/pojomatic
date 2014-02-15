@@ -87,7 +87,7 @@ public class MatrixTest {
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
         "value: " + possibleArrayToList(value),
-        "Pojo{x: {" + expectedFormat(value) + "}}",
+        "Pojo{x: {" + (canBeArray ? expectedFormat(value) : value.toString()) + "}}",
         pojoFactory.pojomator().doToString(pojoFactory.create(value)));
     }
   }
@@ -151,7 +151,9 @@ public class MatrixTest {
 
   private String expectedFormat(Object value) {
     if (value != null && value.getClass().isArray() && value.getClass().getComponentType() == char.class) {
-      return FORMATTER.format(value);
+      StringBuilder stringBuilder = new StringBuilder();
+      FORMATTER.appendFormatted(stringBuilder, (char[]) value);
+      return stringBuilder.toString();
     }
     else {
       return FORMATTER.format(possibleArrayToList(value));

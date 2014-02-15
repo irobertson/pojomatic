@@ -14,11 +14,13 @@ import org.pojomatic.annotations.DeepArray;
  */
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
   private boolean isDeepArray;
+  private boolean canBeArray;
 
   //FIXME - this currently prevents formatter reusability, and for very little benefit.
   @Override
   public void initialize(AnnotatedElement element) {
     isDeepArray = element.isAnnotationPresent(DeepArray.class);
+    canBeArray = element.isAnnotationPresent(CanBeArray.class);
   }
 
   @Override
@@ -33,7 +35,7 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
     if (value == null) {
       builder.append("null");
     }
-    else if (value.getClass().isArray()) {
+    else if (canBeArray && value.getClass().isArray()) {
       // FIXME - avoid allocating new builders
       Class<?> componentClass = value.getClass().getComponentType();
       if (componentClass.isPrimitive()) {
@@ -66,16 +68,21 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
         }
       }
       else {
-        if (isDeepArray) {
-          builder.append( Arrays.deepToString((Object[]) value));
-        }
-        else {
-          builder.append( Arrays.toString((Object[]) value));
-        }
+        appendFormatted(builder, (Object[]) value);
       }
     }
     else {
       builder.append(value);
+    }
+  }
+
+  @Override
+  public void appendFormatted(StringBuilder builder, Object[] array) {
+    if (isDeepArray) {
+      builder.append( Arrays.deepToString(array));
+    }
+    else {
+      builder.append( Arrays.toString(array));
     }
   }
 

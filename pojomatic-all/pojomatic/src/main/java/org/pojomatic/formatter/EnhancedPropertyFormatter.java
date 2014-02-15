@@ -23,4 +23,5 @@ public interface EnhancedPropertyFormatter extends PropertyFormatter {
   void appendFormatted(StringBuilder builder, long[] longs);
   void appendFormatted(StringBuilder builder, float[] floats);
   void appendFormatted(StringBuilder builder, double[] doubles);
+  void appendFormatted(StringBuilder builder, Object[] objects);
 }

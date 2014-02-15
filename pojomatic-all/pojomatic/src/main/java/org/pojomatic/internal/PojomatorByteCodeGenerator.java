@@ -592,7 +592,7 @@ class PojomatorByteCodeGenerator {
         methodDesc(
           void.class,
           StringBuilder.class,
-          propertyElement.getPropertyType().isPrimitive() ? propertyElement.getPropertyType() : Object.class)
+          appendFormattedType(propertyElement.getPropertyType()))
           );
       visitLineNumber(mv, 204);
 
@@ -626,6 +626,18 @@ class PojomatorByteCodeGenerator {
     varBuilder.withScope(start, end).acceptLocalVariable(mv);
     mv.visitMaxs(3 + longOrDoubleStackAdjustment, 4);
     mv.visitEnd();
+  }
+
+  private static Class<?> appendFormattedType(Class<?> propertyType) {
+    if (propertyType.isPrimitive()) {
+      return propertyType;
+    }
+    else if (propertyType.isArray()) {
+      return propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
+    }
+    else {
+      return Object.class;
+    }
   }
 
   private void loadPropertyElementField(MethodVisitor mv, PropertyElement propertyElement) {
