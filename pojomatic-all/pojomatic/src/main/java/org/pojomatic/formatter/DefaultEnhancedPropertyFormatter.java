@@ -16,7 +16,6 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
   private boolean isDeepArray;
   private boolean canBeArray;
 
-  //FIXME - this currently prevents formatter reusability, and for very little benefit.
   @Override
   public void initialize(AnnotatedElement element) {
     isDeepArray = element.isAnnotationPresent(DeepArray.class);
