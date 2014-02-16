@@ -7,14 +7,29 @@ import java.util.List;
 public enum BaseType implements Type {
   BOOLEAN(boolean.class, false, true),
   BYTE(byte.class, (byte) 0, (byte) 1, (byte) -1),
-  CHAR(char.class, 'a', (char) 0, (char) 12345),
+  CHAR(char.class, 'a', '\u0000', '\u009a', '\u1234') {
+    @Override
+    public String toString(Object value) {
+      switch ((char) value) {
+        case 'a': return "'a'";
+        case '\u0000': return "'\\u0000'";
+        case '\u009a': return "'\\u009a'";
+        case '\u1234': return "'" + '\u1234' + "'";
+        default:
+          throw new IllegalArgumentException("unexpected character " + value);
+      }
+    }
+  },
   SHORT(short.class, (short) 0, (short) -1, (short) 1),
   INT(int.class, -12314, 0, 2352362),
   LONG(long.class, 0L, -23413513515L, 2L << 16 + 5L),
   FLOAT(float.class, 0f, 123151f, -151f),
   DOUBLE(double.class, 0.0, -141.2, 12351351.26),
-  STRING(String.class, null, "", "hello"),
+  OBJECT(Object.class, null, "", "hello", 29),
   ;
+
+  private final Class<?> clazz;
+  private final List<Object> sampleValues;
 
   @SafeVarargs
   private <T> BaseType(Class<T> clazz, T... values) {
@@ -32,6 +47,13 @@ public enum BaseType implements Type {
     return sampleValues;
   }
 
-  private final Class<?> clazz;
-  private final List<Object> sampleValues;
+  @Override
+  public int hashCode(Object value) {
+    return value == null ? 0 : value.hashCode();
+  }
+
+  @Override
+  public String toString(Object value) {
+    return value == null ? "null" : value.toString();
+  }
 }

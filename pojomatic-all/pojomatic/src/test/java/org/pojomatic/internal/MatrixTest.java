@@ -4,10 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.pojomatic.annotations.CanBeArray;
-import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 import org.pojomatic.internal.factory.PojoDescriptor;
 import org.pojomatic.internal.factory.PojoFactory;
 import org.pojomatic.internal.factory.PropertyDescriptor;
@@ -16,8 +14,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class MatrixTest {
-
-  private static final DefaultEnhancedPropertyFormatter FORMATTER = new DefaultEnhancedPropertyFormatter();
 
   @DataProvider(name = "types")
   public static Object[][] types() {
@@ -45,7 +41,7 @@ public class MatrixTest {
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
         "value: " + possibleArrayToList(value),
-        31 + Objects.hashCode(possibleArrayToList(value)),
+        31 + type.hashCode(value),
         pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
     }
   }
@@ -58,8 +54,8 @@ public class MatrixTest {
       AssertJUnit.assertEquals(
         "value: " + possibleArrayToList(value),
         canBeArray
-          ? 31 + Objects.hashCode(possibleArrayToList(value))
-          : 31 + value.hashCode(),
+          ? 31 + type.hashCode(value)
+          : 31 + ((value == null) ? 0 : value.hashCode()),
         pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
     }
   }
@@ -75,7 +71,7 @@ public class MatrixTest {
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
         "value: " + possibleArrayToList(value),
-        "Pojo{x: {" + expectedFormat(value) + "}}",
+        "Pojo{x: {" + type.toString(value) + "}}",
         pojoFactory.pojomator().doToString(pojoFactory.create(value)));
     }
   }
@@ -87,7 +83,7 @@ public class MatrixTest {
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
         "value: " + possibleArrayToList(value),
-        "Pojo{x: {" + (canBeArray ? expectedFormat(value) : value.toString()) + "}}",
+        "Pojo{x: {" + (canBeArray ? type.toString(value) : (value == null) ? "null" : value.toString()) + "}}",
         pojoFactory.pojomator().doToString(pojoFactory.create(value)));
     }
   }
@@ -117,7 +113,7 @@ public class MatrixTest {
         // equality of different arrays should only be detected if the CanBeArray is present
         AssertJUnit.assertEquals(
           "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          canBeArray && value1 == value2,
+          (value1 == null && value2 == null) || (canBeArray && value1 == value2),
           pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2))));
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
@@ -149,18 +145,10 @@ public class MatrixTest {
     return result;
   }
 
-  private String expectedFormat(Object value) {
-    if (value != null && value.getClass().isArray() && value.getClass().getComponentType() == char.class) {
-      StringBuilder stringBuilder = new StringBuilder();
-      FORMATTER.appendFormatted(stringBuilder, (char[]) value);
-      return stringBuilder.toString();
-    }
-    else {
-      return FORMATTER.format(possibleArrayToList(value));
-    }
-  }
-
   private Object cloneArray(Object array) {
+    if (array == null) {
+      return null;
+    }
     Object clone = Array.newInstance(array.getClass().getComponentType(), Array.getLength(array));
     for (int i = 0; i < Array.getLength(array); i++) {
       Array.set(clone, i, Array.get(array, i));

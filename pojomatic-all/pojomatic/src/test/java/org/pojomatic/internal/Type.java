@@ -8,4 +8,7 @@ public interface Type {
 
   public abstract List<Object> getSampleValues();
 
+  public abstract int hashCode(Object value);
+
+  public abstract String toString(Object value);
 }

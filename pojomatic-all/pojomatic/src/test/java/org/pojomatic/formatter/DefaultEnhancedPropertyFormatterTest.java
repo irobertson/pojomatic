@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pojomatic.annotations.CanBeArray;
 import org.pojomatic.annotations.DeepArray;
 
 public class DefaultEnhancedPropertyFormatterTest {
@@ -16,10 +17,19 @@ public class DefaultEnhancedPropertyFormatterTest {
   @DeepArray
   private Field deepArrayAnnotated;
 
+  @CanBeArray
+  private Field canBeArrayAnnotated;
+
+  @DeepArray
+  @CanBeArray
+  private Field canBeDeepArrayAnnotated;
+
   @Before public void setUp() throws Exception {
     formatter = new DefaultEnhancedPropertyFormatter();
     builder = new StringBuilder();
     deepArrayAnnotated = getClass().getDeclaredField("deepArrayAnnotated");
+    canBeArrayAnnotated = getClass().getDeclaredField("canBeArrayAnnotated");
+    canBeDeepArrayAnnotated = getClass().getDeclaredField("canBeDeepArrayAnnotated");
   }
 
   @Test public void testFormat() {
@@ -30,6 +40,16 @@ public class DefaultEnhancedPropertyFormatterTest {
   @Test public void testFormatNull() {
     formatter.appendFormatted(builder, (Object) null);
     assertFormatted("null");
+  }
+
+  @Test public void testFormatBooleanFalse() {
+    formatter.appendFormatted(builder, false);
+    assertFormatted("false");
+  }
+
+  @Test public void testFormatBooleanTrue() {
+    formatter.appendFormatted(builder, true);
+    assertFormatted("true");
   }
 
   @Test public void testFormatList() {
@@ -54,7 +74,7 @@ public class DefaultEnhancedPropertyFormatterTest {
 
   @Test public void testFormatArrayOfChars() {
     formatter.appendFormatted(builder, new char[] {5, 'b'});
-    assertFormatted("['0x5', 'b']");
+    assertFormatted("['\\u0005', 'b']");
   }
 
   @Test public void testFormatArrayOfShorts() {
@@ -96,60 +116,69 @@ public class DefaultEnhancedPropertyFormatterTest {
 
   @SuppressWarnings("cast")
   @Test public void testFormatArrayOfObjectsAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new Integer[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfBooleansAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new boolean[] {true, false});
     assertFormatted("[true, false]");
   }
 
   @Test public void testFormatArrayOfBytesAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new byte[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfCharsAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new char[] {5, 'b'});
-    assertFormatted("['0x5', 'b']");
+    assertFormatted("['\\u0005', 'b']");
   }
 
   @Test public void testFormatArrayOfShortsAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new short[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfIntsAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new int[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfLongsAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new long[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfFloatsAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new float[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @Test public void testFormatArrayOfDoublesAsObject() {
+    formatter.initialize(canBeArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new double[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayAsObject() {
-    formatter.initialize(deepArrayAnnotated);
+    formatter.initialize(canBeDeepArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayOfPrimitivesAsObject() {
-    formatter.initialize(deepArrayAnnotated);
+    formatter.initialize(canBeDeepArrayAnnotated);
     formatter.appendFormatted(builder, (Object) new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }

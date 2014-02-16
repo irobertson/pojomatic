@@ -102,7 +102,14 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
 
   @Override
   public void appendFormatted(StringBuilder builder, char c) {
-    builder.append(c);
+    builder.append('\'');
+    if (Character.isISOControl(c)) {
+      builder.append("\\u").append(String.format("%04x", (int)c));
+    }
+    else {
+      builder.append(c);
+    }
+    builder.append('\'');
   }
 
   @Override
@@ -142,25 +149,23 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
 
   @Override
   public void appendFormatted(StringBuilder builder, char[] chars) {
-    builder.append("[");
-    boolean seenOne = false;
-    for (char c: chars) {
-      if(seenOne) {
-        builder.append(", ");
-      }
-      else {
-        seenOne = true;
-      }
-      builder.append('\'');
-      if (Character.isISOControl(c)) {
-        builder.append("0x").append(Integer.toHexString(c));
-      }
-      else {
-        builder.append(c);
-      }
-      builder.append('\'');
+    if (chars == null) {
+      builder.append("null");
     }
-    builder.append(']');
+    else {
+      builder.append("[");
+      boolean seenOne = false;
+      for (char c: chars) {
+        if(seenOne) {
+          builder.append(", ");
+        }
+        else {
+          seenOne = true;
+        }
+        appendFormatted(builder, c);
+      }
+      builder.append(']');
+    }
   }
 
   @Override

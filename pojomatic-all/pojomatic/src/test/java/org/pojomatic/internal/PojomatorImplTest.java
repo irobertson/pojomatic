@@ -181,7 +181,7 @@ public class PojomatorImplTest {
 
     assertEquals(31 + Arrays.hashCode(new char[] { 'a', 'b' }), pojomator.doHashCode(new Simple('a', 'b')));
 
-    assertEquals("Simple{x: {['a', 'b', '0x2']}}", pojomator.doToString(new Simple('a', 'b', (char) 2)));
+    assertEquals("Simple{x: {['a', 'b', '\\u0002']}}", pojomator.doToString(new Simple('a', 'b', (char) 2)));
   }
 
   @Test
