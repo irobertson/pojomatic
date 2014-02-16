@@ -1,9 +1,9 @@
 package org.pojomatic.formatter;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.pojomatic.annotations.CanBeArray;
 import org.pojomatic.annotations.DeepArray;
 
 /**
@@ -14,12 +14,10 @@ import org.pojomatic.annotations.DeepArray;
  */
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
   private boolean isDeepArray;
-  private boolean canBeArray;
 
   @Override
   public void initialize(AnnotatedElement element) {
     isDeepArray = element.isAnnotationPresent(DeepArray.class);
-    canBeArray = element.isAnnotationPresent(CanBeArray.class);
   }
 
   @Override
@@ -31,11 +29,15 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
 
   @Override
   public void appendFormatted(StringBuilder builder, Object value) {
+    builder.append(value);
+  }
+
+  @Override
+  public void appendFormattedPossibleArray(StringBuilder builder, Object value) {
     if (value == null) {
       builder.append("null");
     }
-    else if (canBeArray && value.getClass().isArray()) {
-      // FIXME - avoid allocating new builders
+    else if (value.getClass().isArray()) {
       Class<?> componentClass = value.getClass().getComponentType();
       if (componentClass.isPrimitive()) {
         if (Boolean.TYPE == componentClass) {
@@ -71,17 +73,92 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
       }
     }
     else {
-      builder.append(value);
+      appendFormatted(builder, value);
     }
   }
 
   @Override
   public void appendFormatted(StringBuilder builder, Object[] array) {
     if (isDeepArray) {
-      builder.append( Arrays.deepToString(array));
+      appendFormattedDeep(builder, array, new HashSet<>());
     }
     else {
-      builder.append( Arrays.toString(array));
+      appendFormattedShallow(builder, array);
+    }
+  }
+
+  private void appendFormattedShallow(StringBuilder builder, Object[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
+  }
+
+  private void appendFormattedDeep(StringBuilder builder, Object[] array, Set<Object> dejaVu) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else if (! dejaVu.add(array)) {
+      builder.append("[...]");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        Object element = array[i];
+        if (element != null && element.getClass().isArray()) {
+          Class<?> componentType = element.getClass().getComponentType();
+          if (componentType.isPrimitive()) {
+            if (componentType == boolean.class) {
+              appendFormatted(builder, (boolean[]) element);
+            }
+            else if (componentType == byte.class) {
+              appendFormatted(builder, (byte[]) element);
+            }
+            else if (componentType == short.class) {
+              appendFormatted(builder, (short[]) element);
+            }
+            else if (componentType == char.class) {
+              appendFormatted(builder, (char[]) element);
+            }
+            else if (componentType == int.class) {
+              appendFormatted(builder, (int[]) element);
+            }
+            else if (componentType == long.class) {
+              appendFormatted(builder, (byte[]) element);
+            }
+            else if (componentType == float.class) {
+              appendFormatted(builder, (float[]) element);
+            }
+            else if (componentType == double.class) {
+              appendFormatted(builder, (double[]) element);
+            }
+            else {
+              throw new IllegalArgumentException("Unexpected primitive type " + componentType.getName());
+            }
+          }
+          else {
+            appendFormattedDeep(builder, (Object[]) element, dejaVu);
+          }
+        }
+        else {
+          appendFormatted(builder, element);
+        }
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
     }
   }
 
@@ -133,58 +210,146 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
   }
 
   @Override
-  public void appendFormatted(StringBuilder builder, boolean[] booleans) {
-    builder.append(Arrays.toString(booleans));
-  }
-
-  @Override
-  public void appendFormatted(StringBuilder builder, byte[] bytes) {
-    builder.append(Arrays.toString(bytes));
-  }
-
-  @Override
-  public void appendFormatted(StringBuilder builder, short[] shorts) {
-    builder.append(Arrays.toString(shorts));
-  }
-
-  @Override
-  public void appendFormatted(StringBuilder builder, char[] chars) {
-    if (chars == null) {
+  public void appendFormatted(StringBuilder builder, boolean[] array) {
+    if (array == null) {
       builder.append("null");
     }
     else {
-      builder.append("[");
-      boolean seenOne = false;
-      for (char c: chars) {
-        if(seenOne) {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
           builder.append(", ");
         }
-        else {
-          seenOne = true;
-        }
-        appendFormatted(builder, c);
       }
       builder.append(']');
     }
   }
 
   @Override
-  public void appendFormatted(StringBuilder builder, int[] ints) {
-    builder.append(Arrays.toString(ints));
+  public void appendFormatted(StringBuilder builder, byte[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
   }
 
   @Override
-  public void appendFormatted(StringBuilder builder, long[] longs) {
-    builder.append(Arrays.toString(longs));
+  public void appendFormatted(StringBuilder builder, short[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
   }
 
   @Override
-  public void appendFormatted(StringBuilder builder, float[] floats) {
-    builder.append(Arrays.toString(floats));
+  public void appendFormatted(StringBuilder builder, char[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
   }
 
   @Override
-  public void appendFormatted(StringBuilder builder, double[] doubles) {
-    builder.append(Arrays.toString(doubles));
+  public void appendFormatted(StringBuilder builder, int[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
+  }
+
+  @Override
+  public void appendFormatted(StringBuilder builder, long[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
+  }
+
+  @Override
+  public void appendFormatted(StringBuilder builder, float[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
+  }
+
+  @Override
+  public void appendFormatted(StringBuilder builder, double[] array) {
+    if (array == null) {
+      builder.append("null");
+    }
+    else {
+      builder.append('[');
+      int iMax = array.length - 1;
+      for (int i = 0; i <= iMax; i++) {
+        appendFormatted(builder, array[i]);
+        if (i != iMax) {
+          builder.append(", ");
+        }
+      }
+      builder.append(']');
+    }
   }
 }

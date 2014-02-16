@@ -4,6 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 
 /**
  * A formatter for a property.
+ * <p>
  * Any implementation of {@code PropertyFormatter} must have a public no-argument constructor.
  *
  * @deprecated implement {@link EnhancedPropertyFormatter} instead. This class is unaware of primitives, and does not

@@ -40,6 +40,9 @@ public class EnhancedPropertyFormatterWrapper implements EnhancedPropertyFormatt
   @Override public void appendFormatted(StringBuilder builder, long[] l) { builder.append(delegate.format(l)); }
   @Override public void appendFormatted(StringBuilder builder, float[] f) { builder.append(delegate.format(f)); }
   @Override public void appendFormatted(StringBuilder builder, double[] d) { builder.append(delegate.format(d)); }
-
   @Override public void appendFormatted(StringBuilder builder, Object[] o) { builder.append(delegate.format(o)); }
+
+  @Override public void appendFormattedPossibleArray(StringBuilder builder, Object o) {
+    builder.append(delegate.format(o));
+  }
 }

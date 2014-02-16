@@ -117,69 +117,69 @@ public class DefaultEnhancedPropertyFormatterTest {
   @SuppressWarnings("cast")
   @Test public void testFormatArrayOfObjectsAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new Integer[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new Integer[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfBooleansAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new boolean[] {true, false});
+    formatter.appendFormattedPossibleArray(builder, new boolean[] {true, false});
     assertFormatted("[true, false]");
   }
 
   @Test public void testFormatArrayOfBytesAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new byte[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new byte[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfCharsAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new char[] {5, 'b'});
+    formatter.appendFormattedPossibleArray(builder, new char[] {5, 'b'});
     assertFormatted("['\\u0005', 'b']");
   }
 
   @Test public void testFormatArrayOfShortsAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new short[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new short[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfIntsAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new int[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new int[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfLongsAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new long[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new long[] {5, 7});
     assertFormatted("[5, 7]");
   }
 
   @Test public void testFormatArrayOfFloatsAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new float[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new float[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @Test public void testFormatArrayOfDoublesAsObject() {
     formatter.initialize(canBeArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new double[] {5, 7});
+    formatter.appendFormattedPossibleArray(builder, new double[] {5, 7});
     assertFormatted("[5.0, 7.0]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayAsObject() {
     formatter.initialize(canBeDeepArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
+    formatter.appendFormattedPossibleArray(builder, new Integer[][] {new Integer[] { 1, 2 }, new Integer[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 
   @SuppressWarnings("cast")
   @Test public void testFormatDoubleArrayOfPrimitivesAsObject() {
     formatter.initialize(canBeDeepArrayAnnotated);
-    formatter.appendFormatted(builder, (Object) new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
+    formatter.appendFormattedPossibleArray(builder, new int[][] {new int[] { 1, 2 }, new int[] {3, 4} });
     assertFormatted("[[1, 2], [3, 4]]");
   }
 

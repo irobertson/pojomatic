@@ -584,17 +584,31 @@ class PojomatorByteCodeGenerator {
       varBuilder.acceptLoad(mv);
       visitLineNumber(mv, 202);
       visitAccessor(mv, varPojo, propertyElement);
-      visitLineNumber(mv, 203);
-      mv.visitMethodInsn(
-        INVOKEINTERFACE,
-        internalName(EnhancedPropertyFormatter.class),
-        "appendFormatted",
-        methodDesc(
-          void.class,
-          StringBuilder.class,
-          appendFormattedType(propertyElement.getPropertyType()))
+      if (propertyElement.getPropertyType().equals(Object.class) && canBeArray(propertyElement)) {
+        visitLineNumber(mv, 203);
+        mv.visitMethodInsn(
+          INVOKEINTERFACE,
+          internalName(EnhancedPropertyFormatter.class),
+          "appendFormattedPossibleArray",
+          methodDesc(
+            void.class,
+            StringBuilder.class,
+            appendFormattedType(propertyElement.getPropertyType()))
           );
-      visitLineNumber(mv, 204);
+      }
+      else {
+        visitLineNumber(mv, 204);
+        mv.visitMethodInsn(
+          INVOKEINTERFACE,
+          internalName(EnhancedPropertyFormatter.class),
+          "appendFormatted",
+          methodDesc(
+            void.class,
+            StringBuilder.class,
+            appendFormattedType(propertyElement.getPropertyType()))
+            );
+      }
+      visitLineNumber(mv, 205);
 
       // have any property suffix appended to the StringBuilder
       varPojoFormatter.acceptLoad(mv);
