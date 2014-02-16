@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public enum PrimitiveType implements Type {
+public enum BaseType implements Type {
   BOOLEAN(boolean.class, false, true),
   BYTE(byte.class, (byte) 0, (byte) 1, (byte) -1),
   CHAR(char.class, 'a', (char) 0, (char) 12345),
@@ -17,7 +17,7 @@ public enum PrimitiveType implements Type {
   ;
 
   @SafeVarargs
-  private <T> PrimitiveType(Class<T> clazz, T... values) {
+  private <T> BaseType(Class<T> clazz, T... values) {
     this.clazz = clazz;
     this.sampleValues = Collections.unmodifiableList(Arrays.<Object>asList(values));
   }

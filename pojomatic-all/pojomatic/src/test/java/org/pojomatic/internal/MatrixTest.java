@@ -22,7 +22,7 @@ public class MatrixTest {
   @DataProvider(name = "types")
   public static Object[][] types() {
     List<Object[]> result = new ArrayList<>();
-    for (Type type: PrimitiveType.values()) {
+    for (Type type: BaseType.values()) {
       result.add(new Object[] { type });
       result.add(new Object[] { new ArrayType(type) });
     }
@@ -32,7 +32,7 @@ public class MatrixTest {
   @DataProvider(name = "arrayTypes")
   public static Object[][] arrayTypes() {
     List<Object[]> result = new ArrayList<>();
-    for (Type type: PrimitiveType.values()) {
+    for (Type type: BaseType.values()) {
       result.add(new Object[] { new ArrayType(type), true });
       result.add(new Object[] { new ArrayType(type), false });
     }
