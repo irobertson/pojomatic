@@ -135,7 +135,7 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
               appendFormatted(builder, (int[]) element);
             }
             else if (componentType == long.class) {
-              appendFormatted(builder, (byte[]) element);
+              appendFormatted(builder, (long[]) element);
             }
             else if (componentType == float.class) {
               appendFormatted(builder, (float[]) element);
