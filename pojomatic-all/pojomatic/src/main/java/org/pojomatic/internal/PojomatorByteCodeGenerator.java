@@ -876,10 +876,13 @@ class PojomatorByteCodeGenerator {
   /**
    * Determine if the given propertyElement should be treated as one that could be an array.
    * @param propertyElement
-   * @return {@code true} if the given propertyElement is annotated with {@link CanBeArray}, or {@code false} otherwise.
+   * @return {@code true} if the given propertyElement is annotated with {@link CanBeArray} or {@link DeepArray},
+   *  or {@code false} otherwise.
    */
   private boolean canBeArray(PropertyElement propertyElement) {
-    return propertyElement.getElement().isAnnotationPresent(CanBeArray.class);
+    return propertyElement.getPropertyType().isArray()
+      || propertyElement.getElement().isAnnotationPresent(CanBeArray.class)
+      || propertyElement.getElement().isAnnotationPresent(DeepArray.class);
   }
 
   /**

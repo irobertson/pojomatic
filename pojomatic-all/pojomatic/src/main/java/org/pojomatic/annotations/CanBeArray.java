@@ -11,6 +11,9 @@ import java.lang.annotation.Target;
 /**
  * Indicates that the annotated property (intended to be of type Object) may contain an array, and if so, should be
  * treated as such by the various methods of {@link Pojomator}.
+ * <p>
+ * Note that if the annotated property is already annotated
+ * with @{@link DeepArray}, then this annotation need not be added as well.
  *
  * @see {@link DeepArray}
  */
