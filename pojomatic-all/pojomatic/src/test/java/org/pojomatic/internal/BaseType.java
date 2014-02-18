@@ -3,6 +3,7 @@ package org.pojomatic.internal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public enum BaseType implements Type {
   BOOLEAN(boolean.class, false, true),
@@ -49,11 +50,27 @@ public enum BaseType implements Type {
 
   @Override
   public int hashCode(Object value) {
-    return value == null ? 0 : value.hashCode();
+    return Objects.hashCode(value);
+  }
+
+  @Override
+  public int deepHashCode(Object value) {
+    return hashCode(value);
   }
 
   @Override
   public String toString(Object value) {
-    return value == null ? "null" : value.toString();
+    return Objects.toString(value);
   }
+
+  @Override
+  public String deepToString(Object value) {
+    return toString(value);
+  }
+
+  @Override
+  public int arrayDepth() {
+    return 0;
+  }
+
 }

@@ -3,6 +3,7 @@ package org.pojomatic.internal;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ArrayType implements Type {
   private final Type componentType;
@@ -40,6 +41,19 @@ public class ArrayType implements Type {
   public int hashCode(Object value) {
     return value == null ? 0 : arrayToList(value).hashCode();
   }
+  @Override
+  public int deepHashCode(Object value) {
+    if (value == null) {
+      return 0;
+    }
+    else {
+      int hash = 1;
+      for (Object element: arrayToList(value)) {
+        hash = hash*31 + componentType.deepHashCode(element);
+      }
+      return hash;
+    }
+  }
 
   @Override
   public String toString(Object value) {
@@ -49,7 +63,26 @@ public class ArrayType implements Type {
     else {
       ArrayList<String> strings = new ArrayList<>();
       for (Object element: arrayToList(value)) {
-        strings.add(componentType.toString(element));
+        if (componentType instanceof ArrayType) {
+          strings.add(Objects.toString(element));
+        }
+        else {
+          strings.add(componentType.toString(element));
+        }
+      }
+      return strings.toString();
+    }
+  }
+
+  @Override
+  public String deepToString(Object value) {
+    if (value == null) {
+      return "null";
+    }
+    else {
+      ArrayList<String> strings = new ArrayList<>();
+      for (Object element: arrayToList(value)) {
+        strings.add(componentType.deepToString(element));
       }
       return strings.toString();
     }
@@ -61,5 +94,10 @@ public class ArrayType implements Type {
       result.add(Array.get(array, i));
     }
     return result;
+  }
+
+  @Override
+  public int arrayDepth() {
+    return componentType.arrayDepth() + 1;
   }
 }
