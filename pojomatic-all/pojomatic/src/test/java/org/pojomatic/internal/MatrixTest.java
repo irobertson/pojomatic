@@ -26,10 +26,7 @@ public class MatrixTest {
   public void testHashCode(Type type) {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
     for (Object value: type.getSampleValues()) {
-      AssertJUnit.assertEquals(
-        label(value),
-        31 + type.hashCode(value),
-        pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
+      checkHashCode(pojoFactory, value, type.hashCode(value));
     }
   }
 
@@ -38,12 +35,13 @@ public class MatrixTest {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
-      AssertJUnit.assertEquals(
-        label(value),
-        (canBeArray || deepArray)
-          ? 31 + (deepArray ? type.deepHashCode(value) : type.hashCode(value))
-          : 31 + Objects.hashCode(value),
-        pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
+      int propertyHashCode = deepArray
+        ? type.deepHashCode(value)
+        : canBeArray
+          ? type.hashCode(value)
+          : Objects.hashCode(value);
+
+      checkHashCode(pojoFactory, value, propertyHashCode);
     }
   }
 
@@ -52,10 +50,8 @@ public class MatrixTest {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
-      AssertJUnit.assertEquals(
-        label(value),
-         31 + (deepArray ? type.deepHashCode(value) : type.hashCode(value)),
-         pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
+      int propertyHashCode = deepArray ? type.deepHashCode(value) : type.hashCode(value);
+      checkHashCode(pojoFactory, value, propertyHashCode);
     }
   }
 
@@ -63,10 +59,7 @@ public class MatrixTest {
   public void testToString(Type type) {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
     for (Object value: type.getSampleValues()) {
-      AssertJUnit.assertEquals(
-        label(value),
-        "Pojo{x: {" + type.toString(value) + "}}",
-        pojoFactory.pojomator().doToString(pojoFactory.create(value)));
+      checkToString(pojoFactory, value, type.toString(value));
     }
   }
 
@@ -76,15 +69,12 @@ public class MatrixTest {
       new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
       String expectedPropertyValue =
-        (canBeArray || deepArray) ?
-          (deepArray ?
-            type.deepToString(value) :
-            type.toString(value)) :
-          Objects.toString(value);
-      AssertJUnit.assertEquals(
-        label(value),
-        "Pojo{x: {" + expectedPropertyValue + "}}",
-        pojoFactory.pojomator().doToString(pojoFactory.create(value)));
+        deepArray
+          ? type.deepToString(value)
+          : canBeArray
+            ? type.toString(value)
+            : Objects.toString(value);
+      checkToString(pojoFactory, value, expectedPropertyValue);
     }
   }
 
@@ -94,10 +84,7 @@ public class MatrixTest {
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
       String expectedPropertyValue = deepArray ? type.deepToString(value) : type.toString(value);
-      AssertJUnit.assertEquals(
-        label(value),
-        "Pojo{x: {" + expectedPropertyValue + "}}",
-        pojoFactory.pojomator().doToString(pojoFactory.create(value)));
+      checkToString(pojoFactory, value, expectedPropertyValue);
     }
   }
 
@@ -109,8 +96,7 @@ public class MatrixTest {
       for (Object value2: type.getSampleValues()) {
         boolean expectedToBeEqual = value1 == null ? value2 == null : value1.equals(value2);
         Object pojo2 = pojoFactory.create(value2);
-        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1,
-          pojo2);
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
 
       }
       AssertJUnit.assertFalse(
@@ -130,8 +116,7 @@ public class MatrixTest {
         // Note that in this test, we only clone the inner array if deepArray is true.
         boolean expectedToBeEqual = (value1 == value2) && (value1 == null || canBeArray || deepArray);
         Object pojo2 = pojoFactory.create(cloneArray(value2, deepArray));
-        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1,
-          pojo2);
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
           checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
@@ -154,8 +139,7 @@ public class MatrixTest {
         Object pojo2 = pojoFactory.create(cloneArray(value2, true));
         boolean expectedToBeEqual =
           (value1 == value2) && ((type.arrayDepth() < 2) || deepArray || noNestedArrays(value1));
-        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1,
-          pojo2);
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
           checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
@@ -225,6 +209,22 @@ public class MatrixTest {
       classes.add(DeepArray.class);
     }
     return classes.toArray(new Class[0]);
+  }
+
+  private void checkHashCode(PojoFactory pojoFactory, Object value,
+    int propertyHashCode) {
+    AssertJUnit.assertEquals(
+      label(value),
+       31 + propertyHashCode,
+       pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
+  }
+
+  private void checkToString(PojoFactory pojoFactory, Object value,
+    String expectedPropertyValue) {
+    AssertJUnit.assertEquals(
+      label(value),
+      "Pojo{x: {" + expectedPropertyValue + "}}",
+      pojoFactory.pojomator().doToString(pojoFactory.create(value)));
   }
 
   private void checkEqualsAndDiff(boolean expectedToBeEqual, PojoFactory pojoFactory,
