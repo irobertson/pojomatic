@@ -94,6 +94,19 @@ public class MatrixTest {
     }
   }
 
+  @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
+  public void testArrayAsArrayToString(Type type, boolean canBeArray, boolean deepArray) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+    for (Object value: type.getSampleValues()) {
+      String expectedPropertyValue = deepArray ? type.deepToString(value) : type.toString(value);
+      AssertJUnit.assertEquals(
+        "value: " + possibleArrayToList(value),
+        "Pojo{x: {" + expectedPropertyValue + "}}",
+        pojoFactory.pojomator().doToString(pojoFactory.create(value)));
+    }
+  }
+
   @Test(dataProvider = "types", dataProviderClass = TypeProviders.class)
   public void testEquals(Type type) {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
@@ -116,7 +129,8 @@ public class MatrixTest {
       new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
     for (Object value1: type.getSampleValues()) {
       for (Object value2: type.getSampleValues()) {
-        // equality of different arrays should only be detected if the CanBeArray is present
+        // Equality of different arrays should only be detected if the CanBeArray or DeepArray is present.
+        // Note that in this test, we only clone the inner array if deepArray is true.
         AssertJUnit.assertEquals(
           "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
           (value1 == value2) && (value1 == null || canBeArray || deepArray),
