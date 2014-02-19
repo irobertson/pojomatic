@@ -127,9 +127,6 @@ public class MatrixTest {
   public void testArrayAsArrayEquals(Type type, boolean canBeArray, boolean deepArray) {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
-    if (type.arrayDepth() == 2) {
-      System.out.println("time to debug");
-    }
     for (Object value1: type.getSampleValues()) {
       for (Object value2: type.getSampleValues()) {
         // equality of different arrays should only be detected if the CanBeArray is present
