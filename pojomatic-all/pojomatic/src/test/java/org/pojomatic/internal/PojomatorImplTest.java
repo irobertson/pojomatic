@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
 import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,8 +12,6 @@ import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
 import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.*;
-import org.pojomatic.diff.Difference;
-import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.PropertyDifferences;
@@ -26,9 +23,6 @@ import com.google.common.collect.Sets;
 public class PojomatorImplTest {
   private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
     makePojomator(ObjectProperty.class);
-
-  private static Pojomator<ArrayObjectProperty> ARRAY_OBJECT_PROPERTY_POJOMATOR =
-    makePojomator(ArrayObjectProperty.class);
 
   private static Pojomator<ObjectPairProperty> OBJECT_PAIR_PROPERTY_POJOMATOR =
     makePojomator(ObjectPairProperty.class);
@@ -90,323 +84,8 @@ public class PojomatorImplTest {
     assertFalse(INT_PROPERTY_POJOMATOR.doEquals(new IntProperty(3), new IntProperty(4)));
   }
 
-  @Test public void testObjectArrayPropertyEquals() {
-    class StringArrayProperty {
-      public StringArrayProperty(String... strings) { this.strings = strings; }
-      @Property String[] strings;
-    }
-
-    Pojomator<StringArrayProperty> STRING_ARRAY_PROPERTY_POJOMATOR = makePojomator(StringArrayProperty.class);
-
-    String s1 = "hello";
-    String s2 = copyString(s1);
-    assertTrue(STRING_ARRAY_PROPERTY_POJOMATOR.doEquals(
-      new StringArrayProperty(s1, "goodbye"), new StringArrayProperty(s2, "goodbye")));
-    assertFalse(STRING_ARRAY_PROPERTY_POJOMATOR.doEquals(
-      new StringArrayProperty(s1, "goodbye"), new StringArrayProperty("goodbye", s1)));
-  }
-
   private String copyString(String s1) {
     return new String(s1); //NOPMD - we mean to make a copy
-  }
-
-  @Test
-  public void testPrimitiveArrayAsObjectEquals() throws Exception {
-    class Simple { @Property @CanBeArray Object x; public Simple(Object x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-    final Simple nullProperty = new Simple(null);
-    final Simple objectArrayProperty = new Simple(new String[] {"foo"});
-    for (Class<?> primitiveType : PRIMITIVE_TYPES) {
-      Simple main = new Simple(Array.newInstance(primitiveType, 3));
-      Simple other = new Simple(Array.newInstance(primitiveType, 3));
-      Simple different = new Simple(Array.newInstance(primitiveType, 4));
-      assertTrue(pojomator.doEquals(main, other));
-      assertFalse(pojomator.doEquals(nullProperty, main));
-      assertFalse(pojomator.doEquals(main, nullProperty));
-      assertFalse(pojomator.doEquals(objectArrayProperty, main));
-      assertFalse(pojomator.doEquals(main, objectArrayProperty));
-      assertFalse(pojomator.doEquals(main, different));
-    }
-  }
-
-  @Test
-  public void testBooleanArray() throws Exception {
-    class Simple { @Property boolean[] x; public Simple(boolean... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple(true, false), new Simple(true, false)));
-    assertFalse(pojomator.doEquals(new Simple(true, true), new Simple(true, false)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple(true), new Simple(true)));
-    assertEquals(
-      new PropertyDifferences(
-        Arrays.<Difference>asList(new ValueDifference("x", new boolean[] {true}, new boolean[] {false}))),
-      pojomator.doDiff(new Simple(true), new Simple(false)));
-
-
-    assertEquals(31 + Arrays.hashCode(new boolean[] { true, false }), pojomator.doHashCode(new Simple(true, false)));
-    assertEquals("Simple{x: {[true, false]}}", pojomator.doToString(new Simple(true, false)));
-  }
-
-  @Test
-  public void testByteArray() throws Exception {
-    class Simple { @Property byte[] x; public Simple(byte... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple((byte) 1, (byte) 2), new Simple((byte) 1, (byte) 2)));
-    assertFalse(pojomator.doEquals(new Simple((byte) 1, (byte) 2), new Simple((byte) 2, (byte) 2)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple((byte) 1), new Simple((byte) 1)));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new byte[] {1}, new byte[] {2}))),
-      pojomator.doDiff(new Simple((byte) 1), new Simple((byte) 2)));
-
-    assertEquals(31 + Arrays.hashCode(new byte[] { 1, 2 }), pojomator.doHashCode(new Simple((byte) 1, (byte) 2)));
-
-    assertEquals("Simple{x: {[1, 2]}}", pojomator.doToString(new Simple((byte) 1, (byte) 2)));
-  }
-
-  @Test
-  public void testCharArray() throws Exception {
-    class Simple { @Property char[] x; public Simple(char... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple('a', 'b'), new Simple('a', 'b')));
-    assertFalse(pojomator.doEquals(new Simple('a', 'b'), new Simple('a', 'a')));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple('a'), new Simple('a')));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new char[] {'a'}, new char[] {'b'}))),
-      pojomator.doDiff(new Simple('a'), new Simple('b')));
-
-    assertEquals(31 + Arrays.hashCode(new char[] { 'a', 'b' }), pojomator.doHashCode(new Simple('a', 'b')));
-
-    assertEquals("Simple{x: {['a', 'b', '\\u0002']}}", pojomator.doToString(new Simple('a', 'b', (char) 2)));
-  }
-
-  @Test
-  public void testShortArray() throws Exception {
-    class Simple { @Property short[] x; public Simple(short... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple((short) 1, (short) 2), new Simple((short) 1, (short) 2)));
-    assertFalse(pojomator.doEquals(new Simple((short) 1, (short) 2), new Simple((short) 2, (short) 2)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple((short) 1), new Simple((short) 1)));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new short[] {1}, new short[] {2}))),
-      pojomator.doDiff(new Simple((short) 1), new Simple((short) 2)));
-
-    assertEquals(31 + Arrays.hashCode(new short[] { 1, 2 }), pojomator.doHashCode(new Simple((short) 1, (short) 2)));
-    assertEquals("Simple{x: {[1, 2]}}", pojomator.doToString(new Simple((short) 1, (short) 2)));
-  }
-
-  @Test
-  public void testIntArray() throws Exception {
-    class Simple { @Property int[] x; public Simple(int... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple(1, 2), new Simple(1, 2)));
-    assertFalse(pojomator.doEquals(new Simple(1, 2), new Simple(2, 2)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple(1), new Simple(1)));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new int[] {1}, new int[] {2}))),
-      pojomator.doDiff(new Simple(1), new Simple(2)));
-
-    assertEquals(31 + Arrays.hashCode(new int[] { 1, 2 }), pojomator.doHashCode(new Simple(1, 2)));
-
-    assertEquals("Simple{x: {[1, 2]}}", pojomator.doToString(new Simple(1, 2)));
-  }
-
-  @Test
-  public void testLongArray() throws Exception {
-    class Simple { @Property long[] x; public Simple(long... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple(1, 2), new Simple(1, 2)));
-    assertFalse(pojomator.doEquals(new Simple(1, 2), new Simple(2, 2)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple(1), new Simple(1)));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new long[] {1}, new long[] {2}))),
-      pojomator.doDiff(new Simple(1), new Simple(2)));
-
-    assertEquals(31 + Arrays.hashCode(new long[] { 1, 2 }), pojomator.doHashCode(new Simple(1, 2)));
-    assertEquals("Simple{x: {[1, 2]}}", pojomator.doToString(new Simple(1, 2)));
-  }
-
-  @Test
-  public void testFloatArray() throws Exception {
-    class Simple { @Property float[] x; public Simple(float... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple(1, 2), new Simple(1, 2)));
-    assertFalse(pojomator.doEquals(new Simple(1, 2), new Simple(2, 2)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple(1), new Simple(1)));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new float[] {1}, new float[] {2}))),
-      pojomator.doDiff(new Simple(1), new Simple(2)));
-
-    assertEquals(31 + Arrays.hashCode(new float[] { 1, 2 }), pojomator.doHashCode(new Simple(1, 2)));
-    assertEquals("Simple{x: {[1.0, 2.0]}}", pojomator.doToString(new Simple(1, 2)));
-  }
-
-  @Test
-  public void testDoubleArray() throws Exception {
-    class Simple { @Property double[] x; public Simple(double... x) { this.x = x; } }
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple(1, 2), new Simple(1, 2)));
-    assertFalse(pojomator.doEquals(new Simple(1, 2), new Simple(2, 2)));
-
-    assertEquals(NoDifferences.getInstance(), pojomator.doDiff(new Simple(1), new Simple(1)));
-    assertEquals(
-      new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", new double[] {1}, new double[] {2}))),
-      pojomator.doDiff(new Simple(1), new Simple(2)));
-
-    assertEquals(31 + Arrays.hashCode(new double[] { 1, 2 }), pojomator.doHashCode(new Simple(1, 2)));
-    assertEquals("Simple{x: {[1.0, 2.0]}}", pojomator.doToString(new Simple(1, 2)));
-  }
-
-  @Test public void testDeepObjectArrayAsObjectEquals() {
-    class Simple {
-      @Property @CanBeArray @DeepArray Object x;
-      public Simple(Object val) { x = val; }
-    }
-
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    //tests array of arrays, and that .equals is being called per element
-    assertTrue(pojomator.doEquals(
-      new Simple(new Object[] { "foo", new String[] {"bar"} }),
-      new Simple(new Object[] { new String("foo"), new String[] {new String("bar")} })));
-
-    assertFalse(pojomator.doEquals(
-      new Simple(new Object[] { "foo", new String[] {"bar"} }),
-      new Simple(new Object[] { new String("foo"), new String[] {new String("baz")} })));
-  }
-
-  @Test public void testDeepObjectArrayAsArrayEquals() {
-    class Simple {
-      @Property @DeepArray Object[] x;
-      public Simple(Object[] val) { x = val; }
-    }
-
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    //tests array of arrays, and that .equals is being called per element
-    assertTrue(pojomator.doEquals(
-      new Simple(new Object[] { "foo", new String[] {"bar"} }),
-      new Simple(new Object[] { new String("foo"), new String[] {new String("bar")} })));
-
-    assertFalse(pojomator.doEquals(
-      new Simple(new Object[] { "foo", new String[] {"bar"} }),
-      new Simple(new Object[] { new String("foo"), new String[] {new String("baz")} })));
-  }
-
-  @Test public void testShallowObjectArrayAsObjectEquals() {
-    class Simple {
-      @Property @CanBeArray Object x;
-      public Simple(Object val) { x = val; }
-    }
-
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertTrue(pojomator.doEquals(new Simple(null), new Simple(null)));
-    assertFalse(pojomator.doEquals(
-      new Simple(new Object[] { "foo", new String[] {"bar"} }),
-      new Simple(new Object[] { "foo", new String[] {"bar"} })));
-
-    String[] array = new String[] { "baz" };
-    assertTrue(pojomator.doEquals(
-      new Simple(new Object[] { "foo", array }),
-      new Simple(new Object[] { new String("foo"), array })));
-  }
-
-  @Test public void testShallowObjectArrayAsArrayEquals() {
-    class Simple {
-      @Property Object[] x;
-      public Simple(Object[] val) { x = val; }
-    }
-
-    Pojomator<Simple> pojomator = makePojomator(Simple.class);
-
-    assertFalse(pojomator.doEquals(
-      new Simple(new Object[] { "foo", new String[] {"bar"} }),
-      new Simple(new Object[] { "foo", new String[] {"bar"} })));
-
-    String[] array = new String[] { "baz" };
-    assertTrue(pojomator.doEquals(
-      new Simple(new Object[] { "foo", array }),
-      new Simple(new Object[] { new String("foo"), array })));
-  }
-
-  @Test
-  public void testDeepVersusShallowArrays() throws Exception {
-    class ObjectShallow { @Property @CanBeArray Object x; }
-    class ObjectDeep { @Property @CanBeArray @DeepArray Object x; }
-    class ArrayShallow { @Property Object[] x; }
-    class ArrayDeep { @Property @DeepArray Object[] x; }
-
-    class ArrayClassStrategy<T> {
-      private Class<T> clazz;
-      Pojomator<T> pojomator;
-      public ArrayClassStrategy(Class<T> pojoClass) {
-        clazz = pojoClass;
-        pojomator = makePojomator(clazz);
-      }
-
-      private T instance(Object[] arg) throws Exception {
-        T instance = clazz.getDeclaredConstructor(PojomatorImplTest.class).newInstance(PojomatorImplTest.this);
-        clazz.getDeclaredField("x").set(instance, arg);
-        return instance;
-      }
-
-      public boolean doEquals(Object[] arg1, Object[] arg2) throws Exception {
-        return pojomator.doEquals(instance(arg1), instance(arg2));
-      }
-
-      public int doHashCode(Object[] arg) throws Exception {
-        return pojomator.doHashCode(instance(arg));
-      }
-
-      public String doToString(Object[] arg) throws Exception {
-        return pojomator.doToString(instance(arg));
-      }
-    }
-
-    Object[] array1 = { new Object[] { "a", "b" }, new Object[] { "c", "d" } };
-    Object[] array2 = { new Object[] { "a", "b" }, new Object[] { "c", "d" } };
-    Object[] otherArray = new Object[][] { new Object[] { "a", "b" }, new Object[] { "c", "other" } };
-
-    for (ArrayClassStrategy<?> strategy: new ArrayClassStrategy[] {
-        new ArrayClassStrategy<>(ObjectShallow.class), new ArrayClassStrategy<>(ArrayShallow.class) }) {
-      assertFalse(strategy.doEquals(array1, array2));
-      assertNotEquals(strategy.doHashCode(array1), strategy.doHashCode(array2));
-      assertNotEquals(strategy.doToString(array1), strategy.doToString(array2));
-    }
-
-    for (ArrayClassStrategy<?> strategy: new ArrayClassStrategy[] {
-        new ArrayClassStrategy<>(ObjectDeep.class), new ArrayClassStrategy<>(ArrayDeep.class) }) {
-      assertTrue(strategy.doEquals(array1, array2));
-      assertEquals(strategy.doHashCode(array1), strategy.doHashCode(array2));
-      assertEquals(strategy.doToString(array1), strategy.doToString(array2));
-
-      assertFalse(strategy.doEquals(array1, otherArray));
-      assertNotEquals(strategy.doHashCode(array1), strategy.doHashCode(otherArray));
-      assertNotEquals(strategy.doToString(array1), strategy.doToString(otherArray));
-    }
-  }
-
-  @Test
-  public void testDeepArrayAnnotatedPrimitiveArray() {
-    class Simple { @Property @DeepArray int[] x = { 1, 2, 3 }; }
-
-    Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
-    assertEquals("Simple{x: {[1, 2, 3]}}", pojomator.doToString(new Simple()));
-    pojomator.doHashCode(new Simple());
   }
 
   @Test public void testArrayVsNonArrayEquals() {
@@ -440,56 +119,11 @@ public class PojomatorImplTest {
     assertTrue(left.getBCalled);
   }
 
-  @Test public void testNullValueHashCode() {
-    assertEquals(HASH_CODE_MULTIPLIER * HASH_CODE_SEED,
-      OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty(null)));
-  }
-
-  @Test public void testPropertyHashCode() {
-    assertEquals(
-      HASH_CODE_MULTIPLIER * HASH_CODE_SEED + "foo".hashCode(),
-      OBJECT_PROPERTY_POJOMATOR.doHashCode(new ObjectProperty("foo")));
-  }
-
   @Test public void testPropertyPairHashCode() {
     assertEquals(
       HASH_CODE_MULTIPLIER * (HASH_CODE_MULTIPLIER * HASH_CODE_SEED + "foo".hashCode())
       + "bar".hashCode(),
       OBJECT_PAIR_PROPERTY_POJOMATOR.doHashCode(new ObjectPairProperty("foo", "bar")));
-  }
-
-  @Test public void testPrimitiveHashCode() {
-    assertEquals(
-      HASH_CODE_MULTIPLIER * HASH_CODE_SEED + 7,
-      INT_PROPERTY_POJOMATOR.doHashCode(new IntProperty(7)));
-  }
-
-  @Test public void testObjectArrayHashCode() {
-    String[] strings = new String[] {"hello", "world" };
-    assertEquals(
-      HASH_CODE_MULTIPLIER *  HASH_CODE_SEED + Arrays.hashCode(strings),
-      ARRAY_OBJECT_PROPERTY_POJOMATOR.doHashCode(new ArrayObjectProperty(strings)));
-  }
-
-  @Test public void testPrimitiveArrayHashCode() throws Exception {
-    for (Class<?> primitiveType : PRIMITIVE_TYPES) {
-      Object primitiveArray = Array.newInstance(primitiveType, 2);
-      int expected = HASH_CODE_MULTIPLIER * HASH_CODE_SEED +
-        (Integer) Arrays.class.getDeclaredMethod("hashCode", primitiveArray.getClass())
-        .invoke(null, primitiveArray);
-      assertEquals(
-        "primitive type " + primitiveType,
-        expected,
-        ARRAY_OBJECT_PROPERTY_POJOMATOR.doHashCode(
-          new ArrayObjectProperty(primitiveArray)));
-    }
-  }
-
-  @Test public void testSimpleToString() {
-    String actual = OBJECT_PAIR_PROPERTY_POJOMATOR.doToString(new ObjectPairProperty("ess", "tee"));
-    assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
-    // check that we use a new formatter each time
-    assertEquals("ObjectPairProperty{s: {ess}, t: {tee}}", actual);
   }
 
   @Test public void testToStringNames() {
@@ -518,18 +152,6 @@ public class PojomatorImplTest {
   @Test(expected=NullPointerException.class)
   public void testDiffNulls() {
     OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, null);
-  }
-
-  @Test public void testDiffSameObject() {
-    ObjectPairProperty objectPairProperty = new ObjectPairProperty("this", "that");
-    assertTrue(
-      OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(objectPairProperty, objectPairProperty).areEqual());
-  }
-
-  @Test public void testDiffEqualObjects() {
-    assertTrue(
-      OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(
-        new ObjectPairProperty("this", "that"), new ObjectPairProperty("this", "that")).areEqual());
   }
 
   @Test public void testDiffDifferentObjectsWithSinglePropertyDifferent() {
@@ -650,6 +272,7 @@ public class PojomatorImplTest {
     public Object s;
   }
 
+  @Deprecated
   public static class SimplePojoFormatter extends DefaultPojoFormatter {
 
     @Override
@@ -658,6 +281,7 @@ public class PojomatorImplTest {
     }
   }
 
+  @Deprecated
   public static class SimplePropertyFormatter extends DefaultPropertyFormatter {
     @Override
     public String format(Object value) {
