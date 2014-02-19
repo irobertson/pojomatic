@@ -114,7 +114,7 @@ public class MatrixTest {
       for (Object value2: type.getSampleValues()) {
         AssertJUnit.assertEquals(
           "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          value1 == value2,
+          value1 == null ? value2 == null : value1.equals(value2),
           pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(value2)));
       }
       AssertJUnit.assertFalse(

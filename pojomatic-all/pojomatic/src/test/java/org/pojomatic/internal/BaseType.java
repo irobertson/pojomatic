@@ -26,7 +26,7 @@ public enum BaseType implements Type {
   LONG(long.class, 0L, -23413513515L, 2L << 16 + 5L),
   FLOAT(float.class, 0f, 123151f, -151f),
   DOUBLE(double.class, 0.0, -141.2, 12351351.26),
-  OBJECT(Object.class, null, "", "hello", 29),
+  OBJECT(Object.class, null, "", "hello", new String("hello"), 29),
   ;
 
   private final Class<?> clazz;
