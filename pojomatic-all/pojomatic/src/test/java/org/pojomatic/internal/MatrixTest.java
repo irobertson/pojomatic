@@ -41,6 +41,18 @@ public class MatrixTest {
     }
   }
 
+  @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
+  public void testArrayAsArrayHashCode(Type type, boolean canBeArray, boolean deepArray) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+    for (Object value: type.getSampleValues()) {
+      AssertJUnit.assertEquals(
+        "value: " + possibleArrayToList(value),
+         31 + (deepArray ? type.deepHashCode(value) : type.hashCode(value)),
+         pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
+    }
+  }
+
   @SuppressWarnings("unchecked")
   private Class<? extends Annotation>[] extraAnnotations(boolean canBeArray, boolean deepArray) {
     List<Class<? extends Annotation>> classes = new ArrayList<>();
@@ -146,7 +158,7 @@ public class MatrixTest {
   }
 
   /**
-   * Verify that doEquals honors the @{@link DeepArray} annotation.
+   * Verify that doEquals honors the @{@link DeepArray} annotation on properties of type {@link Object}.
    * @param type
    * @param canBeArray
    * @param deepArray
@@ -171,7 +183,29 @@ public class MatrixTest {
     }
   }
 
-
+  /**
+   * Verify that doEquals honors the @{@link DeepArray} annotation on properties of array type
+   * @param type
+   * @param canBeArray - this should have no impact
+   * @param deepArray
+   */
+  @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
+  public void testDeepArrayAsArrayEquals(Type type, boolean canBeArray, boolean deepArray) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+    for (Object value1: type.getSampleValues()) {
+      for (Object value2: type.getSampleValues()) {
+        // If value1 != value 2, then doEquals should always return false.
+        // If value1 == value2, but canBeArray is false, then the only way doEquals can return true is if value1 == null
+        // If value1 == value2 != null and canBeArray is true, then without deepArray, they can only be equal if
+        //  there are no second level arrays that can be cloned.
+        AssertJUnit.assertEquals(
+          "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
+          value1 == value2 && (deepArray || (noNestedArrays(value1))),
+          pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, true))));
+      }
+    }
+  }
 
   /**
    * Determine if the passed array has no nested arrays
