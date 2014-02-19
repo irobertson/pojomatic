@@ -119,7 +119,7 @@ public class MatrixTest {
         // equality of different arrays should only be detected if the CanBeArray is present
         AssertJUnit.assertEquals(
           "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          (value1 == null && value2 == null) || ((canBeArray || deepArray) && value1 == value2),
+          (value1 == value2) && (value1 == null || canBeArray || deepArray),
           pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, deepArray))));
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
@@ -177,7 +177,7 @@ public class MatrixTest {
         // The presence of @DeepArray on a field of type @Object should imply @CanBeArray
         AssertJUnit.assertEquals(
           "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          value1 == value2 && (value1 == null || canBeArray || deepArray) && (deepArray || (noNestedArrays(value1))),
+          (value1 == value2) && (value1 == null || canBeArray || deepArray) && (deepArray || (noNestedArrays(value1))),
           pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, true))));
       }
     }
