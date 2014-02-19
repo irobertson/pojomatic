@@ -59,18 +59,6 @@ public class MatrixTest {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private Class<? extends Annotation>[] extraAnnotations(boolean canBeArray, boolean deepArray) {
-    List<Class<? extends Annotation>> classes = new ArrayList<>();
-    if (canBeArray) {
-      classes.add(CanBeArray.class);
-    }
-    if (deepArray) {
-      classes.add(DeepArray.class);
-    }
-    return classes.toArray(new Class[0]);
-  }
-
   @Test(dataProvider = "types", dataProviderClass = TypeProviders.class)
   public void testToString(Type type) {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
@@ -225,6 +213,18 @@ public class MatrixTest {
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
       }
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Class<? extends Annotation>[] extraAnnotations(boolean canBeArray, boolean deepArray) {
+    List<Class<? extends Annotation>> classes = new ArrayList<>();
+    if (canBeArray) {
+      classes.add(CanBeArray.class);
+    }
+    if (deepArray) {
+      classes.add(DeepArray.class);
+    }
+    return classes.toArray(new Class[0]);
   }
 
   private void checkEqualsAndDiff(boolean expectedToBeEqual, PojoFactory pojoFactory,
