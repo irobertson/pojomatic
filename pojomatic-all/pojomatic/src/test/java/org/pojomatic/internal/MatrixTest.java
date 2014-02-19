@@ -3,11 +3,17 @@ package org.pojomatic.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.pojomatic.annotations.CanBeArray;
 import org.pojomatic.annotations.DeepArray;
+import org.pojomatic.diff.Difference;
+import org.pojomatic.diff.Differences;
+import org.pojomatic.diff.NoDifferences;
+import org.pojomatic.diff.PropertyDifferences;
+import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.internal.factory.PojoDescriptor;
 import org.pojomatic.internal.factory.PojoFactory;
 import org.pojomatic.internal.factory.PropertyDescriptor;
@@ -21,7 +27,7 @@ public class MatrixTest {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
-        "value: " + possibleArrayToList(value),
+        label(value),
         31 + type.hashCode(value),
         pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
     }
@@ -33,7 +39,7 @@ public class MatrixTest {
       new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
-        "value: " + possibleArrayToList(value),
+        label(value),
         (canBeArray || deepArray)
           ? 31 + (deepArray ? type.deepHashCode(value) : type.hashCode(value))
           : 31 + Objects.hashCode(value),
@@ -47,7 +53,7 @@ public class MatrixTest {
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
-        "value: " + possibleArrayToList(value),
+        label(value),
          31 + (deepArray ? type.deepHashCode(value) : type.hashCode(value)),
          pojoFactory.pojomator().doHashCode(pojoFactory.create(value)));
     }
@@ -70,7 +76,7 @@ public class MatrixTest {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
     for (Object value: type.getSampleValues()) {
       AssertJUnit.assertEquals(
-        "value: " + possibleArrayToList(value),
+        label(value),
         "Pojo{x: {" + type.toString(value) + "}}",
         pojoFactory.pojomator().doToString(pojoFactory.create(value)));
     }
@@ -88,7 +94,7 @@ public class MatrixTest {
             type.toString(value)) :
           Objects.toString(value);
       AssertJUnit.assertEquals(
-        "value: " + possibleArrayToList(value),
+        label(value),
         "Pojo{x: {" + expectedPropertyValue + "}}",
         pojoFactory.pojomator().doToString(pojoFactory.create(value)));
     }
@@ -101,71 +107,70 @@ public class MatrixTest {
     for (Object value: type.getSampleValues()) {
       String expectedPropertyValue = deepArray ? type.deepToString(value) : type.toString(value);
       AssertJUnit.assertEquals(
-        "value: " + possibleArrayToList(value),
+        label(value),
         "Pojo{x: {" + expectedPropertyValue + "}}",
         pojoFactory.pojomator().doToString(pojoFactory.create(value)));
     }
   }
 
   @Test(dataProvider = "types", dataProviderClass = TypeProviders.class)
-  public void testEquals(Type type) {
+  public void testEqualsAndDiff(Type type) {
     PojoFactory pojoFactory = new PojoFactory(new PojoDescriptor(new PropertyDescriptor(type.getClazz())));
     for (Object value1: type.getSampleValues()) {
+      Object pojo1 = pojoFactory.create(value1);
       for (Object value2: type.getSampleValues()) {
-        AssertJUnit.assertEquals(
-          "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          value1 == null ? value2 == null : value1.equals(value2),
-          pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(value2)));
+        boolean expectedToBeEqual = value1 == null ? value2 == null : value1.equals(value2);
+        Object pojo2 = pojoFactory.create(value2);
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1,
+          pojo2);
+
       }
       AssertJUnit.assertFalse(
         "type: " + type.getClazz() + ", value1: " + value1,
-        pojoFactory.pojomator().doEquals(pojoFactory.create(value1), null));
+        pojoFactory.pojomator().doEquals(pojo1, null));
     }
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsObjectEquals(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsObjectEqualsAndDiff(Type type, boolean canBeArray, boolean deepArray) {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
     for (Object value1: type.getSampleValues()) {
+      Object pojo1 = pojoFactory.create(value1);
       for (Object value2: type.getSampleValues()) {
         // Equality of different arrays should only be detected if the CanBeArray or DeepArray is present.
         // Note that in this test, we only clone the inner array if deepArray is true.
-        AssertJUnit.assertEquals(
-          "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          (value1 == value2) && (value1 == null || canBeArray || deepArray),
-          pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, deepArray))));
+        boolean expectedToBeEqual = (value1 == value2) && (value1 == null || canBeArray || deepArray);
+        Object pojo2 = pojoFactory.create(cloneArray(value2, deepArray));
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1,
+          pojo2);
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
-          AssertJUnit.assertEquals(
-            "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-            value1 == value2,
-            pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(value2)));
+          checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
         }
       }
       AssertJUnit.assertFalse(
         "type: " + type.getClazz() + ", value1: " + value1,
-        pojoFactory.pojomator().doEquals(pojoFactory.create(value1), null));
+        pojoFactory.pojomator().doEquals(pojo1, null));
     }
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsArrayEquals(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsArrayEqualsAndDiff(Type type, boolean canBeArray, boolean deepArray) {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
     for (Object value1: type.getSampleValues()) {
       for (Object value2: type.getSampleValues()) {
         // equality of different arrays should only be detected if the CanBeArray is present
-        AssertJUnit.assertEquals(
-          "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          value1 == value2 && ((type.arrayDepth() < 2) || deepArray || noNestedArrays(value1)),
-          pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, true))));
+        Object pojo1 = pojoFactory.create(value1);
+        Object pojo2 = pojoFactory.create(cloneArray(value2, true));
+        boolean expectedToBeEqual =
+          (value1 == value2) && ((type.arrayDepth() < 2) || deepArray || noNestedArrays(value1));
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1,
+          pojo2);
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
-          AssertJUnit.assertEquals(
-            "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-            value1 == value2,
-            pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(value2)));
+          checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
         }
       }
     }
@@ -178,7 +183,7 @@ public class MatrixTest {
    * @param deepArray
    */
   @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
-  public void testDeepArrayAsObjectEquals(Type type, boolean canBeArray, boolean deepArray) {
+  public void testDeepArrayAsObjectEqualsAndDiff(Type type, boolean canBeArray, boolean deepArray) {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
     for (Object value1: type.getSampleValues()) {
@@ -189,10 +194,11 @@ public class MatrixTest {
         // If value1 == value2 != null and canBeArray is true, then without deepArray, they can only be equal if
         //  there are no second level arrays that can be cloned.
         // The presence of @DeepArray on a field of type @Object should imply @CanBeArray
-        AssertJUnit.assertEquals(
-          "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          (value1 == value2) && (value1 == null || canBeArray || deepArray) && (deepArray || (noNestedArrays(value1))),
-          pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, true))));
+        boolean expectedToBeEqual =
+          (value1 == value2) && (value1 == null || canBeArray || deepArray) && (deepArray || (noNestedArrays(value1)));
+        Object pojo1 = pojoFactory.create(value1);
+        Object pojo2 = pojoFactory.create(cloneArray(value2, true));
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
       }
     }
   }
@@ -213,12 +219,38 @@ public class MatrixTest {
         // If value1 == value2, but canBeArray is false, then the only way doEquals can return true is if value1 == null
         // If value1 == value2 != null and canBeArray is true, then without deepArray, they can only be equal if
         //  there are no second level arrays that can be cloned.
-        AssertJUnit.assertEquals(
-          "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2),
-          value1 == value2 && (deepArray || (noNestedArrays(value1))),
-          pojoFactory.pojomator().doEquals(pojoFactory.create(value1), pojoFactory.create(cloneArray(value2, true))));
+        Object pojo1 = pojoFactory.create(value1);
+        Object pojo2 = pojoFactory.create(cloneArray(value2, true));
+        boolean expectedToBeEqual = value1 == value2 && (deepArray || (noNestedArrays(value1)));
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
       }
     }
+  }
+
+  private void checkEqualsAndDiff(boolean expectedToBeEqual, PojoFactory pojoFactory,
+    Object value1, Object value2, Object pojo1, Object pojo2) {
+    AssertJUnit.assertEquals(
+      label(value1, value2),
+      expectedToBeEqual,
+      pojoFactory.pojomator().doEquals(pojo1, pojo2));
+    AssertJUnit.assertEquals(
+      label(value1, value2),
+      expectedDifferences(expectedToBeEqual, value1, value2),
+      pojoFactory.pojomator().doDiff(pojo1, pojo2));
+  }
+
+  /**
+   * Return the expected Differences object for a pair of object
+   * @param expectedToBeEqual whether we expect these two objects to be considered equal
+   * @param value1 the first object
+   * @param value2 the second object
+   * @return the Differences we expect between the two
+   */
+  private Differences expectedDifferences(boolean expectedToBeEqual,
+    Object value1, Object value2) {
+    return expectedToBeEqual
+      ? NoDifferences.getInstance()
+      : new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", value1, value2)));
   }
 
   /**
@@ -236,6 +268,14 @@ public class MatrixTest {
       }
     }
     return true;
+  }
+
+  private String label(Object value1, Object value2) {
+    return "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2);
+  }
+
+  private String label(Object value) {
+    return "value: " + possibleArrayToList(value);
   }
 
   /**
