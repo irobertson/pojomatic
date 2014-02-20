@@ -25,8 +25,8 @@ public class PropertyClassVisitorTest {
     String field2;
     long field3;
     boolean is2() { return false; }
-    void m3(@SuppressWarnings("unused") int n) {}
-    void m4(@SuppressWarnings("unused") int n) {}
+    void m3(int n) {}
+    void m4(int n) {}
   }
 
   static class Other {

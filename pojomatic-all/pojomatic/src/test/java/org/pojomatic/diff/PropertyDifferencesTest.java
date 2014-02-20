@@ -9,13 +9,11 @@ import org.junit.Test;
 
 public class PropertyDifferencesTest {
 
-  @SuppressWarnings("unused")
   @Test(expected=NullPointerException.class)
   public void testConstructorNullPointerException() {
     new PropertyDifferences(null);
   }
 
-  @SuppressWarnings("unused")
   @Test(expected=IllegalArgumentException.class)
   public void testEmptyDifferences() {
     new PropertyDifferences(Collections.<Difference>emptyList());
