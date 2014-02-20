@@ -20,7 +20,7 @@ import org.pojomatic.internal.factory.PropertyDescriptor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class MatrixTest {
+public class PropertyTypeTest {
 
   @Test(dataProvider = "types", dataProviderClass = TypeProviders.class)
   public void testHashCode(Type type) {
