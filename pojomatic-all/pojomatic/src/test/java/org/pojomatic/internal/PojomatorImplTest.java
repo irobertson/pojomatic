@@ -4,11 +4,7 @@ import static org.junit.Assert.*;
 import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
 import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
-import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
 import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.*;
@@ -27,16 +23,8 @@ public class PojomatorImplTest {
   private static Pojomator<ObjectPairProperty> OBJECT_PAIR_PROPERTY_POJOMATOR =
     makePojomator(ObjectPairProperty.class);
 
-  private static Pojomator<IntProperty> INT_PROPERTY_POJOMATOR =
-    makePojomator(IntProperty.class);
-
   private static final Pojomator<AccessCheckedProperties> ACCESS_CHECKED_PROPERTIES_POJOMATOR =
     makePojomator(AccessCheckedProperties.class);
-
-  private static final List<Class<?>> PRIMITIVE_TYPES = Arrays.<Class<?>>asList(
-    Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
-    Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE);
-
 
   @Test(expected=NullPointerException.class) public void testNullHashCode() {
     OBJECT_PROPERTY_POJOMATOR.doHashCode(null);
@@ -61,31 +49,6 @@ public class PojomatorImplTest {
 
   @Test public void testCastCheckFailureForEquals() {
     assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty("test"), "differentClass"));
-  }
-
-  @Test public void testPropertyEquals() {
-    String s1 = "hello";
-    String s2 = copyString(s1); // ensure we are using .equals, and not ==
-
-    assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty(s1), new ObjectProperty(s2)));
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
-      new ObjectProperty("hello"), new ObjectProperty("goodbye")));
-  }
-
-  @Test public void testNullPropertyEquals() {
-    assertTrue(OBJECT_PROPERTY_POJOMATOR.doEquals(
-      new ObjectProperty(null), new ObjectProperty(null)));
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(
-      new ObjectProperty(null), new ObjectProperty("not null over here")));
-  }
-
-  @Test public void testPrimitivePropertyEquals() {
-    assertTrue(INT_PROPERTY_POJOMATOR.doEquals(new IntProperty(3), new IntProperty(3)));
-    assertFalse(INT_PROPERTY_POJOMATOR.doEquals(new IntProperty(3), new IntProperty(4)));
-  }
-
-  private String copyString(String s1) {
-    return new String(s1); //NOPMD - we mean to make a copy
   }
 
   @Test public void testArrayVsNonArrayEquals() {
@@ -205,11 +168,6 @@ public class PojomatorImplTest {
     makePojomator(String.class);
   }
 
-  @Test public void testPrivateClass() {
-    Pojomator<PrivateClass> pojomator = makePojomator(PrivateClass.class);
-    assertTrue(pojomator.doToString(new PrivateClass()).contains("number"));
-  }
-
   @Test public void testInterface() {
     Pojomator<Interface> pojomator = makePojomator(Interface.class);
     class Impl1 implements Interface {
@@ -248,22 +206,8 @@ public class PojomatorImplTest {
     }.getClass()));
   }
 
-  @Test public void testToString() {
-    class SimplePojo {
-      @Property(policy=PojomaticPolicy.EQUALS) int x;
-      @Property(policy=PojomaticPolicy.HASHCODE_EQUALS) int y;
-      @Property(policy=PojomaticPolicy.TO_STRING) int z;
-    }
-    assertEquals(
-      "Pojomator for org.pojomatic.internal.PojomatorImplTest$1SimplePojo" +
-      " with equals properties {x,y}," +
-      " hashCodeProperties {y}," +
-      " and toStringProperties {z}",
-      Pojomatic.pojomator(SimplePojo.class).toString());
-  }
-
   @PojoFormat(SimplePojoFormatter.class)
-  public static class FormattedObject {
+  private static class FormattedObject {
     public FormattedObject(Object s) {
       this.s = s;
     }
@@ -289,21 +233,14 @@ public class PojomatorImplTest {
     }
   }
 
-  public static class ObjectProperty {
+  private static class ObjectProperty {
     public ObjectProperty(Object s) {
       this.s = s;
     }
     @Property public Object s;
   }
 
-  public static class ArrayObjectProperty {
-    public ArrayObjectProperty(Object s) {
-      this.s = s;
-    }
-    @Property @CanBeArray public Object s;
-  }
-
-  public static class ObjectPairProperty {
+  private static class ObjectPairProperty {
     public ObjectPairProperty(Object s, Object t) {
       this.s = s;
       this.t = t;
@@ -312,20 +249,13 @@ public class PojomatorImplTest {
     @Property public Object t;
   }
 
-  public static class IntProperty {
-    public IntProperty(int i) {
-      this.i = i;
-    }
-    @Property int i;
-  }
-
-  public static class ExceptionThrowingProperty {
+  private static class ExceptionThrowingProperty {
     @Property public int bomb() {
       throw new RuntimeException();
     }
   }
 
-  public static class AccessCheckedProperties {
+  private static class AccessCheckedProperties {
     public AccessCheckedProperties(int a, int b) {
       this.a = a;
       this.b = b;
