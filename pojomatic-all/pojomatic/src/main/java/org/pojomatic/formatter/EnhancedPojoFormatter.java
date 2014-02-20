@@ -1,7 +1,12 @@
 package org.pojomatic.formatter;
 
+import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 
+/**
+ * A formatter to aid in creating a {@code String} representation of a POJO.  A new instance will be
+ * created for each time that {@link Pojomator#doToString(Object)} is called.
+ */
 @SuppressWarnings("deprecation")
 public interface EnhancedPojoFormatter extends PojoFormatter {
   /**
