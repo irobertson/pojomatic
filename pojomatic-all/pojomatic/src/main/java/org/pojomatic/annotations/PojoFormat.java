@@ -13,6 +13,7 @@ import org.pojomatic.formatter.PojoFormatter;
  * Specifies formatting information to be used for creating {@code String} representations of POJOs.
  * @see PojoFormatter
  */
+@SuppressWarnings("deprecation")
 @Target(TYPE)
 @Retention(RUNTIME)
 @Documented

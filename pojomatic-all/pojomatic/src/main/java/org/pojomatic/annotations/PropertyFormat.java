@@ -17,13 +17,14 @@ import org.pojomatic.formatter.PropertyFormatter;
  * determined solely by any {@link Property} and {@link AutoProperty} annotations on the POJO.
  * @see PropertyFormatter
  */
+@SuppressWarnings("deprecation")
 @Target({FIELD, METHOD})
 @Retention(RUNTIME)
 @Documented
 public @interface PropertyFormat {
 
   /**
-   *	The formatter to use for creating a {@code String} representation.
+   *  The formatter to use for creating a {@code String} representation.
    */
   public Class<? extends PropertyFormatter> value();
 }
