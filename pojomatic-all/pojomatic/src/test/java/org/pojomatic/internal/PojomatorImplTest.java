@@ -1,8 +1,6 @@
 package org.pojomatic.internal;
 
 import static org.junit.Assert.*;
-import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_MULTIPLIER;
-import static org.pojomatic.internal.PojomatorImpl.HASH_CODE_SEED;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
@@ -16,6 +14,9 @@ import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 import com.google.common.collect.Sets;
 
 public class PojomatorImplTest {
+  private final static int HASH_CODE_MULTIPLIER = 31;
+  private final static int HASH_CODE_SEED = 1;
+
   private static Pojomator<ObjectProperty> OBJECT_PROPERTY_POJOMATOR =
     makePojomator(ObjectProperty.class);
 
@@ -187,8 +188,9 @@ public class PojomatorImplTest {
     }
 
     assertEquals("Interface{int: {2}, string: {hello}}", pojomator.doToString(new Impl1()));
-    assertEquals((
-      HASH_CODE_MULTIPLIER + 2)*HASH_CODE_MULTIPLIER + "hello".hashCode(), pojomator.doHashCode(new Impl1()));
+    assertEquals(
+      (HASH_CODE_MULTIPLIER + 2) * HASH_CODE_MULTIPLIER + "hello".hashCode(),
+      pojomator.doHashCode(new Impl1()));
     assertTrue(pojomator.doEquals(new Impl1(), new Impl2("hello")));
     assertFalse(pojomator.doEquals(new Impl1(), new Impl2("goodbye")));
     assertFalse(pojomator.doEquals(new Impl1(), "not even in the right hierarchy"));

@@ -2,7 +2,6 @@ package org.pojomatic;
 
 import org.pojomatic.diff.Differences;
 import org.pojomatic.internal.PojomatorFactory;
-import org.pojomatic.internal.PojomatorImpl;
 import org.pojomatic.internal.SelfPopulatingMap;
 
 /**
@@ -67,7 +66,6 @@ import org.pojomatic.internal.SelfPopulatingMap;
  *
  * @see Pojomator
  */
-@SuppressWarnings("unused")
 public class Pojomatic {
 
   private final static SelfPopulatingMap<Class<?>, Pojomator<?>> POJOMATORS =
@@ -77,7 +75,6 @@ public class Pojomatic {
       // parameter to Class
       protected Pojomator<?> create(Class<?> key) {
         return PojomatorFactory.makePojomator(key);
-        //return new PojomatorImpl(key);
       }
   };
 
