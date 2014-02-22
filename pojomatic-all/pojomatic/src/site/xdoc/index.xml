@@ -6,6 +6,7 @@
     <title>Pojomatic</title>
   </properties>
   <head>
+    <title/>
     <style type="text/css">
     .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
     .s0 { color: rgb(0,0,128); font-weight: bold; }
@@ -13,6 +14,7 @@
     </style>
   </head>
   <body>
+<section name="Pojomatic">
 <p>
 Pojomatic provides configurable implementations of the <code>equals(Object)</code>, <code>hashCode()</code>
 and <code>toString()</code> methods inherited from <code>java.lang.Object</code>.
@@ -57,9 +59,11 @@ and <code>toString()</code> methods inherited from <code>java.lang.Object</code>
 </p>
 
 <source>System.out.println(new Person("John", "Doe", 32).toString());</source>
-will result in the following output:
+<p>will result in the following output:</p>
 <source>Person{firstName: {John}, lastName: {Doe}, age: {32}}</source>
 
 <p>For more information and examples, see the <a href="apidocs/index.html">JavaDocs</a>.</p>
+</section>
+
   </body>
 </document>

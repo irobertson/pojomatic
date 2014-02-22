@@ -6,20 +6,22 @@
     <title>Using with eclipse</title>
   </properties>
   <body>
-    <p>
-      Adding an eclipse template for pojomatic can make pojomating a class even easier. Open up the
-      Preferences dialog, and then go to Java-&gt;Editor-&gt;Templates. Then add a template named
-      "pojomatic" with the following body:
-    </p>
-    <source>
+    <section name="Using with Eclipse">
+      <p>
+        Adding an eclipse template for pojomatic can make pojomating a class even easier. Open up the
+        Preferences dialog, and then go to Java-&gt;Editor-&gt;Templates. Then add a template named
+        "pojomatic" with the following body:
+      </p>
+      <source>
 @Override public boolean equals(Object other) { return Pojomatic.equals(this, other); }
 @Override public String toString() { return Pojomatic.toString(this); }
 @Override public int hashCode() { return Pojomatic.hashCode(this); }
 ${:import(org.pojomatic.Pojomatic)}
-</source>
-    <p>
-      After that, to pojomate a class, simply add an <code>@AutoProperty</code> annotation to the
-      class, and insert the macro in the class body by typing "pojomatic" and hitting Control-space.
-    </p>
+      </source>
+      <p>
+        After that, to pojomate a class, simply add an <code>@AutoProperty</code> annotation to the
+        class, and insert the macro in the class body by typing "pojomatic" and hitting Control-space.
+      </p>
+    </section>
   </body>
 </document>
