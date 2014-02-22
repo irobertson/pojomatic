@@ -20,7 +20,10 @@ public interface PojoFormatter {
    * @param pojoClass the class for which {@code toString()} is being called
    * @return    the prefix to appear at the beginning of the result of {@code toString()}
    * @see Object#toString()
+   *
+   * @deprecated Use {@link EnhancedPojoFormatter#appendToStringPrefix(StringBuilder, Class)} instead
    */
+  @Deprecated
   String getToStringPrefix(Class<?> pojoClass);
 
   /**
@@ -29,7 +32,10 @@ public interface PojoFormatter {
    * @param pojoClass the class for which {@code toString()} is being called
    * @return    the suffix to appear at the end of the result of {@code toString()}
    * @see Object#toString()
+   *
+   * @deprecated Use {@link EnhancedPojoFormatter#appendToStringSuffix(StringBuilder, Class)} instead
    */
+  @Deprecated
   String getToStringSuffix(Class<?> pojoClass);
 
   /**
@@ -39,7 +45,10 @@ public interface PojoFormatter {
    * {@link PropertyFormatter#format(Object)} for the property's value.
    * @param property the property for which to generate a prefix
    * @return the prefix for the given property
+   *
+   * @deprecated Use {@link EnhancedPojoFormatter#appendPropertyPrefix(StringBuilder, PropertyElement)}
    */
+  @Deprecated
   String getPropertyPrefix(PropertyElement property);
 
   /**
@@ -47,6 +56,9 @@ public interface PojoFormatter {
    * once after each call to {@link PropertyFormatter#format(Object)} for the property's value.
    * @param property the property for which to generate a suffix
    * @return the suffix for the given property
+   *
+   * @deprecated Use {@link EnhancedPojoFormatter#appendPropertySuffix(StringBuilder, PropertyElement)}
    */
+  @Deprecated
   String getPropertySuffix(PropertyElement property);
 }
