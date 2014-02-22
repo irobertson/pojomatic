@@ -8,10 +8,10 @@ import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.SubclassCannotOverrideEquals;
 import org.pojomatic.diff.Differences;
-import org.pojomatic.formatter.DefaultPojoFormatter;
-import org.pojomatic.formatter.DefaultPropertyFormatter;
-import org.pojomatic.formatter.PojoFormatter;
-import org.pojomatic.formatter.PropertyFormatter;
+import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
+import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
+import org.pojomatic.formatter.EnhancedPojoFormatter;
+import org.pojomatic.formatter.EnhancedPropertyFormatter;
 
 /**
  * A provider of the three standard {@code Object} methods,
@@ -40,30 +40,32 @@ public interface Pojomator<T> {
    * Compute the {@code toString} representation for a given instance of {@code T}.
    * <p>
    * The format used depends on the
-   * {@link PojoFormatter} used for the POJO, and the {@link PropertyFormatter} of each property.
+   * {@link EnhancedPojoFormatter} used for the POJO, and the {@link EnhancedPropertyFormatter} of each property.
    * <p>
-   * For example, suppose a class {@code Person} has properties {@code firstName} and
-   * {@code lastName} which are included in its {@code String} representation.
-   * No {@code PojoFormatter} or {@code PropertyFormatter} are specified, so the defaults are used.
-   * In particular, instances of {@code DefaultPropertyFormatter} will be created for
-   * {@code firstName} and {@code lastName} (referred to here as {@code firstNameFormatter} and
-   * {@code lastNameFormatter}, respectively).  Let {@code firstNameProperty} and
-   * {@code lastNameProperty} refer to the instances of {@link PropertyElement} referring to the
-   * properties {@code firstName} and {@code lastName} respectively.
+   * For example, suppose a class {@code Person} has properties {@code String name} and
+   * {@code int age} which are included in its {@code String} representation.
+   * No {@code EnhancedPojoFormatter} or {@code EnhancedPropertyFormatter} are specified, so the defaults are used.
+   * In particular, instances of {@code DefaultEnhancedPropertyFormatter} will be created for
+   * {@code name} and {@code age} (referred to here as {@code nameFormatter} and
+   * {@code ageFormatter}, respectively).  Let {@code nameProperty} and
+   * {@code ageProperty} refer to the instances of {@link PropertyElement} referring to the
+   * properties {@code name} and {@code age} respectively.
    * </p>
    * <p>
    * For a non-null {@code Person} instance, the {@code String} representation will be created by
-   * creating an instance of {@code DefaultPojoFormatter} for the {@code Person} class (referred to
-   * here as {@code personFormatter}), and then concatenating the results of following:
+   * creating an instance of {@code DefaultEnhancedPojoFormatter} for the {@code Person} class (referred to
+   * here as {@code personFormatter}), a {@link StringBuilder} (referred to here as builder), and then invoking the
+   * following methods in order:
    * <ol>
-   *   <li>{@link DefaultPojoFormatter#getToStringPrefix(Class) personFormatter.getToStringPrefix(Person.class)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(firstNameProperty)}</li>
-   *   <li>{@link DefaultPropertyFormatter#format(Object) firstNameFormatter.format(firstName)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(firstNameProperty)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertyPrefix(PropertyElement) personFormatter.getPropertyPrefix(lastNameProperty)}</li>
-   *   <li>{@link DefaultPropertyFormatter#format(Object) lastNameFormatter.format(lastName)}</li>
-   *   <li>{@link DefaultPojoFormatter#getPropertySuffix(PropertyElement) personFormatter.getPropertySuffix(lasttNameProperty)}</li>
-   *   <li>{@link DefaultPojoFormatter#getToStringSuffix(Class) personFormatter.getToStringSuffix(Person.class)}</li>
+   *   <li>{@link DefaultEnhancedPojoFormatter#appendToStringPrefix(StringBuilder, Class) personFormatter.appendToStringPrefix(builder, Person.class)}</li>
+   *   <li>{@link DefaultEnhancedPojoFormatter#appendPropertyPrefix(StringBuilder, PropertyElement) personFormatter.appendPropertyPrefix(builder, nameProperty)}</li>
+   *   <li>{@link DefaultEnhancedPropertyFormatter#appendFormatted(StringBuilder, Object) nameFormatter.appendFormatted(builder, name)}</li>
+   *   <li>{@link DefaultEnhancedPojoFormatter#appendPropertySuffix(StringBuilder, PropertyElement) personFormatter.appendPropertySuffix(builder, nameProperty)}</li>
+   *   <li>{@link DefaultEnhancedPojoFormatter#appendPropertyPrefix(StringBuilder, PropertyElement) personFormatter.appendPropertyPrefix(builder, ageProperty)}</li>
+   *   <li>{@link DefaultEnhancedPropertyFormatter#appendFormatted(StringBuilder, int) ageFormatter.appendFormatted(age)}</li>
+   *   <li>{@link DefaultEnhancedPojoFormatter#appendPropertySuffix(StringBuilder, PropertyElement) personFormatter.appendPropertySuffix(builder, ageProperty)}</li>
+   *   <li>{@link DefaultEnhancedPojoFormatter#appendToStringSuffix(StringBuilder, Class) personFormatter.appendToStringSuffix(builder, Person.class)}</li>
+   *   <li>builder.toString()</li>
    * </ol>
    * </p>
    *
