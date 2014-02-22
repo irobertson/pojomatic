@@ -10,6 +10,7 @@ import java.lang.reflect.AnnotatedElement;
 
 import org.junit.Test;
 import org.pojomatic.Pojomator;
+import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
@@ -162,5 +163,68 @@ public class PojomatorFactoryTest {
 
     Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
     assertEquals("Simple{i: {6}}", pojomator.doToString(new Simple()));
+  }
+
+  @SuppressWarnings("deprecation")
+  public static class DummyPojoFormatter implements org.pojomatic.formatter.PojoFormatter {
+
+    @Override
+    public String getToStringPrefix(Class<?> pojoClass) {
+      return "pojopre-" + pojoClass.getSimpleName() + ":";
+    }
+
+    @Override
+    public String getToStringSuffix(Class<?> pojoClass) {
+      return "pojopost-" + pojoClass.getSimpleName() + ":";
+    }
+
+    @Override
+    public String getPropertyPrefix(PropertyElement property) {
+      return "proppre-" + property.getName() + ":";
+    }
+
+    @Override
+    public String getPropertySuffix(PropertyElement property) {
+      return "proppost-" + property.getName() + ":";
+    }
+
+  }
+
+  @Test
+  public void testPojoFormatterWrapping() {
+    @PojoFormat(DummyPojoFormatter.class)
+    class Pojo {
+      @Property int x;
+    }
+
+    assertEquals(
+      "pojopre-Pojo:proppre-x:0proppost-x:pojopost-Pojo:",
+      PojomatorFactory.makePojomator(Pojo.class).doToString(new Pojo()));
+  }
+
+  @SuppressWarnings("deprecation")
+  public static class DummyPropertyFormatter implements org.pojomatic.formatter.PropertyFormatter {
+    static AnnotatedElement initializedElement;
+
+    @Override
+    public void initialize(AnnotatedElement element) {
+      initializedElement = element;
+    }
+
+    @Override
+    public String format(Object value) {
+      return "-" + value + "-";
+    }
+  }
+
+  @Test
+  public void testPropertyFormatterWrapping() throws Exception {
+    class Pojo {
+      @PropertyFormat(DummyPropertyFormatter.class)
+      @Property int x;
+    }
+    Pojomator<Pojo> pojomator = PojomatorFactory.makePojomator(Pojo.class);
+    assertEquals(Pojo.class.getDeclaredField("x"), DummyPropertyFormatter.initializedElement);
+    assertEquals("Pojo{x: {-0-}}", pojomator.doToString(new Pojo()));
   }
 }

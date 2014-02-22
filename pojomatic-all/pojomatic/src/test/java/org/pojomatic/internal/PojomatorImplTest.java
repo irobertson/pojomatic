@@ -11,9 +11,8 @@ import org.pojomatic.annotations.*;
 import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.PropertyDifferences;
-import org.pojomatic.formatter.DefaultPojoFormatter;
-import org.pojomatic.formatter.DefaultPropertyFormatter;
-
+import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
+import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 import com.google.common.collect.Sets;
 
 public class PojomatorImplTest {
@@ -216,20 +215,19 @@ public class PojomatorImplTest {
     public Object s;
   }
 
-  @Deprecated
-  public static class SimplePojoFormatter extends DefaultPojoFormatter {
-
+  public static class SimplePojoFormatter extends DefaultEnhancedPojoFormatter {
     @Override
-    public String getToStringPrefix(Class<?> pojoClass) {
-      return "PREFIX" + super.getToStringPrefix(pojoClass);
+    public void appendToStringPrefix(StringBuilder builder, Class<?> pojoClass) {
+      builder.append("PREFIX");
+      super.appendToStringPrefix(builder, pojoClass);
     }
   }
 
-  @Deprecated
-  public static class SimplePropertyFormatter extends DefaultPropertyFormatter {
+  public static class SimplePropertyFormatter extends DefaultEnhancedPropertyFormatter {
     @Override
-    public String format(Object value) {
-      return "BEFORE" + super.format(value);
+    public void appendFormatted(StringBuilder builder, Object value) {
+      builder.append("BEFORE");
+      super.appendFormatted(builder, value);
     }
   }
 
