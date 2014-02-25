@@ -1,25 +1,24 @@
 package org.pojomatic.formatter;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 public class AccountNumberFormatterTest {
 
   @Test public void testFormatNull() {
-    assertEquals("null", new AccountNumberFormatter().format(null));
+    AssertJUnit.assertEquals("null", new AccountNumberFormatter().format(null));
   }
 
   @Test public void testFormatBlank() {
-    assertEquals("", new AccountNumberFormatter().format(""));
+    AssertJUnit.assertEquals("", new AccountNumberFormatter().format(""));
   }
 
   @Test public void testFormatMin() {
-    assertEquals("1234", new AccountNumberFormatter().format(1234));
+    AssertJUnit.assertEquals("1234", new AccountNumberFormatter().format(1234));
   }
 
   @Test public void testFormat() {
-    assertEquals("******6789", new AccountNumberFormatter().format("0123456789"));
+    AssertJUnit.assertEquals("******6789", new AccountNumberFormatter().format("0123456789"));
   }
 
 }

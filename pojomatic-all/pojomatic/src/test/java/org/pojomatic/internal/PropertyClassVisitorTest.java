@@ -1,7 +1,9 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.*;
-
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.Assert;
+import org.testng.AssertJUnit;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,8 +13,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.pojomatic.PropertyElement;
 
 import com.google.common.base.Function;
@@ -56,7 +56,7 @@ public class PropertyClassVisitorTest {
 
   private static List<PropertyElement> NO_PROPERTIES = Collections.emptyList();
 
-  @Before
+  @BeforeMethod
   public void setup() throws Exception {
     // Note that fields will be visited before methods, regardless of declaration order.
     f1 = new PropertyField(FieldsAndGetters.class.getDeclaredField("field1"), "");
@@ -74,8 +74,8 @@ public class PropertyClassVisitorTest {
         FieldsAndGetters.class,
         makeRoleMaps(Arrays.asList(f1, f2), Arrays.asList(f2, f1), NO_PROPERTIES),
         makeRoleMaps(Arrays.asList(m2, m1), Arrays.asList(m1), Arrays.asList(m2)));
-    assertNotNull(visitor);
-    assertEquals(
+    AssertJUnit.assertNotNull(visitor);
+    AssertJUnit.assertEquals(
       makeRoleLists(Arrays.asList(f1, f2, m1, m2), Arrays.asList(f1, f2, m1), Arrays.asList(m2)),
       visitor.getSortedProperties());
   }
@@ -85,7 +85,7 @@ public class PropertyClassVisitorTest {
     Map<PropertyRole, Map<String, PropertyElement>> roleMaps =
         makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES);
     PropertyClassVisitor visitor = PropertyClassVisitor.visitClass(String.class, roleMaps, roleMaps);
-    assertNull(visitor);
+    AssertJUnit.assertNull(visitor);
   }
 
   @Test
@@ -94,12 +94,12 @@ public class PropertyClassVisitorTest {
 
     ClassOnlyClassLoader classLoader = new ClassOnlyClassLoader(Bean.class.getClassLoader());
     Class<?> beanClass = classLoader.loadClass(Bean.class.getName());
-    assertNotSame(beanClass, Bean.class);
-    assertNotNull(beanClass.getProtectionDomain().getCodeSource().getLocation());
+    AssertJUnit.assertNotSame(beanClass, Bean.class);
+    Assert.assertNotNull(beanClass.getProtectionDomain().getCodeSource().getLocation());
     Map<PropertyRole, Map<String, PropertyElement>> roleMaps =
         makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES);
     PropertyClassVisitor visitor = PropertyClassVisitor.visitClass(String.class, roleMaps, roleMaps);
-    assertNull(visitor);
+    AssertJUnit.assertNull(visitor);
   }
 
   @Test
@@ -110,10 +110,10 @@ public class PropertyClassVisitorTest {
         FieldsAndGetters.class,
         makeRoleMaps(Arrays.asList(f3), NO_PROPERTIES, NO_PROPERTIES),
         makeRoleMaps(Arrays.asList(m3, m4), NO_PROPERTIES, NO_PROPERTIES));
-      fail("Exception expected");
+      Assert.fail("Exception expected");
     }
     catch (IllegalStateException e) {
-      assertEquals(
+      AssertJUnit.assertEquals(
         "In class " + FieldsAndGetters.class.getName() + ", properties "
         + f3.getElement().toString() + ", " + m3.getElement().toString() + ", " + m4.getElement().toString()
         + " were found in reflection, but not when visiting the bytecode",

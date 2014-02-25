@@ -1,11 +1,11 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.*;
-
+import org.testng.annotations.Test;
+import org.testng.Assert;
+import org.testng.AssertJUnit;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 
-import org.junit.Test;
 import org.pojomatic.internal.a.C1;
 import org.pojomatic.internal.a.C3;
 import org.pojomatic.internal.b.C2;
@@ -40,10 +40,10 @@ public class OverridableMethodsTest {
   @Test
   public void testEqualsThenEquals() throws Exception {
     OverridableMethods overridableMethods = new OverridableMethods();
-    assertEquals(
+    AssertJUnit.assertEquals(
       EQUALS, overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C1.class, "publicMethod"), EQUALS));
-    assertEquals(
+    AssertJUnit.assertEquals(
       EnumSet.noneOf(PropertyRole.class), overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C2.class, "publicMethod"), EQUALS));
   }
@@ -51,10 +51,10 @@ public class OverridableMethodsTest {
   @Test
   public void testEqualsThenToString() throws Exception {
     OverridableMethods overridableMethods = new OverridableMethods();
-    assertEquals(
+    AssertJUnit.assertEquals(
       EQUALS, overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C1.class, "publicMethod"), EQUALS));
-    assertEquals(
+    AssertJUnit.assertEquals(
       EnumSet.of(PropertyRole.TO_STRING), overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C2.class, "publicMethod"), EnumSet.of(PropertyRole.TO_STRING)));
   }
@@ -62,10 +62,10 @@ public class OverridableMethodsTest {
   @Test
   public void testEqualsThenToEqualsString() throws Exception {
     OverridableMethods overridableMethods = new OverridableMethods();
-    assertEquals(
+    AssertJUnit.assertEquals(
       EQUALS, overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C1.class, "publicMethod"), EQUALS));
-    assertEquals(
+    AssertJUnit.assertEquals(
       EnumSet.of(PropertyRole.TO_STRING), overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C2.class, "publicMethod"), EnumSet.of(PropertyRole.TO_STRING, PropertyRole.EQUALS)));
   }
@@ -73,10 +73,10 @@ public class OverridableMethodsTest {
   @Test
   public void testEqualsHashCodeThenEqualsHashCode() throws Exception {
     OverridableMethods overridableMethods = new OverridableMethods();
-    assertEquals(
+    AssertJUnit.assertEquals(
       EQUALS_HASH_CODE, overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C1.class, "publicMethod"), EQUALS_HASH_CODE));
-    assertEquals(
+    AssertJUnit.assertEquals(
       EnumSet.noneOf(PropertyRole.class), overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C2.class, "publicMethod"), EQUALS_HASH_CODE));
   }
@@ -84,16 +84,16 @@ public class OverridableMethodsTest {
   @Test
   public void testEqualsThenEqualsHashCode() throws Exception {
     OverridableMethods overridableMethods = new OverridableMethods();
-    assertEquals(
+    AssertJUnit.assertEquals(
       EQUALS, overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C1.class, "publicMethod"), EQUALS));
     try {
       overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C2.class, "publicMethod"), EQUALS_HASH_CODE);
-      fail("Exception expected");
+      Assert.fail("Exception expected");
     }
     catch (IllegalArgumentException e) {
-      assertEquals(
+      AssertJUnit.assertEquals(
         "Method org.pojomatic.internal.b.C2.publicMethod is requested to be included in hashCode"
           + " computations, but already overrides a method which is requested for"
           + " equals computations, but not hashCode computations.", e.getMessage());
@@ -104,16 +104,16 @@ public class OverridableMethodsTest {
     String methodName, boolean c1Add, boolean c2Add, boolean c3Add, boolean c4Add)
     throws Exception {
     OverridableMethods overridableMethods = new OverridableMethods();
-    assertEquals(
+    AssertJUnit.assertEquals(
       c1Add, !overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C1.class, methodName), ALL).isEmpty());
-    assertEquals(
+    AssertJUnit.assertEquals(
       c2Add, !overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C2.class, methodName), ALL).isEmpty());
-    assertEquals(
+    AssertJUnit.assertEquals(
       c3Add, !overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C3.class, methodName), ALL).isEmpty());
-    assertEquals(
+    AssertJUnit.assertEquals(
       c4Add, !overridableMethods.checkAndMaybeAddRolesToMethod(
         method(C4.class, methodName), ALL).isEmpty());
   }

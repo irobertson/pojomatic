@@ -1,9 +1,8 @@
 package org.pojomatic.formatter;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.AssertJUnit;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.TestUtils;
 
@@ -29,7 +28,8 @@ public class DefaultEnhancedPojoFormatterTest {
     }
   }
 
-  @Before public void setUp() {
+  @BeforeMethod
+  public void setUp() {
     formatter = new DefaultEnhancedPojoFormatter();
     builder = new StringBuilder();
   }
@@ -68,6 +68,6 @@ public class DefaultEnhancedPojoFormatterTest {
   }
 
   private void assertFormatted(String expected) {
-    assertEquals(expected, builder.toString());
+    AssertJUnit.assertEquals(expected, builder.toString());
   }
 }

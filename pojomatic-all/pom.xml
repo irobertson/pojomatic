@@ -16,21 +16,8 @@
     <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</url>
   </scm>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-  </dependencies>
-
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.11</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>org.pojomatic</groupId>
         <artifactId>pojomatic</artifactId>

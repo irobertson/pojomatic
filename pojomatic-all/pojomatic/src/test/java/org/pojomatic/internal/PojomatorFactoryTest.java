@@ -1,14 +1,15 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 
-import org.junit.Test;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
@@ -48,7 +49,7 @@ public class PojomatorFactoryTest {
       }
     };
     Class<?> simple2 = reloader.loadClass(simpleName);
-    assertNotEquals(ToBeDuplicated.class, simple2);
+    Assert.assertNotEquals(simple2, ToBeDuplicated.class);
     Pojomator<ToBeDuplicated> pojomator1 = PojomatorFactory.makePojomator(ToBeDuplicated.class);
     assertTrue(pojomator1.doEquals(ToBeDuplicated.class.newInstance(), ToBeDuplicated.class.newInstance()));
     @SuppressWarnings("unchecked")

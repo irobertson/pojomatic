@@ -1,7 +1,7 @@
 package org.pojomatic.internal;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.Pojomator;
 import org.pojomatic.Pojomatic;
@@ -29,9 +29,9 @@ public class EqualsInheritanceTest {
     Child child = new Child();
     Pojomator<Child> childPojomator = PojomatorFactory.makePojomator(Child.class);
 
-    assertTrue(PARENT_POJOMATOR.doEquals(PARENT, child));
-    assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
-    assertTrue(childPojomator.doEquals(child, PARENT));
+    AssertJUnit.assertTrue(PARENT_POJOMATOR.doEquals(PARENT, child));
+    AssertJUnit.assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
+    AssertJUnit.assertTrue(childPojomator.doEquals(child, PARENT));
   }
 
   @Test public void testChildWithNewProperty() {
@@ -39,14 +39,14 @@ public class EqualsInheritanceTest {
     Child child = new Child();
     Pojomator<Child> childPojomator = PojomatorFactory.makePojomator(Child.class);
 
-    assertFalse(PARENT.equals(child));
-    assertFalse(child.equals(PARENT));
-    assertFalse(PARENT_POJOMATOR.doEquals(PARENT, child));
-    assertFalse(childPojomator.doEquals(child, PARENT));
+    AssertJUnit.assertFalse(PARENT.equals(child));
+    AssertJUnit.assertFalse(child.equals(PARENT));
+    AssertJUnit.assertFalse(PARENT_POJOMATOR.doEquals(PARENT, child));
+    AssertJUnit.assertFalse(childPojomator.doEquals(child, PARENT));
     // If we explicitly use a PARENT_POJOMATOR to compare child to parent, we'll miss the additional
     //child property.
     //TODO - document this a as a danger of creating your own Pojomators.
-    assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
+    AssertJUnit.assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
   }
 
   @Test public void testTwoChildrenWithNoNewProperties() {
@@ -56,8 +56,8 @@ public class EqualsInheritanceTest {
     Child2 child2 = new Child2();
     Pojomator<Child1> childPojomator = PojomatorFactory.makePojomator(Child1.class);
 
-    assertTrue(PARENT_POJOMATOR.doEquals(child1, child2));
-    assertTrue(childPojomator.doEquals(child1, child2));
+    AssertJUnit.assertTrue(PARENT_POJOMATOR.doEquals(child1, child2));
+    AssertJUnit.assertTrue(childPojomator.doEquals(child1, child2));
   }
 
   @Test public void testTwoChildrenWithOneHavingNewProperties() {
@@ -68,7 +68,7 @@ public class EqualsInheritanceTest {
     Pojomator<Child1> child1Pojomator = PojomatorFactory.makePojomator(Child1.class);
     Pojomator<Child2> child2Pojomator = PojomatorFactory.makePojomator(Child2.class);
 
-    assertFalse(child1Pojomator.doEquals(child1, child2));
-    assertFalse(child2Pojomator.doEquals(child2, child1));
+    AssertJUnit.assertFalse(child1Pojomator.doEquals(child1, child2));
+    AssertJUnit.assertFalse(child2Pojomator.doEquals(child2, child1));
   }
 }

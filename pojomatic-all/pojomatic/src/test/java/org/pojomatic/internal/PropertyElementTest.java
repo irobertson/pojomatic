@@ -1,13 +1,12 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.*;
-
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.junit.Test;
 import org.pojomatic.PropertyElement;
 
 public class PropertyElementTest {
@@ -16,13 +15,13 @@ public class PropertyElementTest {
     String value();
   }
 
-  @Test(expected=NullPointerException.class)
+  @Test(expectedExceptions=NullPointerException.class)
   public void testGetValueNullField() throws Exception {
     PropertyElement propertyElement = new PropertyField(getTestField(), "");
     propertyElement.getValue(null);
   }
 
-  @Test(expected=NullPointerException.class)
+  @Test(expectedExceptions=NullPointerException.class)
   public void testGetValueNullMethod() throws Exception {
     PropertyElement propertyElement = new PropertyAccessor(getTestMethod(), "");
     propertyElement.getValue(null);
@@ -31,57 +30,57 @@ public class PropertyElementTest {
   @Test
   public void testGetValueField() throws Exception {
     PropertyElement propertyElement = new PropertyField(getTestField(), "");
-    assertEquals(testField, propertyElement.getValue(this));
+    AssertJUnit.assertEquals(testField, propertyElement.getValue(this));
   }
 
   @Test
   public void testGetValueMethod() throws Exception {
     PropertyElement propertyElement = new PropertyAccessor(getTestMethod(), "");
-    assertEquals(testAccessor(), propertyElement.getValue(this));
+    AssertJUnit.assertEquals(testAccessor(), propertyElement.getValue(this));
   }
 
   @Test
   public void testGetDeclaringClass() throws Exception {
-    assertEquals(PropertyElementTest.class, new PropertyAccessor(getTestMethod(), "").getDeclaringClass());
-    assertEquals(PropertyElementTest.class, new PropertyField(getTestField(), "").getDeclaringClass());      
+    AssertJUnit.assertEquals(PropertyElementTest.class, new PropertyAccessor(getTestMethod(), "").getDeclaringClass());
+    AssertJUnit.assertEquals(PropertyElementTest.class, new PropertyField(getTestField(), "").getDeclaringClass());
   }
 
   @Test
   public void testEquals() throws Exception {
     PropertyAccessor testMethodProperty = new PropertyAccessor(getTestMethod(), "");
-    assertEquals(testMethodProperty, testMethodProperty);
-    assertFalse(testMethodProperty.equals(null));
-    assertFalse(testMethodProperty.equals("someOtherClass"));
-    assertEquals(testMethodProperty, new PropertyAccessor(getTestMethod(), ""));
+    AssertJUnit.assertEquals(testMethodProperty, testMethodProperty);
+    AssertJUnit.assertFalse(testMethodProperty.equals(null));
+    AssertJUnit.assertFalse(testMethodProperty.equals("someOtherClass"));
+    AssertJUnit.assertEquals(testMethodProperty, new PropertyAccessor(getTestMethod(), ""));
     final PropertyField testFieldProperty = new PropertyField(getTestField(), "");
-    assertFalse(testMethodProperty.equals(testFieldProperty));
-    assertFalse(testFieldProperty.equals(testMethodProperty));
+    AssertJUnit.assertFalse(testMethodProperty.equals(testFieldProperty));
+    AssertJUnit.assertFalse(testFieldProperty.equals(testMethodProperty));
   }
 
   @Test
   public void testToString() throws Exception {
-    assertEquals(getTestMethod().toString(), new PropertyAccessor(getTestMethod(), "").toString());
+    AssertJUnit.assertEquals(getTestMethod().toString(), new PropertyAccessor(getTestMethod(), "").toString());
   }
 
   @Test
   public void testMethodHashCode() throws Exception {
-    assertEquals(getTestMethod().hashCode(), new PropertyAccessor(getTestMethod(), "salt").hashCode());
+    AssertJUnit.assertEquals(getTestMethod().hashCode(), new PropertyAccessor(getTestMethod(), "salt").hashCode());
   }
 
   @Test
   public void testFieldHashCode() throws Exception {
-    assertEquals(getTestField().hashCode(), new PropertyField(getTestField(), "salt").hashCode());
+    AssertJUnit.assertEquals(getTestField().hashCode(), new PropertyField(getTestField(), "salt").hashCode());
   }
 
   @Test
   public void testGetNameForField() throws Exception {
-    assertEquals("testField", new PropertyField(getTestField(), "").getName());
-    assertEquals("foo", new PropertyField(getTestField(), "foo").getName());
+    AssertJUnit.assertEquals("testField", new PropertyField(getTestField(), "").getName());
+    AssertJUnit.assertEquals("foo", new PropertyField(getTestField(), "foo").getName());
   }
 
   @Test
   public void testOverrideNameForAccessor() throws Exception {
-    assertEquals("bar", new PropertyAccessor(getTestMethod(), "bar").getName());
+    AssertJUnit.assertEquals("bar", new PropertyAccessor(getTestMethod(), "bar").getName());
   }
 
   @Test
@@ -89,7 +88,7 @@ public class PropertyElementTest {
     for (Method method: getClass().getDeclaredMethods()) {
       Expected expected = method.getAnnotation(Expected.class);
       if (expected != null) {
-        assertEquals(
+        AssertJUnit.assertEquals(
           "name for method " + method.getName(),
           expected.value(),
           new PropertyAccessor(method, "").getName());

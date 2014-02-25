@@ -1,8 +1,8 @@
 package org.pojomatic.internal;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import org.testng.annotations.Test;
+import org.testng.Assert;
+import org.testng.AssertJUnit;
 import org.pojomatic.Pojomator;
 import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.*;
@@ -26,29 +26,29 @@ public class PojomatorImplTest {
   private static final Pojomator<AccessCheckedProperties> ACCESS_CHECKED_PROPERTIES_POJOMATOR =
     makePojomator(AccessCheckedProperties.class);
 
-  @Test(expected=NullPointerException.class) public void testNullHashCode() {
+  @Test(expectedExceptions=NullPointerException.class) public void testNullHashCode() {
     OBJECT_PROPERTY_POJOMATOR.doHashCode(null);
   }
 
-  @Test(expected=NullPointerException.class) public void testToStringOnNull() {
+  @Test(expectedExceptions=NullPointerException.class) public void testToStringOnNull() {
     OBJECT_PROPERTY_POJOMATOR.doToString(null);
   }
 
-  @Test(expected=NullPointerException.class) public void testNullInstanceEquals() {
+  @Test(expectedExceptions=NullPointerException.class) public void testNullInstanceEquals() {
     OBJECT_PROPERTY_POJOMATOR.doEquals(null, new ObjectProperty("e"));
   }
 
   @Test public void testNullEquals() {
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty(null), null));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty(null), null));
   }
 
   @Test public void testReflexiveEquals() {
     ExceptionThrowingProperty instance = new ExceptionThrowingProperty();
-    assertTrue(makePojomator(ExceptionThrowingProperty.class).doEquals(instance, instance));
+    AssertJUnit.assertTrue(makePojomator(ExceptionThrowingProperty.class).doEquals(instance, instance));
   }
 
   @Test public void testCastCheckFailureForEquals() {
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty("test"), "differentClass"));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(new ObjectProperty("test"), "differentClass"));
   }
 
   @Test public void testArrayVsNonArrayEquals() {
@@ -56,63 +56,63 @@ public class PojomatorImplTest {
     ObjectProperty stringProperty = new ObjectProperty("");
     ObjectProperty nullProperty = new ObjectProperty(null);
 
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(arrayProperty, stringProperty));
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(stringProperty, arrayProperty));
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(arrayProperty, nullProperty));
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, arrayProperty));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(arrayProperty, stringProperty));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(stringProperty, arrayProperty));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(arrayProperty, nullProperty));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.doEquals(nullProperty, arrayProperty));
   }
 
   @Test public void testShortCircuitEquals() {
     AccessCheckedProperties left = new AccessCheckedProperties(1,1);
     AccessCheckedProperties right = new AccessCheckedProperties(2,2);
-    assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, right));
-    assertFalse(left.getBCalled);
-    assertFalse(right.getBCalled);
+    AssertJUnit.assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, right));
+    AssertJUnit.assertFalse(left.getBCalled);
+    AssertJUnit.assertFalse(right.getBCalled);
 
-    assertTrue(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, left));
-    assertFalse(left.getBCalled);
+    AssertJUnit.assertTrue(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, left));
+    AssertJUnit.assertFalse(left.getBCalled);
 
-    assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, null));
-    assertFalse(left.getBCalled);
+    AssertJUnit.assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, null));
+    AssertJUnit.assertFalse(left.getBCalled);
 
-    assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, "hello"));
-    assertFalse(left.getBCalled);
+    AssertJUnit.assertFalse(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, "hello"));
+    AssertJUnit.assertFalse(left.getBCalled);
 
-    assertTrue(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, new AccessCheckedProperties(1,1)));
-    assertTrue(left.getBCalled);
+    AssertJUnit.assertTrue(ACCESS_CHECKED_PROPERTIES_POJOMATOR.doEquals(left, new AccessCheckedProperties(1,1)));
+    AssertJUnit.assertTrue(left.getBCalled);
   }
 
   @Test public void testPropertyPairHashCode() {
-    assertEquals(
+    AssertJUnit.assertEquals(
       HASH_CODE_MULTIPLIER * (HASH_CODE_MULTIPLIER * HASH_CODE_SEED + "foo".hashCode())
       + "bar".hashCode(),
       OBJECT_PAIR_PROPERTY_POJOMATOR.doHashCode(new ObjectPairProperty("foo", "bar")));
   }
 
   @Test public void testToStringNames() {
-    assertEquals(
+    AssertJUnit.assertEquals(
       "AccessCheckedProperties{a: {1}, b: {2}}",
       ACCESS_CHECKED_PROPERTIES_POJOMATOR.doToString(new AccessCheckedProperties(1, 2)));
   }
 
   @Test public void testCustomFormatters() {
-    assertEquals("PREFIXFormattedObject{s: {BEFOREx}}",
+    AssertJUnit.assertEquals("PREFIXFormattedObject{s: {BEFOREx}}",
       makePojomator(FormattedObject.class).doToString(new FormattedObject("x")));
   }
 
-  @Test(expected=NullPointerException.class)
+  @Test(expectedExceptions=NullPointerException.class)
   public void testDiffNullInstance() {
     ObjectPairProperty other = new ObjectPairProperty("this", "that");
     OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, other);
   }
 
-  @Test(expected=NullPointerException.class)
+  @Test(expectedExceptions=NullPointerException.class)
   public void testDiffNullOther() {
     ObjectPairProperty instance = new ObjectPairProperty("this", "that");
     OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(instance, null);
   }
 
-  @Test(expected=NullPointerException.class)
+  @Test(expectedExceptions=NullPointerException.class)
   public void testDiffNulls() {
     OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(null, null);
   }
@@ -120,8 +120,8 @@ public class PojomatorImplTest {
   @Test public void testDiffDifferentObjectsWithSinglePropertyDifferent() {
     final Differences diffs = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(
       new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "that"));
-    assertTrue(diffs instanceof PropertyDifferences);
-    assertEquals(
+    AssertJUnit.assertTrue(diffs instanceof PropertyDifferences);
+    AssertJUnit.assertEquals(
       Sets.newHashSet(new ValueDifference("s", "this", "THIS")),
       Sets.newHashSet(diffs.differences()));
   }
@@ -129,8 +129,8 @@ public class PojomatorImplTest {
   @Test public void testDiffDifferentObjectsWithMultiplePropertiesDifferent() {
     final Differences diffs = OBJECT_PAIR_PROPERTY_POJOMATOR.doDiff(
       new ObjectPairProperty("this", "that"), new ObjectPairProperty("THIS", "THAT"));
-    assertEquals(PropertyDifferences.class, diffs.getClass());
-    assertEquals(
+    AssertJUnit.assertEquals(PropertyDifferences.class, diffs.getClass());
+    AssertJUnit.assertEquals(
       Sets.newHashSet(new ValueDifference("s", "this", "THIS"), new ValueDifference("t", "that", "THAT")),
       Sets.newHashSet(diffs.differences()));
   }
@@ -140,10 +140,10 @@ public class PojomatorImplTest {
     @SuppressWarnings("unchecked") Pojomator<Object> misCastPojomator = (Pojomator<Object>) pojomator;
     try {
       misCastPojomator.doDiff(new ObjectPairProperty(1,2), "wrong");
-      fail("exception expected");
+      Assert.fail("exception expected");
     }
     catch (IllegalArgumentException e) {
-      assertEquals(
+      AssertJUnit.assertEquals(
         "other has type java.lang.String which is not compatible for equality with org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
         e.getMessage());
     }
@@ -154,16 +154,16 @@ public class PojomatorImplTest {
     @SuppressWarnings("unchecked") Pojomator<Object> misCastPojomator = (Pojomator<Object>) pojomator;
     try {
       misCastPojomator.doDiff("wrong", new ObjectPairProperty(1,2));
-      fail("exception expected");
+      Assert.fail("exception expected");
     }
     catch (IllegalArgumentException e) {
-      assertEquals(
+      AssertJUnit.assertEquals(
         "instance has type java.lang.String which is not compatible for equality with org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty",
         e.getMessage());
     }
   }
 
-  @Test(expected= NoPojomaticPropertiesException.class)
+  @Test(expectedExceptions= NoPojomaticPropertiesException.class)
   public void testNonPojomatedClass() {
     makePojomator(String.class);
   }
@@ -187,19 +187,19 @@ public class PojomatorImplTest {
       public String getString() { return string; }
     }
 
-    assertEquals("Interface{int: {2}, string: {hello}}", pojomator.doToString(new Impl1()));
-    assertEquals(
+    AssertJUnit.assertEquals("Interface{int: {2}, string: {hello}}", pojomator.doToString(new Impl1()));
+    AssertJUnit.assertEquals(
       (HASH_CODE_MULTIPLIER + 2) * HASH_CODE_MULTIPLIER + "hello".hashCode(),
       pojomator.doHashCode(new Impl1()));
-    assertTrue(pojomator.doEquals(new Impl1(), new Impl2("hello")));
-    assertFalse(pojomator.doEquals(new Impl1(), new Impl2("goodbye")));
-    assertFalse(pojomator.doEquals(new Impl1(), "not even in the right hierarchy"));
+    AssertJUnit.assertTrue(pojomator.doEquals(new Impl1(), new Impl2("hello")));
+    AssertJUnit.assertFalse(pojomator.doEquals(new Impl1(), new Impl2("goodbye")));
+    AssertJUnit.assertFalse(pojomator.doEquals(new Impl1(), "not even in the right hierarchy"));
   }
 
   @Test public void testIsCompatibleForEquals() {
-    assertTrue(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectProperty.class));
-    assertFalse(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectPairProperty.class));
-    assertTrue(makePojomator(Interface.class).isCompatibleForEquality(new Interface() {
+    AssertJUnit.assertTrue(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectProperty.class));
+    AssertJUnit.assertFalse(OBJECT_PROPERTY_POJOMATOR.isCompatibleForEquality(ObjectPairProperty.class));
+    AssertJUnit.assertTrue(makePojomator(Interface.class).isCompatibleForEquality(new Interface() {
       @Override
       public int getInt() { return 0; }
       @Override
