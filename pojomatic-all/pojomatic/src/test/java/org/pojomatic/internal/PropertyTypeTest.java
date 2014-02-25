@@ -1,5 +1,7 @@
 package org.pojomatic.internal;
 
+import static org.testng.Assert.*;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import org.pojomatic.diff.ValueDifference;
 import org.pojomatic.internal.factory.PojoDescriptor;
 import org.pojomatic.internal.factory.PojoFactory;
 import org.pojomatic.internal.factory.PropertyDescriptor;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class PropertyTypeTest {
@@ -99,7 +100,7 @@ public class PropertyTypeTest {
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
 
       }
-      Assert.assertFalse(
+      assertFalse(
         pojoFactory.pojomator().doEquals(pojo1, null),
         "type: " + type.getClazz() + ", value1: " + value1);
     }
@@ -122,7 +123,7 @@ public class PropertyTypeTest {
           checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
         }
       }
-      Assert.assertFalse(
+      assertFalse(
         pojoFactory.pojomator().doEquals(pojo1, null),
         "type: " + type.getClazz() + ", value1: " + value1);
     }
@@ -213,7 +214,7 @@ public class PropertyTypeTest {
 
   private void checkHashCode(PojoFactory pojoFactory, Object value,
     int propertyHashCode) {
-    Assert.assertEquals(
+    assertEquals(
       pojoFactory.pojomator().doHashCode(pojoFactory.create(value)),
       31 + propertyHashCode,
       label(value));
@@ -221,13 +222,13 @@ public class PropertyTypeTest {
 
   private void checkToString(PojoFactory pojoFactory, Object value,
     String expectedPropertyValue) {
-    Assert.assertEquals(pojoFactory.pojomator().doToString(pojoFactory.create(value)), "Pojo{x: {" + expectedPropertyValue + "}}", label(value));
+    assertEquals(pojoFactory.pojomator().doToString(pojoFactory.create(value)), "Pojo{x: {" + expectedPropertyValue + "}}", label(value));
   }
 
   private void checkEqualsAndDiff(boolean expectedToBeEqual, PojoFactory pojoFactory,
     Object value1, Object value2, Object pojo1, Object pojo2) {
-    Assert.assertEquals((Object) pojoFactory.pojomator().doEquals(pojo1, pojo2), (Object) expectedToBeEqual, label(value1, value2));
-    Assert.assertEquals(pojoFactory.pojomator().doDiff(pojo1, pojo2), expectedDifferences(expectedToBeEqual, value1, value2), label(value1, value2));
+    assertEquals((Object) pojoFactory.pojomator().doEquals(pojo1, pojo2), (Object) expectedToBeEqual, label(value1, value2));
+    assertEquals(pojoFactory.pojomator().doDiff(pojo1, pojo2), expectedDifferences(expectedToBeEqual, value1, value2), label(value1, value2));
   }
 
   /**

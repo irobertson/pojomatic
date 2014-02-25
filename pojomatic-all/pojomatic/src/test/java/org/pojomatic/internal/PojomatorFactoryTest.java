@@ -1,10 +1,7 @@
 package org.pojomatic.internal;
 
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -49,7 +46,7 @@ public class PojomatorFactoryTest {
       }
     };
     Class<?> simple2 = reloader.loadClass(simpleName);
-    Assert.assertNotEquals(simple2, ToBeDuplicated.class);
+    assertNotEquals(simple2, ToBeDuplicated.class);
     Pojomator<ToBeDuplicated> pojomator1 = PojomatorFactory.makePojomator(ToBeDuplicated.class);
     assertTrue(pojomator1.doEquals(ToBeDuplicated.class.newInstance(), ToBeDuplicated.class.newInstance()));
     @SuppressWarnings("unchecked")
@@ -69,7 +66,7 @@ public class PojomatorFactoryTest {
     class Simple {
       @Property Inaccessible x = new Inaccessible();
     }
-    assertEquals (31 + 7, PojomatorFactory.makePojomator(Simple.class).doHashCode(new Simple()));
+    assertEquals(PojomatorFactory.makePojomator(Simple.class).doHashCode(new Simple()), 31 + 7);
   }
 
   @Test
@@ -81,9 +78,7 @@ public class PojomatorFactoryTest {
     }
     Complex complex = new Complex();
     Pojomator<Complex> pojomator = PojomatorFactory.makePojomator(Complex.class);
-    assertEquals(
-      31 * (31 * (31  + complex.i) + complex.o.hashCode()) + Float.floatToIntBits(complex.f),
-      pojomator.doHashCode(complex));
+    assertEquals(pojomator.doHashCode(complex), 31 * (31 * (31  + complex.i) + complex.o.hashCode()) + Float.floatToIntBits(complex.f));
   }
 
   @Test
@@ -111,7 +106,7 @@ public class PojomatorFactoryTest {
     class Simple {
       @Property public String x() { return "foo"; }
     }
-    assertEquals("Simple{x: {foo}}", PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()));
+    assertEquals(PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()), "Simple{x: {foo}}");
   }
 
   @Test
@@ -121,7 +116,7 @@ public class PojomatorFactoryTest {
     class Simple {
       @Property public String x() { return "foo"; }
     }
-    assertEquals("Simple{x: {foo}}", PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()));
+    assertEquals(PojomatorFactory.makePojomator(Simple.class).doToString(new Simple()), "Simple{x: {foo}}");
   }
 
   @Test
@@ -163,7 +158,7 @@ public class PojomatorFactoryTest {
     }
 
     Pojomator<Simple> pojomator = PojomatorFactory.makePojomator(Simple.class);
-    assertEquals("Simple{i: {6}}", pojomator.doToString(new Simple()));
+    assertEquals(pojomator.doToString(new Simple()), "Simple{i: {6}}");
   }
 
   @SuppressWarnings("deprecation")
@@ -198,9 +193,7 @@ public class PojomatorFactoryTest {
       @Property int x;
     }
 
-    assertEquals(
-      "pojopre-Pojo:proppre-x:0proppost-x:pojopost-Pojo:",
-      PojomatorFactory.makePojomator(Pojo.class).doToString(new Pojo()));
+    assertEquals(PojomatorFactory.makePojomator(Pojo.class).doToString(new Pojo()), "pojopre-Pojo:proppre-x:0proppost-x:pojopost-Pojo:");
   }
 
   @SuppressWarnings("deprecation")
@@ -225,7 +218,7 @@ public class PojomatorFactoryTest {
       @Property int x;
     }
     Pojomator<Pojo> pojomator = PojomatorFactory.makePojomator(Pojo.class);
-    assertEquals(Pojo.class.getDeclaredField("x"), DummyPropertyFormatter.initializedElement);
-    assertEquals("Pojo{x: {-0-}}", pojomator.doToString(new Pojo()));
+    assertEquals(DummyPropertyFormatter.initializedElement, Pojo.class.getDeclaredField("x"));
+    assertEquals(pojomator.doToString(new Pojo()), "Pojo{x: {-0-}}");
   }
 }

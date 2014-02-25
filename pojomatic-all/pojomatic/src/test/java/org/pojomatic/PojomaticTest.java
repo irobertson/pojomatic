@@ -1,7 +1,8 @@
 package org.pojomatic;
 
+import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorFactory;
@@ -19,17 +20,17 @@ public class PojomaticTest {
   @Test
   public void testPojomator() {
     Pojomator<Bean> pojomator = Pojomatic.pojomator(Bean.class);
-    AssertJUnit.assertEquals(BEAN_POJOMATOR.doToString(BEAN), pojomator.doToString(BEAN));
+    assertEquals(pojomator.doToString(BEAN), BEAN_POJOMATOR.doToString(BEAN));
   }
 
   @Test
   public void testToString() {
-    AssertJUnit.assertEquals(BEAN_POJOMATOR.doToString(BEAN), Pojomatic.toString(BEAN));
+    assertEquals(Pojomatic.toString(BEAN), BEAN_POJOMATOR.doToString(BEAN));
   }
 
   @Test
   public void testDiffNoDifferences() {
-    AssertJUnit.assertEquals(NoDifferences.getInstance(), Pojomatic.diff(BEAN, BEAN));
+    assertEquals(Pojomatic.diff(BEAN, BEAN), NoDifferences.getInstance());
   }
 
   @Test(expectedExceptions=NullPointerException.class)
@@ -49,13 +50,13 @@ public class PojomaticTest {
 
   @Test
   public void testHashCode() {
-    AssertJUnit.assertEquals(BEAN_POJOMATOR.doHashCode(BEAN), Pojomatic.hashCode(BEAN));
+    assertEquals(Pojomatic.hashCode(BEAN), BEAN_POJOMATOR.doHashCode(BEAN));
   }
 
   @Test
   public void testEquals() {
-    AssertJUnit.assertTrue(Pojomatic.equals(new Bean(3), new Bean(3)));
-    AssertJUnit.assertFalse(Pojomatic.equals(new Bean(3), new Bean(4)));
+    assertTrue(Pojomatic.equals(new Bean(3), new Bean(3)));
+    assertFalse(Pojomatic.equals(new Bean(3), new Bean(4)));
   }
 
   @Test
@@ -65,8 +66,8 @@ public class PojomaticTest {
     class BeanWithExtraData extends Bean {
       @Property public int getY() { return 0; }
     }
-    AssertJUnit.assertTrue(Pojomatic.areCompatibleForEquals(Bean.class, BeanSubClass.class));
-    AssertJUnit.assertFalse(Pojomatic.areCompatibleForEquals(Bean.class, BeanWithExtraData.class));
-    AssertJUnit.assertFalse(Pojomatic.areCompatibleForEquals(BeanWithExtraData.class, Bean.class));
+    assertTrue(Pojomatic.areCompatibleForEquals(Bean.class, BeanSubClass.class));
+    assertFalse(Pojomatic.areCompatibleForEquals(Bean.class, BeanWithExtraData.class));
+    assertFalse(Pojomatic.areCompatibleForEquals(BeanWithExtraData.class, Bean.class));
   }
 }

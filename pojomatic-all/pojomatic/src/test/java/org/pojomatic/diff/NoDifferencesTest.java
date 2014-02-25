@@ -1,23 +1,23 @@
 package org.pojomatic.diff;
 
 import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
+import static org.testng.Assert.*;
 
 public class NoDifferencesTest {
 
   @Test
   public void testAreEqual() {
-    AssertJUnit.assertTrue(NoDifferences.getInstance().areEqual());
+    assertTrue(NoDifferences.getInstance().areEqual());
   }
 
   @Test
   public void testToString() {
-    AssertJUnit.assertEquals("no differences", NoDifferences.getInstance().toString());
+    assertEquals(NoDifferences.getInstance().toString(), "no differences");
   }
 
   @Test
   public void testDifferences() {
-    AssertJUnit.assertFalse(NoDifferences.getInstance().differences().iterator().hasNext());
+    assertFalse(NoDifferences.getInstance().differences().iterator().hasNext());
   }
 
 }

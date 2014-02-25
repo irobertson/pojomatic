@@ -1,8 +1,8 @@
 package org.pojomatic.internal;
 
+import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
-import org.testng.Assert;
-import org.testng.AssertJUnit;
 import java.util.*;
 
 import org.pojomatic.PropertyElement;
@@ -15,7 +15,7 @@ import org.pojomatic.internal.b.C4;
 public class ClassPropertiesTest {
   @Test public void testForClass() {
     ClassProperties interfaceProperties = ClassProperties.forClass(Interface.class);
-    AssertJUnit.assertSame(interfaceProperties, ClassProperties.forClass(Interface.class));
+    assertSame(ClassProperties.forClass(Interface.class), interfaceProperties);
   }
 
   @Test
@@ -28,19 +28,11 @@ public class ClassPropertiesTest {
 
     ClassProperties classProperties = ClassProperties.forClass(FieldPojo.class);
 
-    AssertJUnit.assertEquals(
-      asSet(privateStringField, publicIntField, forEqualsAndToString),
-      asSet(classProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(
-      asSet(privateStringField, publicIntField),
-      asSet(classProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(
-      asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString),
-      asSet(classProperties.getToStringProperties()));
+    assertEquals(asSet(classProperties.getEqualsProperties()), asSet(privateStringField, publicIntField, forEqualsAndToString));
+    assertEquals(asSet(classProperties.getHashCodeProperties()), asSet(privateStringField, publicIntField));
+    assertEquals(asSet(classProperties.getToStringProperties()), asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString));
 
-    AssertJUnit.assertEquals(
-      asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString),
-      classProperties.getAllProperties());
+    assertEquals(classProperties.getAllProperties(), asSet(privateStringField, publicIntField, onlyForStringField, forEqualsAndToString));
   }
 
   @Test
@@ -51,11 +43,9 @@ public class ClassPropertiesTest {
 
     ClassProperties classProperties = ClassProperties.forClass(AutoFieldPojo.class);
 
-    AssertJUnit.assertEquals(asSet(allInDoubleField), asSet(classProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(asSet(allInDoubleField), asSet(classProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(
-      asSet(stringField, allInDoubleField),
-      asSet(classProperties.getToStringProperties()));
+    assertEquals(asSet(classProperties.getEqualsProperties()), asSet(allInDoubleField));
+    assertEquals(asSet(classProperties.getHashCodeProperties()), asSet(allInDoubleField));
+    assertEquals(asSet(classProperties.getToStringProperties()), asSet(stringField, allInDoubleField));
   }
 
   @Test
@@ -72,15 +62,9 @@ public class ClassPropertiesTest {
 
     ClassProperties classProperties = ClassProperties.forClass(MethodPojo.class);
 
-    AssertJUnit.assertEquals(
-      asSet(getIntMethod, privateStringMethod, onlyForEqualsMethod),
-      asSet(classProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(
-      asSet(getIntMethod, privateStringMethod),
-      asSet(classProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(
-      asSet(getIntMethod, privateStringMethod),
-      asSet(classProperties.getToStringProperties()));
+    assertEquals(asSet(classProperties.getEqualsProperties()), asSet(getIntMethod, privateStringMethod, onlyForEqualsMethod));
+    assertEquals(asSet(classProperties.getHashCodeProperties()), asSet(getIntMethod, privateStringMethod));
+    assertEquals(asSet(classProperties.getToStringProperties()), asSet(getIntMethod, privateStringMethod));
   }
 
   @Test
@@ -95,9 +79,9 @@ public class ClassPropertiesTest {
 
     ClassProperties classProperties = ClassProperties.forClass(AutoMethodPojo.class);
 
-    AssertJUnit.assertEquals(equalsHashCodeProperties, asSet(classProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(equalsHashCodeProperties, asSet(classProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(commonProperties, asSet(classProperties.getToStringProperties()));
+    assertEquals(asSet(classProperties.getEqualsProperties()), equalsHashCodeProperties);
+    assertEquals(asSet(classProperties.getHashCodeProperties()), equalsHashCodeProperties);
+    assertEquals(asSet(classProperties.getToStringProperties()), commonProperties);
   }
 
   @Test(expectedExceptions=IllegalArgumentException.class)
@@ -119,32 +103,32 @@ public class ClassPropertiesTest {
   public void testAnnotatedInheritance() throws Exception {
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentPojo.class, "getFoo"));
     ClassProperties parentClassProperties = ClassProperties.forClass(ParentPojo.class);
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getToStringProperties()));
+    assertEquals(asSet(parentClassProperties.getEqualsProperties()), expectedParent);
+    assertEquals(asSet(parentClassProperties.getHashCodeProperties()), expectedParent);
+    assertEquals(asSet(parentClassProperties.getToStringProperties()), expectedParent);
 
     ClassProperties childClassProperties = ClassProperties.forClass(ChildPojo.class);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"), TestUtils.field(ChildPojo.class, "other"));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+    assertEquals(asSet(childClassProperties.getEqualsProperties()), expectedChild);
+    assertEquals(asSet(childClassProperties.getHashCodeProperties()), expectedChild);
+    assertEquals(asSet(childClassProperties.getToStringProperties()), expectedChild);
   }
 
   @Test
   public void testAutoInheritanceBothAuto() throws Exception {
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentAutoPojo.class, "getFoo"));
     ClassProperties parentClassProperties = ClassProperties.forClass(ParentAutoPojo.class);
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getToStringProperties()));
+    assertEquals(asSet(parentClassProperties.getEqualsProperties()), expectedParent);
+    assertEquals(asSet(parentClassProperties.getHashCodeProperties()), Collections.EMPTY_SET);
+    assertEquals(asSet(parentClassProperties.getToStringProperties()), Collections.EMPTY_SET);
 
     ClassProperties childClassProperties = ClassProperties.forClass(ChildAutoFieldPojo.class);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.field(ChildAutoFieldPojo.class, "other"));
-    AssertJUnit.assertEquals(expectedParent, asSet(childClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(Collections.EMPTY_SET, asSet(childClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+    assertEquals(asSet(childClassProperties.getEqualsProperties()), expectedParent);
+    assertEquals(asSet(childClassProperties.getHashCodeProperties()), Collections.EMPTY_SET);
+    assertEquals(asSet(childClassProperties.getToStringProperties()), expectedChild);
   }
 
   @Test
@@ -159,9 +143,9 @@ public class ClassPropertiesTest {
     Set<PropertyElement> expected = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"),
       TestUtils.method(ChildAutoMethodPojo.class, "getBar"));
-    AssertJUnit.assertEquals(expected, asSet(childClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(expected, asSet(childClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expected, asSet(childClassProperties.getToStringProperties()));
+    assertEquals(asSet(childClassProperties.getEqualsProperties()), expected);
+    assertEquals(asSet(childClassProperties.getHashCodeProperties()), expected);
+    assertEquals(asSet(childClassProperties.getToStringProperties()), expected);
   }
 
   @Test
@@ -174,17 +158,17 @@ public class ClassPropertiesTest {
 
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentPojo.class, "getFoo"));
     ClassProperties parentClassProperties = ClassProperties.forClass(ParentPojo.class);
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getToStringProperties()));
+    assertEquals(asSet(parentClassProperties.getEqualsProperties()), expectedParent);
+    assertEquals(asSet(parentClassProperties.getHashCodeProperties()), expectedParent);
+    assertEquals(asSet(parentClassProperties.getToStringProperties()), expectedParent);
 
     ClassProperties childClassProperties = ClassProperties.forClass(ChildExtendsAnnotatedPojo.class);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.method(ParentPojo.class, "getFoo"),
       TestUtils.method(ChildExtendsAnnotatedPojo.class, "getMyString"));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+    assertEquals(asSet(childClassProperties.getEqualsProperties()), expectedChild);
+    assertEquals(asSet(childClassProperties.getHashCodeProperties()), expectedChild);
+    assertEquals(asSet(childClassProperties.getToStringProperties()), expectedChild);
   }
 
   @Test
@@ -197,47 +181,43 @@ public class ClassPropertiesTest {
 
     Set<PropertyElement> expectedParent = asSet(TestUtils.method(ParentAutoPojo.class, "getFoo"));
     ClassProperties parentClassProperties = ClassProperties.forClass(ParentAutoPojo.class);
-    AssertJUnit.assertEquals(expectedParent, asSet(parentClassProperties.getEqualsProperties()));
-    AssertJUnit.assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(Collections.EMPTY_SET, asSet(parentClassProperties.getToStringProperties()));
+    assertEquals(asSet(parentClassProperties.getEqualsProperties()), expectedParent);
+    assertEquals(asSet(parentClassProperties.getHashCodeProperties()), Collections.EMPTY_SET);
+    assertEquals(asSet(parentClassProperties.getToStringProperties()), Collections.EMPTY_SET);
 
     ClassProperties childClassProperties = ClassProperties.forClass(ChildExtendsAutoPojo.class);
     Set<PropertyElement> expectedChildEquals = asSet(
       TestUtils.method(ParentAutoPojo.class, "getFoo"),
       TestUtils.field(ChildExtendsAutoPojo.class, "other"));
-    AssertJUnit.assertEquals(expectedChildEquals, asSet(childClassProperties.getEqualsProperties()));
+    assertEquals(asSet(childClassProperties.getEqualsProperties()), expectedChildEquals);
     Set<PropertyElement> expectedChild = asSet(
       TestUtils.field(ChildExtendsAutoPojo.class, "other"));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(expectedChild, asSet(childClassProperties.getToStringProperties()));
+    assertEquals(asSet(childClassProperties.getHashCodeProperties()), expectedChild);
+    assertEquals(asSet(childClassProperties.getToStringProperties()), expectedChild);
   }
 
   @Test
   public void testOverriddenMethods() throws Exception {
     ClassProperties classProperties = ClassProperties.forClass(C4.class);
-    AssertJUnit.assertEquals(
-      asSet(
-        TestUtils.method(C1.class, "packagePrivate"),
-        TestUtils.method(C1.class, "packagePrivateOverriddenProtected"),
-        TestUtils.method(C1.class, "packagePrivateOverriddenPublic"),
-        TestUtils.method(C1.class, "protectedMethod"),
-        TestUtils.method(C1.class, "publicMethod"),
-        TestUtils.method(C2.class, "packagePrivate"),
-        TestUtils.method(C2.class, "packagePrivateOverriddenProtected"),
-        TestUtils.method(C2.class, "packagePrivateOverriddenPublic")),
-      asSet(classProperties.getEqualsProperties()));
+    assertEquals(asSet(classProperties.getEqualsProperties()), asSet(
+    TestUtils.method(C1.class, "packagePrivate"),
+    TestUtils.method(C1.class, "packagePrivateOverriddenProtected"),
+    TestUtils.method(C1.class, "packagePrivateOverriddenPublic"),
+    TestUtils.method(C1.class, "protectedMethod"),
+    TestUtils.method(C1.class, "publicMethod"),
+    TestUtils.method(C2.class, "packagePrivate"),
+    TestUtils.method(C2.class, "packagePrivateOverriddenProtected"),
+    TestUtils.method(C2.class, "packagePrivateOverriddenPublic")));
   }
 
   @Test
   public void testAnnotatedStaticField() {
     try {
       ClassProperties.forClass(StaticField.class);
-      Assert.fail("Exception expected");
+      fail("Exception expected");
     }
     catch (IllegalArgumentException e) {
-      AssertJUnit.assertEquals(
-        "Static field " + StaticField.class.getName() + ".a is annotated with @Property",
-        e.getMessage());
+      assertEquals(e.getMessage(), "Static field " + StaticField.class.getName() + ".a is annotated with @Property");
     }
   }
 
@@ -245,12 +225,10 @@ public class ClassPropertiesTest {
   public void testAnnotatedStaticMethod() {
     try {
       ClassProperties.forClass(StaticMethod.class);
-      Assert.fail("Exception expected");
+      fail("Exception expected");
     }
     catch (IllegalArgumentException e) {
-      AssertJUnit.assertEquals(
-        "Static method " + StaticMethod.class.getName() + ".a() is annotated with @Property",
-        e.getMessage());
+      assertEquals(e.getMessage(), "Static method " + StaticMethod.class.getName() + ".a() is annotated with @Property");
     }
   }
 
@@ -258,9 +236,9 @@ public class ClassPropertiesTest {
     ClassProperties classProperties = ClassProperties.forClass(Interface.class);
     PropertyElement getFoo = TestUtils.method(Interface.class, "getFoo");
     PropertyElement baz = TestUtils.method(Interface.class, "baz");
-    AssertJUnit.assertEquals(asSet(getFoo), asSet(classProperties.getHashCodeProperties()));
-    AssertJUnit.assertEquals(asSet(getFoo), asSet(classProperties.getToStringProperties()));
-    AssertJUnit.assertEquals(asSet(getFoo, baz), asSet(classProperties.getEqualsProperties()));
+    assertEquals(asSet(classProperties.getHashCodeProperties()), asSet(getFoo));
+    assertEquals(asSet(classProperties.getToStringProperties()), asSet(getFoo));
+    assertEquals(asSet(classProperties.getEqualsProperties()), asSet(getFoo, baz));
   }
 
   @Test public void testIsCompatibleForEquals() {
@@ -280,10 +258,10 @@ public class ClassPropertiesTest {
         for(List<Class<?>> otherPartition: partitions) {
           for(Class<?> otherClazz: otherPartition) {
             if (partition == otherPartition) {
-              AssertJUnit.assertTrue(ClassProperties.forClass(clazz).isCompatibleForEquals(otherClazz));
+              assertTrue(ClassProperties.forClass(clazz).isCompatibleForEquals(otherClazz));
             }
             else {
-              AssertJUnit.assertFalse(ClassProperties.forClass(clazz).isCompatibleForEquals(otherClazz));
+              assertFalse(ClassProperties.forClass(clazz).isCompatibleForEquals(otherClazz));
             }
           }
         }
@@ -301,13 +279,12 @@ public class ClassPropertiesTest {
       public int baz() { return 0; }
     }
 
-    AssertJUnit.assertTrue(
-      ClassProperties.forClass(Interface.class).isCompatibleForEquals(ChildOfInterface.class));
+    assertTrue(ClassProperties.forClass(Interface.class).isCompatibleForEquals(ChildOfInterface.class));
 
     @SubclassCannotOverrideEquals class A { @Property int x; }
     class B extends A { @Property int y; }
-    AssertJUnit.assertTrue(ClassProperties.forClass(A.class).isCompatibleForEquals(B.class));
-    AssertJUnit.assertFalse(ClassProperties.forClass(B.class).isCompatibleForEquals(A.class));
+    assertTrue(ClassProperties.forClass(A.class).isCompatibleForEquals(B.class));
+    assertFalse(ClassProperties.forClass(B.class).isCompatibleForEquals(A.class));
   }
 
   @Test
@@ -319,7 +296,7 @@ public class ClassPropertiesTest {
     ClassOnlyClassLoader classLoader = new ClassOnlyClassLoader(Bean.class.getClassLoader());
     Class<?> beanClass = classLoader.loadClass(Bean.class.getName());
     ClassProperties classProperties = ClassProperties.forClass(beanClass);
-    AssertJUnit.assertEquals(3, classProperties.getEqualsProperties().size());
+    assertEquals(classProperties.getEqualsProperties().size(), 3);
   }
 
   //Not all classes can be made internal.  In particular, autodetect=FIELD classes cannot, because of the synthetic

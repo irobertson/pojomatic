@@ -1,7 +1,9 @@
 package org.pojomatic.internal.factory;
 
+import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
+
 import java.lang.reflect.Field;
 
 import org.pojomatic.annotations.Property;
@@ -13,10 +15,10 @@ public class PojoFactoryTest {
     Object pojo = pojoFactory.create().with("x", 4).pojo();
     Field field = pojo.getClass().getDeclaredField("x");
     field.setAccessible(true);
-    AssertJUnit.assertEquals(4, field.get(pojo));
-    AssertJUnit.assertTrue(field.isAnnotationPresent(Property.class));
+    assertEquals(field.get(pojo), (Object) 4);
+    assertTrue(field.isAnnotationPresent(Property.class));
 
-    AssertJUnit.assertEquals(31 + 4, pojoFactory.pojomator().doHashCode(pojo));
+    assertEquals(pojoFactory.pojomator().doHashCode(pojo), 31 + 4);
   }
 
   @Test
@@ -33,6 +35,6 @@ public class PojoFactoryTest {
         parent,
         new PropertyDescriptor(int.class)));
     Object pojo = pojoFactory.create().with("x", 4).withParent("x", "foo").pojo();
-    AssertJUnit.assertEquals("bar{x: {foo}, x: {4}}", pojoFactory.pojomator().doToString(pojo));
+    assertEquals(pojoFactory.pojomator().doToString(pojo), "bar{x: {foo}, x: {4}}");
   }
 }

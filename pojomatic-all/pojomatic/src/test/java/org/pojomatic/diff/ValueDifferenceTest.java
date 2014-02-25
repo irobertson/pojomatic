@@ -1,23 +1,23 @@
 package org.pojomatic.diff;
 
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
 
 public class ValueDifferenceTest {
   private ValueDifference DIFFERENCE = new ValueDifference("foo", "this", "that");
 
   @Test
   public void testPropertyName() {
-    AssertJUnit.assertEquals("foo", DIFFERENCE.propertyName());
+    assertEquals(DIFFERENCE.propertyName(), "foo");
   }
 
   @Test
   public void testLeftValue() {
-    AssertJUnit.assertEquals("this", DIFFERENCE.leftValue());
+    assertEquals(DIFFERENCE.leftValue(), "this");
   }
 
   @Test
   public void testRightValue() {
-    AssertJUnit.assertEquals("that", DIFFERENCE.rightValue());
+    assertEquals(DIFFERENCE.rightValue(), "that");
   }
 }

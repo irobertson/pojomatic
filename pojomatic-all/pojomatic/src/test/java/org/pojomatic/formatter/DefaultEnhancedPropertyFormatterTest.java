@@ -1,5 +1,7 @@
 package org.pojomatic.formatter;
 
+import static org.testng.Assert.*;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,7 +12,6 @@ import java.util.Objects;
 import org.pojomatic.annotations.DeepArray;
 import org.pojomatic.internal.Type;
 import org.pojomatic.internal.TypeProviders;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -33,7 +34,7 @@ public class DefaultEnhancedPropertyFormatterTest {
     for (Object value: type.getSampleValues()) {
       StringBuilder builder = new StringBuilder();
       appendFormatted.invoke(formatter, builder, value);
-      Assert.assertEquals(
+      assertEquals(
         builder.toString(),
         type.toString(value),
         "value: " + possibleArrayToList(value));
@@ -52,7 +53,7 @@ public class DefaultEnhancedPropertyFormatterTest {
       else {
         simpleFormatter.appendFormatted(builder, value);
       }
-      Assert.assertEquals(
+      assertEquals(
         builder.toString(),
         (canBeArray
           ? ( deepArray ? type.deepToString(value) : type.toString(value) )

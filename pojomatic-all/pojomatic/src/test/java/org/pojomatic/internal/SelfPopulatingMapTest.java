@@ -1,8 +1,7 @@
 package org.pojomatic.internal;
 
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
-import org.testng.Assert;
-import org.testng.AssertJUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SelfPopulatingMapTest {
@@ -39,7 +38,7 @@ public class SelfPopulatingMapTest {
     for (Thread t: threads) {
       t.join();
     }
-    AssertJUnit.assertSame(results[0], results[1]);
+    assertSame(results[1], results[0]);
   }
 
   @Test
@@ -59,12 +58,12 @@ public class SelfPopulatingMapTest {
 
     try {
       selfPopulatingMap.get("x");
-      Assert.fail("Exception expected");
+      fail("Exception expected");
     }
     catch(RuntimeException e) {
-      AssertJUnit.assertEquals("first", e.getMessage());
+      assertEquals(e.getMessage(), "first");
     }
 
-    AssertJUnit.assertEquals("x", selfPopulatingMap.get("x"));
+    assertEquals(selfPopulatingMap.get("x"), "x");
   }
 }

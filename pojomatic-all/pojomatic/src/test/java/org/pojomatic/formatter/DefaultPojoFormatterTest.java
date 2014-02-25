@@ -2,7 +2,7 @@ package org.pojomatic.formatter;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
-import org.testng.AssertJUnit;
+import static org.testng.Assert.*;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.TestUtils;
 
@@ -35,25 +35,25 @@ public class DefaultPojoFormatterTest {
 
   @Test
   public void testGetPropertyPrefix() {
-    AssertJUnit.assertEquals("firstName: {", formatter.getPropertyPrefix(FIRST_NAME_FIELD));
-    AssertJUnit.assertEquals(", lastName: {", formatter.getPropertyPrefix(LAST_NAME_FIELD));
-    AssertJUnit.assertEquals(", age: {", formatter.getPropertyPrefix(AGE_FIELD));
+    assertEquals(formatter.getPropertyPrefix(FIRST_NAME_FIELD), "firstName: {");
+    assertEquals(formatter.getPropertyPrefix(LAST_NAME_FIELD), ", lastName: {");
+    assertEquals(formatter.getPropertyPrefix(AGE_FIELD), ", age: {");
   }
 
   @Test
   public void testGetPropertySuffix() {
-    AssertJUnit.assertEquals("}", formatter.getPropertySuffix(FIRST_NAME_FIELD));
-    AssertJUnit.assertEquals("}", formatter.getPropertySuffix(LAST_NAME_FIELD));
-    AssertJUnit.assertEquals("}", formatter.getPropertySuffix(AGE_FIELD));
+    assertEquals(formatter.getPropertySuffix(FIRST_NAME_FIELD), "}");
+    assertEquals(formatter.getPropertySuffix(LAST_NAME_FIELD), "}");
+    assertEquals(formatter.getPropertySuffix(AGE_FIELD), "}");
   }
 
   @Test
   public void testGetToStringPrefix() {
-    AssertJUnit.assertEquals("Integer{", formatter.getToStringPrefix(Integer.class));
+    assertEquals(formatter.getToStringPrefix(Integer.class), "Integer{");
   }
 
   @Test
   public void testGetToStringSuffix() {
-    AssertJUnit.assertEquals("}", formatter.getToStringSuffix(Integer.class));
+    assertEquals(formatter.getToStringSuffix(Integer.class), "}");
   }
 }

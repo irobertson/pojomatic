@@ -1,7 +1,9 @@
 package org.pojomatic.internal;
 
+import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
+
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -14,39 +16,37 @@ public class PropertyFilterTest {
 
   @Test public void testGetRolesWithNoClassPolicy() {
     for (PojomaticPolicy policy: ALL_BUT_DEFAULT) {
-      AssertJUnit.assertEquals(policy.getRoles(), PropertyFilter.getRoles(policy, null));
+      assertEquals(PropertyFilter.getRoles(policy, null), policy.getRoles());
     }
   }
 
   @Test public void testGetRolesWithPropertyPolicyAndClassPolicy() {
     for (PojomaticPolicy policy: ALL_BUT_DEFAULT) {
       for (DefaultPojomaticPolicy defaultPolicy: DefaultPojomaticPolicy.values()) {
-      AssertJUnit.assertEquals(policy.getRoles(), PropertyFilter.getRoles(policy, defaultPolicy));
+      assertEquals(PropertyFilter.getRoles(policy, defaultPolicy), policy.getRoles());
       }
     }
   }
 
   @Test public void testGetRolesWithDefaultPropertyPolicyAndNoClassPolicy() {
-    AssertJUnit.assertEquals(
-      PojomaticPolicy.ALL.getRoles(), PropertyFilter.getRoles(PojomaticPolicy.DEFAULT, null));
+    assertEquals(PropertyFilter.getRoles(PojomaticPolicy.DEFAULT, null), PojomaticPolicy.ALL.getRoles());
   }
 
   @Test public void testGetRolesWithDefaultPropertyPolicyAndClassPolicy() {
     for (DefaultPojomaticPolicy defaultPolicy: DefaultPojomaticPolicy.values()) {
-      AssertJUnit.assertEquals(
-        defaultPolicy.getRoles(), PropertyFilter.getRoles(PojomaticPolicy.DEFAULT, defaultPolicy));
+      assertEquals(PropertyFilter.getRoles(PojomaticPolicy.DEFAULT, defaultPolicy), defaultPolicy.getRoles());
     }
   }
 
   @Test public void testGetRolesWithOnlyClassPolicy() {
     for (DefaultPojomaticPolicy defaultPolicy: DefaultPojomaticPolicy.values()) {
-      AssertJUnit.assertEquals(defaultPolicy.getRoles(), PropertyFilter.getRoles(null, defaultPolicy));
+      assertEquals(PropertyFilter.getRoles(null, defaultPolicy), defaultPolicy.getRoles());
     }
   }
 
   @Test
   public void testGetRolesWithNoPolicy() {
-    AssertJUnit.assertEquals(Collections.EMPTY_SET, PropertyFilter.getRoles(null, null));
+    assertEquals(PropertyFilter.getRoles(null, null), Collections.EMPTY_SET);
   }
 
 }

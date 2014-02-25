@@ -1,9 +1,9 @@
 package org.pojomatic.internal;
 
+import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
-import org.testng.Assert;
-import org.testng.AssertJUnit;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -74,10 +74,8 @@ public class PropertyClassVisitorTest {
         FieldsAndGetters.class,
         makeRoleMaps(Arrays.asList(f1, f2), Arrays.asList(f2, f1), NO_PROPERTIES),
         makeRoleMaps(Arrays.asList(m2, m1), Arrays.asList(m1), Arrays.asList(m2)));
-    AssertJUnit.assertNotNull(visitor);
-    AssertJUnit.assertEquals(
-      makeRoleLists(Arrays.asList(f1, f2, m1, m2), Arrays.asList(f1, f2, m1), Arrays.asList(m2)),
-      visitor.getSortedProperties());
+    assertNotNull(visitor);
+    assertEquals(visitor.getSortedProperties(), makeRoleLists(Arrays.asList(f1, f2, m1, m2), Arrays.asList(f1, f2, m1), Arrays.asList(m2)));
   }
 
   @Test
@@ -85,7 +83,7 @@ public class PropertyClassVisitorTest {
     Map<PropertyRole, Map<String, PropertyElement>> roleMaps =
         makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES);
     PropertyClassVisitor visitor = PropertyClassVisitor.visitClass(String.class, roleMaps, roleMaps);
-    AssertJUnit.assertNull(visitor);
+    assertNull(visitor);
   }
 
   @Test
@@ -94,12 +92,12 @@ public class PropertyClassVisitorTest {
 
     ClassOnlyClassLoader classLoader = new ClassOnlyClassLoader(Bean.class.getClassLoader());
     Class<?> beanClass = classLoader.loadClass(Bean.class.getName());
-    AssertJUnit.assertNotSame(beanClass, Bean.class);
-    Assert.assertNotNull(beanClass.getProtectionDomain().getCodeSource().getLocation());
+    assertNotSame(Bean.class, beanClass);
+    assertNotNull(beanClass.getProtectionDomain().getCodeSource().getLocation());
     Map<PropertyRole, Map<String, PropertyElement>> roleMaps =
         makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES);
     PropertyClassVisitor visitor = PropertyClassVisitor.visitClass(String.class, roleMaps, roleMaps);
-    AssertJUnit.assertNull(visitor);
+    assertNull(visitor);
   }
 
   @Test
@@ -110,14 +108,12 @@ public class PropertyClassVisitorTest {
         FieldsAndGetters.class,
         makeRoleMaps(Arrays.asList(f3), NO_PROPERTIES, NO_PROPERTIES),
         makeRoleMaps(Arrays.asList(m3, m4), NO_PROPERTIES, NO_PROPERTIES));
-      Assert.fail("Exception expected");
+      fail("Exception expected");
     }
     catch (IllegalStateException e) {
-      AssertJUnit.assertEquals(
-        "In class " + FieldsAndGetters.class.getName() + ", properties "
-        + f3.getElement().toString() + ", " + m3.getElement().toString() + ", " + m4.getElement().toString()
-        + " were found in reflection, but not when visiting the bytecode",
-        e.getMessage());
+      assertEquals(e.getMessage(), "In class " + FieldsAndGetters.class.getName() + ", properties "
+      + f3.getElement().toString() + ", " + m3.getElement().toString() + ", " + m4.getElement().toString()
+      + " were found in reflection, but not when visiting the bytecode");
     }
   }
 
