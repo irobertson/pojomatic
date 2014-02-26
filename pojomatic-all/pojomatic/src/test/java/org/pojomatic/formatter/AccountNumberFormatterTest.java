@@ -3,6 +3,7 @@ package org.pojomatic.formatter;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
+@Deprecated
 public class AccountNumberFormatterTest {
 
   @Test public void testFormatNull() {

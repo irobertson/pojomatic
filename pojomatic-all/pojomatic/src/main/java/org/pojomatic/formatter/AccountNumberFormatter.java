@@ -11,7 +11,14 @@ import org.pojomatic.annotations.Property;
  * <p>
  * For example, a 16 character {@code String} representing a credit card number would
  * be formatted as "************1234".
+ *
+ * @deprecated While this formatter can prevent the toString representation of an object including a full account
+ * number, the full number can still be visible in heap dumps. A more secure approach is to avoid storing plaintext
+ * private account numbers in memory at all (or at most, for as long as it takes to encrypt them). This formatter will
+ * be removed in a future release of Pojomatic. Clients who feel they still need this functionality should implement it
+ * themselves.
  */
+@Deprecated
 public class AccountNumberFormatter extends DefaultPropertyFormatter {
   private static final int DEFAULT_PLAINTEXT_CHARS = 4;
   private static final int DEFAULT_FILL_CHAR = '*';
