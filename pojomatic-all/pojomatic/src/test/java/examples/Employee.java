@@ -21,7 +21,6 @@ public class Employee {
     return this.lastName;
   }
 
-
   public String getSecurityLevel() {
     return this.securityLevel;
   }
