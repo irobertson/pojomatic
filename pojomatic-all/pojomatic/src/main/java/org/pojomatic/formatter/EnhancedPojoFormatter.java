@@ -4,8 +4,13 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 
 /**
- * A formatter to aid in creating a {@code String} representation of a POJO.  A new instance will be
- * created for each time that {@link Pojomator#doToString(Object)} is called.
+ * A formatter to aid in creating a {@code String} representation of a POJO.
+ *
+ * Any implementation of {@code EnhancedPojoFormatter} must have a public no-argument constructor. A new instance will
+ * be created for each time that {@link Pojomator#doToString(Object)} is called. Consequently, implementations do
+ * <em>not</em> need to be thread safe.
+ * 
+ * @see DefaultEnhancedPojoFormatter
  */
 @SuppressWarnings("deprecation")
 public interface EnhancedPojoFormatter extends PojoFormatter {

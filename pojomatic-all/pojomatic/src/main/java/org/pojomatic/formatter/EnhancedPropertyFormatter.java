@@ -5,7 +5,9 @@ import java.lang.reflect.AnnotatedElement;
 /**
  * A formatter for a property.
  * <p>
- * Any implementation of {@code EnhancedPropertyFormatter} must have a public no-argument constructor.
+ * Any implementation of {@code EnhancedPropertyFormatter} must have a public no-argument constructor. A single instance
+ * will be created for each property; consequently, implementations must be thread safe.
+ *
  * @see DefaultEnhancedPropertyFormatter
  */
 @SuppressWarnings("deprecation")
