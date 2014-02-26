@@ -17,28 +17,28 @@ public class DefaultEnhancedPojoFormatter implements EnhancedPojoFormatter {
   private boolean firstPropertyPrinted = false;
 
   @Override
-  public String getPropertyPrefix(PropertyElement property) {
+  public final String getPropertyPrefix(PropertyElement property) {
     StringBuilder builder = new StringBuilder();
     appendPropertyPrefix(builder, property);
     return builder.toString();
   }
 
   @Override
-  public String getPropertySuffix(PropertyElement property) {
+  public final String getPropertySuffix(PropertyElement property) {
     StringBuilder builder = new StringBuilder();
     appendPropertySuffix(builder, property);
     return builder.toString();
   }
 
   @Override
-  public String getToStringPrefix(Class<?> pojoClass) {
+  public final String getToStringPrefix(Class<?> pojoClass) {
     StringBuilder builder = new StringBuilder();
     appendToStringPrefix(builder, pojoClass);
     return builder.toString();
   }
 
   @Override
-  public String getToStringSuffix(Class<?> pojoClass) {
+  public final String getToStringSuffix(Class<?> pojoClass) {
     StringBuilder builder = new StringBuilder();
     appendToStringSuffix(builder, pojoClass);
     return builder.toString();
