@@ -15,13 +15,19 @@ import org.pojomatic.annotations.DeepArray;
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
   private boolean isDeepArray;
 
+  /**
+   * {@inheritDoc}
+   *
+   * This implementation checks to see if the element has been annotated with {@link DeepArray}. Overrides of this
+   * method should call {@code super.initialize(element)}.
+   */
   @Override
   public void initialize(AnnotatedElement element) {
     isDeepArray = element.isAnnotationPresent(DeepArray.class);
   }
 
   @Override
-  public String format(Object value) {
+  final public String format(Object value) {
     StringBuilder builder = new StringBuilder();
     appendFormatted(builder, value);
     return builder.toString();
