@@ -199,7 +199,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * {@link Arrays}{@code .hashCode()}
    * @param array
    * @param deepArray whether to do a deep hashCode for Object arrays.
-   * @return
+   * @return the hashCode
    */
   protected static int arrayHashCode(Object array, boolean deepArray) {
     Class<?> componentType = array.getClass().getComponentType();
@@ -267,7 +267,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * @param name the name of the dynamic method. This should be of the form "get_xxx", where "element_xxx" will be a
    * static field containing a {@link PropertyElement} instance referring to the property to be accessed.
    * @param pojomatorClass the type of the pojomator class
-   * @return
+   * @return the MethodHandle
    * @throws NoSuchFieldException
    * @throws IllegalAccessException
    * @throws NoSuchMethodException
