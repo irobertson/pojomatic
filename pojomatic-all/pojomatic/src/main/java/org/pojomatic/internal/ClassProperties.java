@@ -14,13 +14,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.annotations.*;
 
 /**
- * The properties of a class used for {@link PojomatorImpl#doHashCode(Object)},
- * {@link PojomatorImpl#doEquals(Object, Object)}, and {@link PojomatorImpl#doToString(Object)}.
+ * The properties of a class used for {@link Pojomator#doHashCode(Object)},
+ * {@link Pojomator#doEquals(Object, Object)}, and {@link Pojomator#doToString(Object)}.
  */
 public class ClassProperties {
   private static final Pattern ACCESSOR_PATTERN = Pattern.compile("(get|is)\\P{Ll}.*");
@@ -86,24 +87,24 @@ public class ClassProperties {
   }
 
   /**
-   * Gets the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
-   * @return the properties to use for {@link PojomatorImpl#doEquals(Object, Object)}.
+   * Gets the properties to use for {@link Pojomator#doEquals(Object, Object)}.
+   * @return the properties to use for {@link Pojomator#doEquals(Object, Object)}.
    */
   public Collection<PropertyElement> getEqualsProperties() {
     return properties.get(PropertyRole.EQUALS);
   }
 
   /**
-   * Gets the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
-   * @return the properties to use for {@link PojomatorImpl#doHashCode(Object)}.
+   * Gets the properties to use for {@link Pojomator#doHashCode(Object)}.
+   * @return the properties to use for {@link Pojomator#doHashCode(Object)}.
    */
   public Collection<PropertyElement> getHashCodeProperties() {
     return properties.get(PropertyRole.HASH_CODE);
   }
 
   /**
-   * Gets the properties to use for {@link PojomatorImpl#doToString(Object)}.
-   * @return the properties to use for {@link PojomatorImpl#doToString(Object)}.
+   * Gets the properties to use for {@link Pojomator#doToString(Object)}.
+   * @return the properties to use for {@link Pojomator#doToString(Object)}.
    */
   public Collection<PropertyElement> getToStringProperties() {
     return properties.get(PropertyRole.TO_STRING);
