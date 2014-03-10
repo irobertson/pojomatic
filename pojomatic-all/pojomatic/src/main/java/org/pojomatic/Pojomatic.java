@@ -165,8 +165,9 @@ public class Pojomatic {
   }
 
   /**
-   * Get the {@code Pojomator} for {@code pojoClass}.  The same instance will be returned every time
-   * for a given value of {@code pojoClass}.
+   * Get the {@code Pojomator} for {@code pojoClass}. While the same instance will be returned every time
+   * for a given value of {@code pojoClass}, highly performance-sensitive applications may want to cache the value
+   * returned in a static variable on the class in question.
    * @param <T> the type represented by {@code pojoClass}
    * @param pojoClass the class to create a {@code Pojomator} for.
    * @return a {@code Pojomator<T>}
