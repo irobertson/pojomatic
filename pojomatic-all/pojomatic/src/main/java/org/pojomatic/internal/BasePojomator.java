@@ -63,7 +63,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * @param name the name of the dynamic method. This should either be "field_&lt;fieldName&gt;" or "method_&lt;methodName&gt;".
    * @param methodType the type of the dynamic method; the return type should be the type of the aforementioned field
    *   or method
-   * @param pojoClass the type of the pojo class
+   * @param pojomatorClass the type of the pojomator class
    * @return a CallSite which invokes the method or gets the field value.
    * @throws NoSuchMethodException
    * @throws NoSuchFieldException

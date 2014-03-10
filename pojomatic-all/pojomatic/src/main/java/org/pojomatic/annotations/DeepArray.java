@@ -12,11 +12,11 @@ import java.util.Arrays;
 /**
  * Indicates that the annotated property (intended to be of type Object or Object[]) may contain a multi-dimensional
  * array, and if so, the array should be treated as a deep arrays in the fashion of {@link Arrays#deepHashCode(Object[])},
- * {@link Arrays#deepEquals(Object[], Object[])} and {@link Arrays#deepToString(Object[]).
+ * {@link Arrays#deepEquals(Object[], Object[])} and {@link Arrays#deepToString(Object[])}.
  * <p>
- * Note that if this annotation is present, then @{@link CanBeArray} is automatically inferred.
+ * Note that if this annotation is present, then {@link CanBeArray} is automatically inferred.
  *
- * @see {@link CanBeArray}
+ * @see CanBeArray
  */
 @Target({FIELD, METHOD})
 @Retention(RetentionPolicy.RUNTIME)

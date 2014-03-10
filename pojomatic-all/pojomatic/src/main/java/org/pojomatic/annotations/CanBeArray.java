@@ -8,6 +8,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.pojomatic.Pojomator;
+
 /**
  * Indicates that the annotated property (intended to be of type Object) may contain an array, and if so, should be
  * treated as such by the various methods of {@link Pojomator}.
@@ -15,7 +17,7 @@ import java.lang.annotation.Target;
  * Note that if the annotated property is already annotated
  * with @{@link DeepArray}, then this annotation need not be added as well.
  *
- * @see {@link DeepArray}
+ * @see DeepArray
  */
 @Target({FIELD, METHOD})
 @Retention(RetentionPolicy.RUNTIME)
