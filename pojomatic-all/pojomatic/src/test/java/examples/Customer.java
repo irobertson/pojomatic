@@ -3,7 +3,6 @@ package examples;
 import org.pojomatic.Pojomatic;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.PropertyFormat;
-import org.pojomatic.formatter.AccountNumberFormatter;
 
 @AutoProperty
 public class Customer {
@@ -11,18 +10,18 @@ public class Customer {
 
   private final String lastName;
 
-  @PropertyFormat(AccountNumberFormatter.class)
-  private final String accountNumber;
+  @PropertyFormat(IpAddressFormatter.class)
+  private final byte[] ipAddress;
 
-  public Customer(String accountNumber, String firstName, String lastName) {
-    this.accountNumber = accountNumber;
+  public Customer(String firstName, String lastName, byte[] ipAddress) {
     this.firstName = firstName;
     this.lastName = lastName;
+    this.ipAddress = ipAddress;
   }
 
   public String getFirstName() { return firstName; }
   public String getLastName() { return lastName; }
-  public String getAccountNumber() { return accountNumber; }
+  public byte[] getIpAddress() { return ipAddress; }
 
   @Override public int hashCode() {
     return Pojomatic.hashCode(this);
@@ -37,6 +36,6 @@ public class Customer {
   }
 
   public static void main(String[] args) {
-    System.out.println(new Customer("12345", "Joe", "Blow"));
+    System.out.println(new Customer("Joe", "Blow", new byte[] {127, 0, 0, 1}));
   }
 }

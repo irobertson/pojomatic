@@ -130,20 +130,43 @@ in the {@code hashCode} calculation, you can accomplish this via:
 </p>
 
 The {@code toString} implementation provided by Pojomatic defaults to using
-{@link org.pojomatic.formatter.DefaultPojoFormatter DefaultPojoFormatter}; you can specify your
+{@link org.pojomatic.formatter.DefaultEnhancedPojoFormatter DefaultEnhancedPojoFormatter}; you can specify your
 own formatting by providing an alternate implementation of
-{@link org.pojomatic.formatter.PojoFormatter PojoFormatter} and using the
+{@link org.pojomatic.formatter.EnhancedPojoFormatter EnhancedPojoFormatter} and using the
 {@link org.pojomatic.annotations.PojoFormat PojoFormat} annotation.  In addition to controlling the
 overall format of {@code toString}, the formatting of individual properties can be controlled by
 a {@link org.pojomatic.annotations.PropertyFormat PropertyFormat} annotation referencing an
-implementation of {@link org.pojomatic.formatter.PropertyFormatter PropertyFormatter}.  In addition
-to {@link org.pojomatic.formatter.DefaultPropertyFormatter DefaultPropertyFormatter}, this library
-also provides an {@link org.pojomatic.formatter.AccountNumberFormatter AccountNumberFormatter} for
-formatting properties with sensitive data.
+implementation of {@link org.pojomatic.formatter.EnhancedPropertyFormatter EnhancedPropertyFormatter}. An easy way to
+implement EnhancedPropertyFormatter is to extend
+{@link org.pojomatic.formatter.DefaultPropertyFormatter DefaultPropertyFormatter}. For example, to format a byte array
+as an IP address, one could have:
 
-Taking all of this together, a Customer POJO using pojomatic might look like:
+<p class="java">
+<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>IpAddressFormatter&nbsp;<font color="#7f0055"><b>extends&nbsp;</b></font>DefaultEnhancedPropertyFormatter&nbsp;{<br />
+&nbsp;&nbsp;<font color="#646464">@Override</font><br />
+&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font>appendFormatted(StringBuilder&nbsp;builder,&nbsp;<font color="#7f0055"><b>byte</b></font>[]&nbsp;array)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>if&nbsp;</b></font>(array&nbsp;==&nbsp;<font color="#7f0055"><b>null</b></font>)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>super</b></font>.appendFormatted(builder,&nbsp;array);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>else&nbsp;</b></font>{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>boolean&nbsp;</b></font>first&nbsp;=&nbsp;<font color="#7f0055"><b>true</b></font>;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>for&nbsp;</b></font>(<font color="#7f0055"><b>byte&nbsp;</b></font>b:&nbsp;array)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>if&nbsp;</b></font>(first)&nbsp;{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;=&nbsp;<font color="#7f0055"><b>false</b></font>;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>else&nbsp;</b></font>{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder.append(<font color="#990000">'.'</font>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder.append(((<font color="#7f0055"><b>int</b></font>)&nbsp;b)&nbsp;&amp;&nbsp;<font color="#990000">0xff</font>);<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}<br />
+&nbsp;&nbsp;}<br />
+}</code>
+</p>
 
-<p style="background-color:#EEEEFF; margin: 1em">
+Taking all of this together, a Customer POJO using Pojomatic might look like:
+
+<p class="java">
 <code>
 <font color="#646464">@AutoProperty</font><br />
 <font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Customer&nbsp;{<br />
@@ -151,18 +174,18 @@ Taking all of this together, a Customer POJO using pojomatic might look like:
 <br />
 &nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font>String&nbsp;lastName;<br />
 <br />
-&nbsp;&nbsp;<font color="#646464">@PropertyFormat</font>(AccountNumberFormatter.<font color="#7f0055"><b>class</b></font>)<br />
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font>String&nbsp;accountNumber;<br />
+&nbsp;&nbsp;<font color="#646464">@PropertyFormat</font>(IpAddressFormatter.<font color="#7f0055"><b>class</b></font>)<br />
+&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>byte</b></font>[]&nbsp;ipAddress;<br />
 <br />
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>Customer(String&nbsp;accountNumber,&nbsp;String&nbsp;firstName,&nbsp;String&nbsp;lastName)&nbsp;{<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.accountNumber&nbsp;=&nbsp;accountNumber;<br />
+&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>Customer(String&nbsp;firstName,&nbsp;String&nbsp;lastName,&nbsp;<font color="#7f0055"><b>byte</b></font>[]&nbsp;ipAddress)&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.firstName&nbsp;=&nbsp;firstName;<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.lastName&nbsp;=&nbsp;lastName;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.ipAddress&nbsp;=&nbsp;ipAddress;<br />
 &nbsp;&nbsp;}<br />
 <br />
 &nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;getFirstName()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>firstName;&nbsp;}<br />
 &nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;getLastName()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>lastName;&nbsp;}<br />
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;getAccountNumber()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>accountNumber;&nbsp;}<br />
+&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>byte</b></font>[]&nbsp;getIpAddress()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>ipAddress;&nbsp;}<br />
 <br />
 &nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font>hashCode()&nbsp;{<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.hashCode(<font color="#7f0055"><b>this</b></font>);<br />
