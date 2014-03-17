@@ -11,9 +11,9 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</connection>
-    <developerConnection>scm:svn:https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</developerConnection>
-    <url>https://pojomatic.svn.sourceforge.net/svnroot/pojomatic/trunk/pojomatic-all</url>
+    <connection>scm:git:https://github.com/irobertson/pojomatic</connection>
+    <developerConnection>scm:git:https://github.com/irobertson/pojomatic</developerConnection>
+    <url>https://github.com/irobertson/pojomatic</url>
   </scm>
 
   <dependencyManagement>
@@ -34,8 +34,8 @@
       </roles>
       <email>ian.b.robertson@gmail.com</email>
       <id>ian.b.robertson</id>
-      <organization>Overstock.com</organization>
-      <organizationUrl>http://www.overstock.com</organizationUrl>
+      <organization>Myriad Genetics</organization>
+      <organizationUrl>http://www.myriad.com</organizationUrl>
       <url>http://www.artima.com/weblogs/index.jsp?blogger=ianr</url>
     </developer>
     <developer>
@@ -45,8 +45,8 @@
       </roles>
       <email>hansen.chris.w@gmail.com</email>
       <id>hansen.chris.w</id>
-      <organization>Overstock.com</organization>
-      <organizationUrl>http://www.overstock.com</organizationUrl>
+      <organization>Experticity</organization>
+      <organizationUrl>http://www.experticity.com/</organizationUrl>
       <url>http://polyglot-window.blogspot.com/</url>
     </developer>
   </developers>
@@ -60,8 +60,8 @@
   </licenses>
 
   <issueManagement>
-    <system>Sourceforge</system>
-    <url>https://sourceforge.net/tracker/?func=browse&amp;group_id=239113</url>
+    <system>Github</system>
+    <url>https://github.com/irobertson/pojomatic/issues</url>
   </issueManagement>
 
   <distributionManagement>
