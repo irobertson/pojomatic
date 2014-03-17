@@ -3,6 +3,8 @@ package org.pojomatic.internal;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
@@ -22,8 +24,27 @@ public class PojomatorFactory {
     }
   }
 
-  private static PojomatorFactory.DynamicClassLoader CLASS_LOADER =
-    new PojomatorFactory.DynamicClassLoader(PojomatorFactory.class.getClassLoader());
+  private static volatile DynamicClassLoader CLASS_LOADER = null;
+  private final static Object CLASS_LOADER_MUTEX = new Object();
+
+  // We don't initialize CLASS_LOADER at classLoad time because permission issues could cause an exception; we don't
+  // want that exception to be masked with a ClassNotFoundException
+  private static DynamicClassLoader getClassLoader() {
+    if (CLASS_LOADER == null) {
+      synchronized (CLASS_LOADER_MUTEX) {
+        if (CLASS_LOADER == null) {
+          CLASS_LOADER =
+            AccessController.doPrivileged(new PrivilegedAction<DynamicClassLoader>() {
+              @Override
+              public DynamicClassLoader run() {
+                return new DynamicClassLoader(PojomatorFactory.class.getClassLoader());
+              }
+            });
+        }
+      }
+    }
+    return CLASS_LOADER;
+  }
 
   public static <T> Pojomator<T> makePojomator(Class<T> pojoClass) {
     try {
@@ -39,7 +60,7 @@ public class PojomatorFactory {
       InvocationTargetException, NoSuchMethodException {
     ClassProperties classProperties = ClassProperties.forClass(pojoClass);
     PojomatorByteCodeGenerator generator = new PojomatorByteCodeGenerator(pojoClass, classProperties);
-    Class<?> pojomatorClass = CLASS_LOADER.loadClass(generator.pojomatorClassName, generator.makeClassBytes());
+    Class<?> pojomatorClass = getClassLoader().loadClass(generator.pojomatorClassName, generator.makeClassBytes());
     setStaticField(pojomatorClass, PojomatorByteCodeGenerator.POJO_CLASS_FIELD_NAME, pojoClass);
     @SuppressWarnings("unchecked")
     Pojomator<T> pojomator = (Pojomator<T>) pojomatorClass.getConstructor(Class.class, ClassProperties.class)
