@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.mockito.Mockito;
+import org.pojomatic.internal.ArrayType;
 import org.pojomatic.internal.EnhancedPropertyFormatterWrapper;
 import org.pojomatic.internal.Type;
 import org.pojomatic.internal.TypeProviders;
@@ -30,6 +31,18 @@ public class EnhancedPropertyFormatterTest {
     EnhancedPropertyFormatter wrapper = new EnhancedPropertyFormatterWrapper(new DefaultPropertyFormatter());
     Method m = EnhancedPropertyFormatter.class.getDeclaredMethod("appendFormatted", StringBuilder.class, type.getClazz());
     for (Object value: type.getSampleValues()) {
+      StringBuilder builder = new StringBuilder();
+      m.invoke(wrapper, builder, value);
+      assertEquals(builder.toString(), new DefaultPropertyFormatter().format(value));
+    }
+  }
+
+  @Test(dataProvider="types", dataProviderClass=TypeProviders.class)
+  public void testAppendArraysAsObject(Type type) throws ReflectiveOperationException {
+    Type arrayType = new ArrayType(type);
+    EnhancedPropertyFormatter wrapper = new EnhancedPropertyFormatterWrapper(new DefaultPropertyFormatter());
+    Method m = EnhancedPropertyFormatter.class.getDeclaredMethod("appendFormatted", StringBuilder.class, Object.class);
+    for (Object value: arrayType.getSampleValues()) {
       StringBuilder builder = new StringBuilder();
       m.invoke(wrapper, builder, value);
       assertEquals(builder.toString(), new DefaultPropertyFormatter().format(value));
