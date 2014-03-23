@@ -14,7 +14,6 @@ import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 import org.pojomatic.internal.PojomatorFactoryTest;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 public class SecurityTest {
