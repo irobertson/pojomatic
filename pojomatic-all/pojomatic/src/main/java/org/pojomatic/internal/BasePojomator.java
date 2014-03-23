@@ -8,6 +8,9 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 
 import org.pojomatic.Pojomator;
@@ -71,7 +74,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    */
   protected static CallSite bootstrap(
       MethodHandles.Lookup caller, String name, MethodType methodType, Class<?> pojomatorClass)
-      throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
+      throws Throwable {
     return new ConstantCallSite(
       MethodHandles.explicitCastArguments(
         getTypedMethod(caller, name, pojomatorClass),
@@ -268,17 +271,44 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * static field containing a {@link PropertyElement} instance referring to the property to be accessed.
    * @param pojomatorClass the type of the pojomator class
    * @return the MethodHandle
+   * @throws Throwable
+   */
+  private static MethodHandle getTypedMethod(
+    final MethodHandles.Lookup caller, final String name, final Class<?> pojomatorClass)
+    throws Throwable {
+    try {
+      return AccessController.doPrivileged(new PrivilegedExceptionAction<MethodHandle>() {
+        @Override
+        public MethodHandle run() throws Exception {
+          return getTypedMethodPrivileged(caller, name, pojomatorClass);
+        }
+      });
+    } catch (PrivilegedActionException e) {
+      throw e.getCause();
+    }
+  }
+
+  /**
+   * Do the work for {@link #getTypedMethod(java.lang.invoke.MethodHandles.Lookup, String, Class)}. This method will be
+   * run inside of a {@link AccessController#doPrivileged(PrivilegedExceptionAction)} block, hence should make sure to
+   * not run untrusted code.
+   * @param pojomatorClass the type of the pojomator class
+   * @return the MethodHandle
+   * @param pojomatorClass
+   * @return the MethodHandle
    * @throws NoSuchFieldException
    * @throws IllegalAccessException
-   * @throws NoSuchMethodException
    */
-  private static MethodHandle getTypedMethod(MethodHandles.Lookup caller, String name, Class<?> pojomatorClass)
-    throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
+  private static MethodHandle getTypedMethodPrivileged(
+    MethodHandles.Lookup caller, String name, Class<?> pojomatorClass)
+    throws NoSuchFieldException, IllegalAccessException {
     String elementName = "element_" + name.substring(4);
     Field elementField = pojomatorClass.getDeclaredField(elementName);
     elementField.setAccessible(true);
     PropertyElement property = (PropertyElement) elementField.get(null);
     AnnotatedElement element = property.getElement();
+    // Note that while element is a reference to untrusted code, we do not actually invoke this code inside a
+    // doPrivileged block - we merely make it accessible to be invoked later, outside of a doPriviliged block
     if (element instanceof Field) {
       Field field = (Field) element;
       field.setAccessible(true);
@@ -292,7 +322,6 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
     else {
       throw new IllegalArgumentException("Cannot handle element of type " + element.getClass().getName());
     }
-
   }
 
 }

@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
@@ -46,12 +48,16 @@ public class PojomatorFactory {
     return CLASS_LOADER;
   }
 
-  public static <T> Pojomator<T> makePojomator(Class<T> pojoClass) {
+  public static <T> Pojomator<T> makePojomator(final Class<T> pojoClass) {
     try {
-      return makePojomatorChecked(pojoClass);
-    } catch (InstantiationException | IllegalAccessException | NoSuchFieldException | SecurityException
-        | InvocationTargetException | NoSuchMethodException e) {
-      throw new RuntimeException(e);
+      return AccessController.doPrivileged(new PrivilegedExceptionAction<Pojomator<T>>() {
+        @Override
+        public Pojomator<T> run() throws Exception {
+          return makePojomatorChecked(pojoClass);
+        }
+      });
+    } catch (PrivilegedActionException e) {
+      throw new RuntimeException(e.getCause());
     }
   }
 

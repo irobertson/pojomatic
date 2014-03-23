@@ -2,6 +2,7 @@ package org.pojomatic.internal;
 
 
 import static org.testng.Assert.*;
+
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 import com.google.common.io.ByteStreams;
 
 public class PojomatorFactoryTest {
+
   public static class ToBeDuplicated {
     @Property int x;
   }
