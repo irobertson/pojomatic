@@ -9,36 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.pojomatic.PropertyElement;
-
 public class PropertyElementTest {
 
   @Retention(RetentionPolicy.RUNTIME) @interface Expected {
     String value();
-  }
-
-  @Test(expectedExceptions=NullPointerException.class)
-  public void testGetValueNullField() throws Exception {
-    PropertyElement propertyElement = new PropertyField(getTestField(), "");
-    propertyElement.getValue(null);
-  }
-
-  @Test(expectedExceptions=NullPointerException.class)
-  public void testGetValueNullMethod() throws Exception {
-    PropertyElement propertyElement = new PropertyAccessor(getTestMethod(), "");
-    propertyElement.getValue(null);
-  }
-
-  @Test
-  public void testGetValueField() throws Exception {
-    PropertyElement propertyElement = new PropertyField(getTestField(), "");
-    assertEquals(propertyElement.getValue(this), testField);
-  }
-
-  @Test
-  public void testGetValueMethod() throws Exception {
-    PropertyElement propertyElement = new PropertyAccessor(getTestMethod(), "");
-    assertEquals(propertyElement.getValue(this), testAccessor());
   }
 
   @Test
@@ -110,7 +84,7 @@ public class PropertyElementTest {
   }
 
   private Method getMethod(String name) throws Exception {
-    return this.getClass().getMethod(name, (Class[])null);
+    return this.getClass().getDeclaredMethod(name, (Class[])null);
   }
 
   private Field getTestField() throws Exception {
@@ -118,6 +92,8 @@ public class PropertyElementTest {
   }
 
   // test properties
-  public Object testAccessor() { return "Test string"; }
+  @SuppressWarnings("unused")
+  private Object testAccessor() { return "Test string"; }
+  @SuppressWarnings("unused")
   private final Object testField = new Object();
 }

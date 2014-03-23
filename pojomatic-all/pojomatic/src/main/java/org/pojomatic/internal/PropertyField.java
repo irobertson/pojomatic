@@ -8,12 +8,6 @@ public class PropertyField extends AbstractPropertyElement<Field> {
   }
 
   @Override
-  protected Object accessValue(Object instance)
-  throws IllegalArgumentException, IllegalAccessException {
-    return element.get(instance);
-  }
-
-  @Override
   public String getElementName() {
     return element.getName();
   }

@@ -1,7 +1,6 @@
 package org.pojomatic.internal;
 
 import java.beans.Introspector;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class PropertyAccessor extends AbstractPropertyElement<Method> {
@@ -32,17 +31,6 @@ public class PropertyAccessor extends AbstractPropertyElement<Method> {
     return name.length() > prefix.length()
     && name.startsWith(prefix)
     && Character.isUpperCase(name.charAt(prefix.length()));
-  }
-
-  @Override
-  protected Object accessValue(Object instance)
-  throws IllegalArgumentException, IllegalAccessException {
-    try {
-      return element.invoke(instance, (Object[])null);
-    }
-    catch (InvocationTargetException e) {
-      throw new RuntimeException(e.getCause());
-    }
   }
 
   @Override

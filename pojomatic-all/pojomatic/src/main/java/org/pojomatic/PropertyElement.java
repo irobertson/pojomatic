@@ -15,14 +15,6 @@ public interface PropertyElement {
   String getName();
 
   /**
-   * Get the value held by this property from the given instance.
-   *
-   * @param instance the instance to get the value from
-   * @return the value held by the instance
-   */
-  Object getValue(Object instance);
-
-  /**
    * Get the original annotated element that this property is derived from.
    * @return the original annotated element that this property is derived from.
    */

@@ -12,7 +12,6 @@ implements PropertyElement {
   private final String name;
 
   protected AbstractPropertyElement(E element, String name) {
-    element.setAccessible(true);
     this.element = element;
     this.name = name;
   }
@@ -21,27 +20,6 @@ implements PropertyElement {
   public String getName() {
     return name;
   }
-
-  @Override
-  public Object getValue(Object instance) {
-    if (instance == null) {
-      throw new NullPointerException("Instance is null: cannot get property value");
-    }
-    else {
-      try {
-        return accessValue(instance);
-      }
-      catch (IllegalArgumentException e) {
-        throw new RuntimeException(e);
-      }
-      catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
-  protected abstract Object accessValue(Object instance)
-  throws IllegalAccessException, IllegalArgumentException;
 
   /* (non-Javadoc)
    * @see org.pojomatic.PropertyElement#getElement()
