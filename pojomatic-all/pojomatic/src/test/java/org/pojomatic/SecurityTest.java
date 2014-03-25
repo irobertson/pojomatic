@@ -92,7 +92,6 @@ public class SecurityTest {
     }
     catch (AccessControlException e) {
       assertTrue(e.getPermission() instanceof SocketPermission);
-      e.printStackTrace();
     }
     finally {
       restorePolicy();
@@ -124,7 +123,6 @@ public class SecurityTest {
     catch (ExceptionInInitializerError e) {
       assertEquals(e.getCause().getClass(), AccessControlException.class);
       assertTrue(((AccessControlException) e.getCause()).getPermission() instanceof SocketPermission);
-      e.printStackTrace();
     }
     finally {
       restorePolicy();
