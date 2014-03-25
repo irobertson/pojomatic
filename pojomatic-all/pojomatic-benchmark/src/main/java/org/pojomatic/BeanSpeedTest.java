@@ -9,7 +9,6 @@ import com.google.caliper.Benchmark;
 import com.google.caliper.runner.CaliperMain;
 
 public class BeanSpeedTest extends Benchmark {
-  private static final PmHandRolledChecker PM_HAND_ROLLED_CHECKER = new PmHandRolledChecker();
   private static final PmFastChecker PM_FAST_CHECKER = new PmFastChecker();
   private static final PmChecker PM_CHECKER = new PmChecker();
   private static final StandardChecker STANDARD_CHECKER = new StandardChecker();
@@ -44,10 +43,6 @@ public class BeanSpeedTest extends Benchmark {
 
   public void timePojomaticCheckerHashCode(int reps) {
     PM_CHECKER.checkHashCode(beans, reps);
-  }
-
-  public void timePojomaticHandRolledCheckerHashCode(int reps) {
-    PM_HAND_ROLLED_CHECKER.checkHashCode(beans, reps);
   }
 
   public void timeAsmHashCode(int reps) {
@@ -169,14 +164,4 @@ public class BeanSpeedTest extends Benchmark {
       return bean.pmFastHashCode();
     }
   }
-
-  public static class PmHandRolledChecker extends BaseChecker {
-    @Override protected boolean equals(Bean bean1, Bean bean2) {
-      return bean1.handRolledPmEquals(bean2);
-    }
-    @Override protected long hashCode(Bean bean) {
-      return bean.handRolledPmHashCode();
-    }
-  }
-
 }
