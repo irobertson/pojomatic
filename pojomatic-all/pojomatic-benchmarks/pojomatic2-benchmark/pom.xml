@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.pojomatic</groupId>
+    <artifactId>pojomatic-benchmarks</artifactId>
+    <version>trunk-SNAPSHOT</version>
+  </parent>
+  <artifactId>pojomatic2-benchmark</artifactId>
+  <name>Pojomatic2 benchmark</name>
+  <description>Benchmark for Pojomatic version 2.0</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.pojomatic</groupId>
+      <artifactId>pojomatic-base-benchmark</artifactId>
+      <version>trunk-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pojomatic</groupId>
+      <artifactId>pojomatic</artifactId>
+      <version>trunk-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>

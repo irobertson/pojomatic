@@ -2,14 +2,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>pojomatic-all</artifactId>
     <groupId>org.pojomatic</groupId>
+    <artifactId>pojomatic-benchmarks</artifactId>
     <version>trunk-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>pojomatic-benchmark</artifactId>
+  <artifactId>pojomatic-base-benchmark</artifactId>
   <packaging>jar</packaging>
-  <name>pojomatic-benchmark</name>
+  <name>Pojomatic Base Benchmark</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -19,26 +19,14 @@
     <dependency>
       <groupId>com.google.caliper</groupId>
       <artifactId>caliper</artifactId>
-      <version>1.0-beta-1</version>
+      <!-- sigh - caliper really needs post 1.0-beta-1, but they haven't released it yet; I'm using a build off of
+           9788e7ea2f984a7b9760e1b1d7d7eae7d7b50cdc -->
+      <version>1.0-beta-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.java-allocation-instrumenter</groupId>
+      <artifactId>java-allocation-instrumenter</artifactId>
+      <version>2.1</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <mainClass>com.google.caliper.Runner</mainClass>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

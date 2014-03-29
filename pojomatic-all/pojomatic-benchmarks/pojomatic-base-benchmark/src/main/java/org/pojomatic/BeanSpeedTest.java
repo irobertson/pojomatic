@@ -3,59 +3,56 @@ package org.pojomatic;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.google.caliper.BeforeExperiment;
 import com.google.caliper.Benchmark;
 //import com.google.caliper.Runner;
 //import com.google.caliper.SimpleBenchmark;
 import com.google.caliper.runner.CaliperMain;
 
-public class BeanSpeedTest extends Benchmark {
+public class BeanSpeedTest {
   private static final PmFastChecker PM_FAST_CHECKER = new PmFastChecker();
   private static final PmChecker PM_CHECKER = new PmChecker();
   private static final StandardChecker STANDARD_CHECKER = new StandardChecker();
-  private static final AsmChecker ASM_CHECKER = new AsmChecker();
   private final static Random rand = new Random();
   private static Bean[] beans;
-/*
+
+  @Benchmark
   public void timeStandardCheckerEquals(int reps) {
     System.out.println("The beans are " + Arrays.toString(beans));
     STANDARD_CHECKER.checkEquals(beans, reps);
   }
 
+  @Benchmark
   public void timePojomaticFastCheckerEquals(int reps) {
     PM_FAST_CHECKER.checkEquals(beans, reps);
   }
 
+  @Benchmark
   public void timePojomaticCheckerEquals(int reps) {
     PM_CHECKER.checkEquals(beans, reps);
   }
 
-  public void timePojomaticHandRolledCheckerEquals(int reps) {
-    PM_HAND_ROLLED_CHECKER.checkEquals(beans, reps);
-  }
-*/
+  @Benchmark
   public void timeStandardCheckerHashCode(int reps) {
     STANDARD_CHECKER.checkHashCode(beans, reps);
   }
 
+  @Benchmark
   public void timePojomaticFastCheckerHashCode(int reps) {
     PM_FAST_CHECKER.checkHashCode(beans, reps);
   }
 
+  @Benchmark
   public void timePojomaticCheckerHashCode(int reps) {
     PM_CHECKER.checkHashCode(beans, reps);
   }
 
-  public void timeAsmHashCode(int reps) {
-    ASM_CHECKER.checkHashCode(beans, reps);
-  }
-
+  @BeforeExperiment
   public void setUp() {
     beans = makeBeans(800);
   }
 
   public static void main(String[] args) {
-    System.out.println("The beans are " + Arrays.toString(beans));
-
     CaliperMain.main(BeanSpeedTest.class, args);
   }
 
@@ -134,16 +131,6 @@ public class BeanSpeedTest extends Benchmark {
 
     @Override protected long hashCode(Bean bean) {
       return bean.hashCode();
-    }
-  }
-
-  public static class AsmChecker extends BaseChecker {
-    @Override protected boolean equals(Bean bean1, Bean bean2) {
-      return bean1.equals(bean2); // FIXME
-    }
-
-    @Override protected long hashCode(Bean bean) {
-      return bean.asmHashCode();
     }
   }
 
