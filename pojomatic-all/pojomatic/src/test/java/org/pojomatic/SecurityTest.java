@@ -2,41 +2,54 @@ package org.pojomatic;
 
 import static org.testng.Assert.*;
 
+import java.io.FilePermission;
+import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.SecurityPermission;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.formatter.DefaultEnhancedPropertyFormatter;
 import org.pojomatic.internal.PojomatorFactoryTest;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableSet;
+
 public class SecurityTest {
   private SecurityManager originalSecurityManager;
   private Policy originalPolicy;
 
+  private Set<Permission> requestedPermissions = new HashSet<>();
+
   private void setPolicy() {
     originalSecurityManager = System.getSecurityManager();
     originalPolicy = Policy.getPolicy();
+    final ProtectionDomain testProtectionDomain = PojomatorFactoryTest.class.getProtectionDomain();
+    final ProtectionDomain mainProtectionDomain = Pojomatic.class.getProtectionDomain();
     Policy.setPolicy(new Policy() {
-      private final ProtectionDomain testProtectionDomain = PojomatorFactoryTest.class.getProtectionDomain();
+
       @Override
       public boolean implies(ProtectionDomain domain, Permission permission) {
+        if (domain == mainProtectionDomain) {
+          requestedPermissions.add(permission);
+          return true;
+        }
         if (permission instanceof SecurityPermission && "setPolicy".equals(permission.getName())) {
           return true;
         }
         if (permission instanceof RuntimePermission && "setSecurityManager".equals(permission.getName())) {
           return true;
         }
-        if (domain == testProtectionDomain) {
+        if (testProtectionDomain.equals(domain)) {
           return false;
         }
-        return true;
+        return true; // let TestNG do it's thing.
       }
     });
 
@@ -48,24 +61,49 @@ public class SecurityTest {
     Policy.setPolicy(originalPolicy);
   }
 
-  @AutoProperty
+  private static class Inaccessible{}
+
   private static class SimplePojo {
-    @SuppressWarnings("unused")
+    @Property
     int x = 0;
+
+    @Property
+    int getY() { return 0; }
+
+    @Property
+    Inaccessible z;
   }
 
   @Test
   public void testSecurityModel() {
+    requestedPermissions.clear();
     SimplePojo pojo = new SimplePojo();
     String toString = null;
+    boolean equals;
+    int hashCode;
     try {
       setPolicy();
+      equals = Pojomatic.pojomator(SimplePojo.class).doEquals(new SimplePojo(), new SimplePojo());
+      hashCode = Pojomatic.pojomator(SimplePojo.class).doHashCode(new SimplePojo());
       toString = Pojomatic.pojomator(SimplePojo.class).doToString(pojo);
     }
     finally {
       restorePolicy();
     }
-    assertEquals(toString, "SimplePojo{x: {0}}");
+    assertEquals(toString, "SimplePojo{x: {0}, z: {null}, y: {0}}");
+    assertTrue(equals);
+    assertEquals(hashCode, 31*31*31);
+
+    String testClassPath = SimplePojo.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+    String simplePojoPath = SimplePojo.class.getName().replace('.', '/') + ".class";
+
+    assertEquals(
+      requestedPermissions,
+      ImmutableSet.of(
+        new FilePermission(testClassPath + simplePojoPath, "read"),
+        new RuntimePermission("accessDeclaredMembers"),
+        new RuntimePermission("getProtectionDomain"),
+        new ReflectPermission("suppressAccessChecks")));
   }
 
   public static class AttackingConstructorFormatter extends DefaultEnhancedPropertyFormatter {
@@ -79,6 +117,7 @@ public class SecurityTest {
     @PropertyFormat(SecurityTest.AttackingConstructorFormatter.class)
     int x = 0;
   }
+
 
   /**
    * Verify that constructor code for property formatters is not running with Pojomatic security privileges
