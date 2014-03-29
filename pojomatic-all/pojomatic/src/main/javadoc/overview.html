@@ -222,5 +222,17 @@ Taking all of this together, a Customer POJO using Pojomatic might look like:
 &nbsp;&nbsp;}<br />
 }</code>
 </p>
+<h3>Security</h3>
+ If a {@link java.lang.SecurityManager Security Manager} is present, Pojomatic needs the following permissions
+ <p>
+ <code>
+ grant codebase "file:/path/to/pojomatic.jar" {<br>
+ &nbsp;&nbsp;permission {@link java.io.FilePermission} "/path/to/jar/with/pojos.jar" read"<br>
+ &nbsp;&nbsp;permission {@link java.io.FilePermission} "/path/to/dir/with/pojos/classes/-" read"<br>
+ &nbsp;&nbsp;permission {@link java.lang.RuntimePermission} "accessDeclaredMembers"<br>
+ &nbsp;&nbsp;permission {@link java.lang.RuntimePermission} "getProtectionDomain"<br>
+ &nbsp;&nbsp;permission {@link java.lang.reflect.ReflectPermission} "suppressAccessChecks"<br>
+ };<br>
+ </code>
 </body>
 </html>
