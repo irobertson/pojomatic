@@ -49,9 +49,9 @@ import org.pojomatic.formatter.EnhancedPropertyFormatter;
  *   </li>
  *   <li>
  *     If the declared type of the property is Object, then pojomatic will treat values as opaque object references,
- *     unless the property is annotated with @{@link CanBeArray}, in which case the Pojomator will treat it as either
- *     a single-dimensional or multiple-dimensional array, depending on whether a @{@link DeepArray} annotation is
- *     absent or present on the property.
+ *     unless the property is annotated with @{@link CanBeArray} or {@{@link DeepArray}, in which case the Pojomator
+ *     will treat it as either a single-dimensional or multiple-dimensional array, depending on whether a
+ *     @{@link DeepArray} annotation is absent or present on the property.
  *   </li>
  * <ul>
  *
