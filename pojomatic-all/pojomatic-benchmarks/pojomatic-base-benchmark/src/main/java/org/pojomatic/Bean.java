@@ -8,25 +8,25 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.AutoDetectPolicy;
 import org.pojomatic.annotations.AutoProperty;
 
-@AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
+@AutoProperty(autoDetect=AutoDetectPolicy.FIELD)
 public class Bean {
-  private String string;
   private int i;
+  private String string;
   private Integer integer;
   private int[] ints;
   private List<String> strings;
 
-  public String getString() {
-    return string;
-  }
-  public void setString(String string) {
-    this.string = string;
-  }
   public int getI() {
     return i;
   }
   public void setI(int i) {
     this.i = i;
+  }
+  public String getString() {
+    return string;
+  }
+  public void setString(String string) {
+    this.string = string;
   }
   public Integer getInteger() {
     return integer;
@@ -55,7 +55,7 @@ public class Bean {
     return Pojomatic.hashCode(this);
   }
 
-  private Pojomator<Bean> POJOMATOR = Pojomatic.pojomator(Bean.class);
+  private final static Pojomator<Bean> POJOMATOR = Pojomatic.pojomator(Bean.class);
 
   public boolean pmFastequals(Object other) {
     return POJOMATOR.doEquals(this, other);
