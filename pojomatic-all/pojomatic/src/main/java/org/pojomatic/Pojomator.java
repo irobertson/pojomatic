@@ -3,6 +3,8 @@ package org.pojomatic;
 import java.util.Arrays;
 import java.util.List;
 
+import org.pojomatic.annotations.CanBeArray;
+import org.pojomatic.annotations.DeepArray;
 import org.pojomatic.annotations.OverridesEquals;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
@@ -17,6 +19,41 @@ import org.pojomatic.formatter.EnhancedPropertyFormatter;
  * A provider of the three standard {@code Object} methods,
  * {@link Object#equals(Object)}, {@link Object#hashCode()} and {@link Object#toString()}, as
  * well as a useful method to aid in debugging, {@link #doDiff(Object, Object)}.
+ *
+ * <h3>Treatment of arrays</h3>
+ * When encountering an array, there are three approaches that can be taken:
+ * <ul>
+ *   <li>
+ *     Treat the array as an opaque object reference. Equality and hashCodes will be based on object identity, and
+ *     toString will return a relatively unhelpful string like "[Ljava.lang.String;@5195da41".
+ *   </li>
+ *   <li>
+ *     Treat the array as a a single-dimensional array. Equality, hashCode and toString will also look not at the array
+ *     instance itself, but the contents of the array. If elements of the array are arrays themselves, treat those
+ *     elements as opaque object references.
+ *   </li>
+ *   <li>
+ *     Treat the array as a potentially multi-dimensioanl array. If any of the arrays elements are themselves arrays,
+ *     look at the elements of those sub-arrays, and so on recursively.
+ *   </li>
+ * </ul>
+ * <p>
+ * Which option a Pojomator will choose depends on the declared type of the property and on the presence or absence of a
+ * pair of annotations, @{@link CanBeArray} and @{@link DeepArray}. Specifically:
+ * <ul>
+ *   <li>
+ *     If the declared type of the property (as opposed to the actual type of the value for the property on a
+ *     given instance) is of array type, then by default, the Pojomator will treat it as a single-dimensional array, unless
+ *     the property is annotated with @{@link DeepArray}, in which case the Pojomator will treat it as a
+ *     multi-dimensioanl array.
+ *   </li>
+ *   <li>
+ *     If the declared type of the property is Object, then pojomatic will treat values as opaque object references,
+ *     unless the property is annotated with @{@link CanBeArray}, in which case the Pojomator will treat it as either
+ *     a single-dimensional or multiple-dimensional array, depending on whether a @{@link DeepArray} annotation is
+ *     absent or present on the property.
+ *   </li>
+ * <ul>
  *
  * @param <T> the class this {@code Pojomator} is generated for.
  */
@@ -56,7 +93,7 @@ public interface Pojomator<T> {
    * creating an instance of {@code DefaultEnhancedPojoFormatter} for the {@code Person} class (referred to
    * here as {@code personFormatter}), a {@link StringBuilder} (referred to here as builder), and then invoking the
    * following methods in order:
-   * <ol>
+   * <ul>
    *   <li>{@link DefaultEnhancedPojoFormatter#appendToStringPrefix(StringBuilder, Class) personFormatter.appendToStringPrefix(builder, Person.class)}</li>
    *   <li>{@link DefaultEnhancedPojoFormatter#appendPropertyPrefix(StringBuilder, PropertyElement) personFormatter.appendPropertyPrefix(builder, nameProperty)}</li>
    *   <li>{@link DefaultEnhancedPropertyFormatter#appendFormatted(StringBuilder, Object) nameFormatter.appendFormatted(builder, name)}</li>
@@ -66,7 +103,7 @@ public interface Pojomator<T> {
    *   <li>{@link DefaultEnhancedPojoFormatter#appendPropertySuffix(StringBuilder, PropertyElement) personFormatter.appendPropertySuffix(builder, ageProperty)}</li>
    *   <li>{@link DefaultEnhancedPojoFormatter#appendToStringSuffix(StringBuilder, Class) personFormatter.appendToStringSuffix(builder, Person.class)}</li>
    *   <li>builder.toString()</li>
-   * </ol>
+   * </ul>
    * </p>
    *
    * @param instance the instance to compute the {@code toString} representation for - must not be {@code null}
@@ -94,12 +131,18 @@ public interface Pojomator<T> {
    * <li>Both are {@code null}, or</li>
    * <li>Both are reference-equals (==) to each other, or</li>
    * <li>Both are primitive of the same type, and equal to each other, or</li>
-   * <li>Both are of array type, with matching primitive component types, and the corresponding
-   * {@code} equals method of {@link Arrays} returns true, or</li>
-   * <li>Both are of array type with non-primitive component types, and
-   * {@link Arrays#deepEquals(Object[], Object[])} returns true, or</li>
    * <li>The property {@code p} in {@code instance} is an object not of array type, and {@code
    * instanceP.equals(otherP)} returns true.
+   * <li>The declared type of the property {@code p} is {@link Object}, the property is not annotated with @{@link CanBeArray},
+   * and {@code instanceP.equals(otherP)} returns true.
+   * <li>The declared type of the property is either an array type, or is of type {@link Object}, and the property is
+   * annotated with @{@link CanBeArray}, and:
+   * <ul>
+   *   <li>If the property is annotated with @{@link DeepArray}, then
+   *     {@link Arrays#deepEquals(Object[], Object[]) Arrays.deepEquals(instanceP, otherP)} returns true</li>
+   *   <li>If the property is not annotated with @{@link DeepArray}, then the appropriate {@code equals} method of
+   *     {@link Arrays} returns true</li>
+   * </ul></li>
    * </ul>
    * </p>
    * @param instance the instance to test against - must not be {@code null}
