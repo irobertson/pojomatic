@@ -82,6 +82,43 @@ public class Bean {
     return result;
   }
 
+  public static boolean doEquals(Bean left, Object right) {
+    if (left == right)
+      return true;
+    if (right == null)
+      return false;
+    if (left.getClass() != right.getClass())
+      return false;
+    final Bean other = (Bean) right;
+    if (left.i != other.i)
+      return false;
+    if (left.integer == null) {
+      if (other.integer != null)
+        return false;
+    }
+    else if (!left.integer.equals(other.integer))
+      return false;
+    if (!Arrays.equals(left.ints, other.ints))
+      return false;
+    if (left.string == null) {
+      if (other.string != null)
+        return false;
+    }
+    else if (!left.string.equals(other.string))
+      return false;
+    if (left.strings == null) {
+      if (other.strings != null)
+        return false;
+    }
+    else if (!left.strings.equals(other.strings))
+      return false;
+    return true;
+  }
+
+  public boolean indirectEquals(Object obj) {
+    return doEquals(this, obj);
+  }
+
   @Override public boolean equals(Object obj) {
     if (this == obj)
       return true;

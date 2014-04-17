@@ -1,59 +1,44 @@
 package org.pojomatic;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Random;
 
 import com.google.caliper.BeforeExperiment;
 import com.google.caliper.Benchmark;
-//import com.google.caliper.Runner;
-//import com.google.caliper.SimpleBenchmark;
+import com.google.caliper.Param;
 import com.google.caliper.runner.CaliperMain;
 
 public class BeanSpeedTest {
-  private static final PmFastChecker PM_FAST_CHECKER = new PmFastChecker();
-  private static final PmChecker PM_CHECKER = new PmChecker();
-  private static final StandardChecker STANDARD_CHECKER = new StandardChecker();
+  public static void main(String[] args) throws Exception {
+    String[] fullArgs = new String[args.length + 1];
+    fullArgs[0] = BeanSpeedTest.class.getName();
+    System.arraycopy(args, 0, fullArgs, 1, args.length);
+    CaliperMain.exitlessMain(
+      fullArgs,
+      new PrintWriter(System.out, true),
+      new PrintWriter(System.err, true));
+  }
+
   private final static Random rand = new Random();
   private static Bean[] beans;
 
+  @Param({ "STANDARD", "STANDARD_INDIRECT", "POJOMATIC", "POJOMATIC_FAST" })
+  private Checker checker;
+
   @Benchmark
-  public void timeStandardCheckerEquals(int reps) {
-    System.out.println("The beans are " + Arrays.toString(beans));
-    STANDARD_CHECKER.checkEquals(beans, reps);
+  public void equals(int reps) {
+    checker.checkEquals(beans, reps);
   }
 
   @Benchmark
-  public void timePojomaticFastCheckerEquals(int reps) {
-    PM_FAST_CHECKER.checkEquals(beans, reps);
-  }
-
-  @Benchmark
-  public void timePojomaticCheckerEquals(int reps) {
-    PM_CHECKER.checkEquals(beans, reps);
-  }
-
-  @Benchmark
-  public void timeStandardCheckerHashCode(int reps) {
-    STANDARD_CHECKER.checkHashCode(beans, reps);
-  }
-
-  @Benchmark
-  public void timePojomaticFastCheckerHashCode(int reps) {
-    PM_FAST_CHECKER.checkHashCode(beans, reps);
-  }
-
-  @Benchmark
-  public void timePojomaticCheckerHashCode(int reps) {
-    PM_CHECKER.checkHashCode(beans, reps);
+  public void hashCode(int reps) {
+    checker.checkHashCode(beans, reps);
   }
 
   @BeforeExperiment
   public void setUp() {
     beans = makeBeans(800);
-  }
-
-  public static void main(String[] args) {
-    CaliperMain.main(BeanSpeedTest.class, args);
   }
 
   private static Bean[] makeBeans(int beanCount) {
@@ -82,7 +67,43 @@ public class BeanSpeedTest {
     return bean;
   }
 
-  public static abstract class BaseChecker {
+  public static enum Checker {
+    STANDARD {
+      @Override protected boolean equals(Bean bean1, Bean bean2) {
+        return bean1.equals(bean2);
+      }
+
+      @Override protected long hashCode(Bean bean) {
+        return bean.hashCode();
+      }
+    },
+    STANDARD_INDIRECT {
+      @Override protected boolean equals(Bean bean1, Bean bean2) {
+        return bean1.indirectEquals(bean2);
+      }
+
+      @Override protected long hashCode(Bean bean) {
+        return bean.hashCode();
+      }
+    },
+    POJOMATIC {
+      @Override protected boolean equals(Bean bean1, Bean bean2) {
+        return bean1.pmequals(bean2);
+      }
+      @Override protected long hashCode(Bean bean) {
+        return bean.pmHashCode();
+      }
+    }
+,
+    POJOMATIC_FAST {
+      @Override protected boolean equals(Bean bean1, Bean bean2) {
+        return bean1.pmFastequals(bean2);
+      }
+      @Override protected long hashCode(Bean bean) {
+        return bean.pmFastHashCode();
+      }
+    };
+
     public void checkEquals(Bean[] beans) {
       checkEquals(beans, beans.length * beans.length);
     }
@@ -124,31 +145,4 @@ public class BeanSpeedTest {
     protected abstract boolean equals(Bean bean1, Bean bean2);
   }
 
-  public static class StandardChecker extends BaseChecker {
-    @Override protected boolean equals(Bean bean1, Bean bean2) {
-      return bean1.equals(bean2);
-    }
-
-    @Override protected long hashCode(Bean bean) {
-      return bean.hashCode();
-    }
-  }
-
-  public static class PmChecker extends BaseChecker {
-    @Override protected boolean equals(Bean bean1, Bean bean2) {
-      return bean1.pmequals(bean2);
-    }
-    @Override protected long hashCode(Bean bean) {
-      return bean.pmHashCode();
-    }
-  }
-
-  public static class PmFastChecker extends BaseChecker {
-    @Override protected boolean equals(Bean bean1, Bean bean2) {
-      return bean1.pmFastequals(bean2);
-    }
-    @Override protected long hashCode(Bean bean) {
-      return bean.pmFastHashCode();
-    }
-  }
 }
