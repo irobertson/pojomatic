@@ -51,8 +51,7 @@ public class PropertyTypeTest {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
-      int propertyHashCode = deepArray ? type.deepHashCode(value) : type.hashCode(value);
-      checkHashCode(pojoFactory, value, propertyHashCode);
+      checkHashCode(pojoFactory, value, type.deepHashCode(value));
     }
   }
 
@@ -84,8 +83,7 @@ public class PropertyTypeTest {
     PojoFactory pojoFactory = new PojoFactory(
       new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
     for (Object value: type.getSampleValues()) {
-      String expectedPropertyValue = deepArray ? type.deepToString(value) : type.toString(value);
-      checkToString(pojoFactory, value, expectedPropertyValue);
+      checkToString(pojoFactory, value, type.deepToString(value));
     }
   }
 
@@ -138,8 +136,7 @@ public class PropertyTypeTest {
         // equality of different arrays should only be detected if the CanBeArray is present
         Object pojo1 = pojoFactory.create(value1);
         Object pojo2 = pojoFactory.create(cloneArray(value2, true));
-        boolean expectedToBeEqual =
-          (value1 == value2) && ((type.arrayDepth() < 2) || deepArray || noNestedArrays(value1));
+        boolean expectedToBeEqual = (value1 == value2);
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
         if (!canBeArray) {
           // however, even if CanBeArray is not present, identical arrays should still match
@@ -180,7 +177,7 @@ public class PropertyTypeTest {
    * Verify that doEquals honors the @{@link DeepArray} annotation on properties of array type
    * @param type
    * @param canBeArray - this should have no impact
-   * @param deepArray
+   * @param deepArray - likewise - deep arrays should be detected
    */
   @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
   public void testDeepArrayAsArrayEquals(Type type, boolean canBeArray, boolean deepArray) {
@@ -194,7 +191,7 @@ public class PropertyTypeTest {
         //  there are no second level arrays that can be cloned.
         Object pojo1 = pojoFactory.create(value1);
         Object pojo2 = pojoFactory.create(cloneArray(value2, true));
-        boolean expectedToBeEqual = value1 == value2 && (deepArray || (noNestedArrays(value1)));
+        boolean expectedToBeEqual = value1 == value2;
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
       }
     }

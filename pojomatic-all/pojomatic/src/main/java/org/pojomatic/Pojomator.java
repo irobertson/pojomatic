@@ -42,15 +42,16 @@ import org.pojomatic.formatter.EnhancedPropertyFormatter;
  * pair of annotations, @{@link CanBeArray} and @{@link DeepArray}. Specifically:
  * <ul>
  *   <li>
- *     If the declared type of the property (as opposed to the actual type of the value for the property on a
- *     given instance) is of array type, then by default, the Pojomator will treat it as a single-dimensional array, unless
- *     the property is annotated with @{@link DeepArray}, in which case the Pojomator will treat it as a
- *     multi-dimensioanl array.
+ *     If the declared type of the property is a multi-dimensioanl array, then Pojomatic will treat it as such.
  *   </li>
  *   <li>
- *     If the declared type of the property is Object, then pojomatic will treat values as opaque object references,
- *     unless the property is annotated with @{@link CanBeArray} or {@{@link DeepArray}, in which case the Pojomator
- *     will treat it as either a single-dimensional or multiple-dimensional array, depending on whether a
+ *     If the declared type of the property is a single dimensional array, then Pojomatic will treat it as such, unless
+ *     the component type of the array is {@link Object} and the property is annotated with @{@link DeepArray}.
+ *   </li>
+ *   <li>
+ *     If the declared type of the property is {@link Object}, then pojomatic will treat values as opaque object
+ *     references, unless the property is annotated with @{@link CanBeArray} or {@{@link DeepArray}, in which case the
+ *     Pojomator will treat it as either a single-dimensional or multiple-dimensional array, depending on whether a
  *     @{@link DeepArray} annotation is absent or present on the property.
  *   </li>
  * <ul>
@@ -138,7 +139,7 @@ public interface Pojomator<T> {
    * <li>The declared type of the property is either an array type, or is of type {@link Object}, and the property is
    * annotated with @{@link CanBeArray}, and:
    * <ul>
-   *   <li>If the property is annotated with @{@link DeepArray}, then
+   *   <li>If the property is annotated with @{@link DeepArray} or has a declared type of a multi-dimensioanl array, then
    *     {@link Arrays#deepEquals(Object[], Object[]) Arrays.deepEquals(instanceP, otherP)} returns true</li>
    *   <li>If the property is not annotated with @{@link DeepArray}, then the appropriate {@code equals} method of
    *     {@link Arrays} returns true</li>

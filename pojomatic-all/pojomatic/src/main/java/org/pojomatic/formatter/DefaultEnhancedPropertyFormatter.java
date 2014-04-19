@@ -1,6 +1,8 @@
 package org.pojomatic.formatter;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +25,13 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
    */
   @Override
   public void initialize(AnnotatedElement element) {
-    isDeepArray = element.isAnnotationPresent(DeepArray.class);
+    isDeepArray = element.isAnnotationPresent(DeepArray.class)
+      || (element instanceof Field && isDeepArray(((Field) element).getType()))
+      || (element instanceof Method && isDeepArray(((Method) element).getReturnType()));
+  }
+
+  private boolean isDeepArray(Class<?> type) {
+    return type.isArray() && type.getComponentType().isArray();
   }
 
   @Override

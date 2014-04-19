@@ -860,17 +860,22 @@ class PojomatorByteCodeGenerator {
 
   /**
    * Determine if the given propertyElement should be treated as possibly containing a multi-level array.
-   * This will be the case if it is annotated with {@link DeepArray}, and is not of a primitive type or array of
-   * primitive type.
+   * This will be the case if it is:
+   * <ul>
+   *   <li>annotated with {@link DeepArray} and is not of a primitive type or array of primitive type, or</li>
+   *   <li>is of array type with a component type of array type</li>
+   * </ul>
    * @param propertyElement
    * @return {@code true} if the given propertyElement should be treated as possibly containing a multi-level array,
    * or {@code false} otherwise.
    */
   private boolean isDeepArray(PropertyElement propertyElement) {
-    return propertyElement.getElement().isAnnotationPresent(DeepArray.class)
-      && !propertyElement.getPropertyType().isPrimitive()
-      && !(propertyElement.getPropertyType().isArray()
-           && propertyElement.getPropertyType().getComponentType().isPrimitive());
+    Class<?> propertyType = propertyElement.getPropertyType();
+    return
+      (propertyElement.getElement().isAnnotationPresent(DeepArray.class)
+        && !propertyType.isPrimitive()
+        && !(propertyType.isArray() && propertyType.getComponentType().isPrimitive()))
+      || (propertyType.isArray() && propertyType.getComponentType().isArray());
   }
 
   /**
