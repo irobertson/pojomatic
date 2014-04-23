@@ -82,23 +82,6 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   }
 
   /**
-   * Compare two values with a static type a proper sub-type of Object for equality. In particular, it is assumed that
-   * neither value is an array.
-   * @param instanceValue the first value to compare
-   * @param otherValue the second value to compare
-   * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
-   */
-  protected static boolean areNonArrayValuesEqual(Object instanceValue, Object otherValue) {
-    if (instanceValue == otherValue) {
-      return true;
-    }
-    if (instanceValue == null || otherValue == null) {
-      return false;
-    }
-    return instanceValue.equals(otherValue);
-  }
-
-  /**
    * Compare two values of static type Object for equality. If both values are arrays of the same primitive component
    * type, or if both values are arrays of non-primitive component type, then the appropriate {@code equals} method
    * on {@link Arrays} is used to determine equality.

@@ -6,6 +6,7 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.objectweb.asm.ClassWriter;
@@ -372,8 +373,8 @@ class PojomatorByteCodeGenerator {
         else {
           mv.visitMethodInsn(
             INVOKESTATIC,
-            BASE_POJOMATOR_INTERNAL_NAME,
-            "areNonArrayValuesEqual",
+            internalName(Objects.class),
+            "equals",
             methodDesc(boolean.class, Object.class, Object.class));
         }
       }
