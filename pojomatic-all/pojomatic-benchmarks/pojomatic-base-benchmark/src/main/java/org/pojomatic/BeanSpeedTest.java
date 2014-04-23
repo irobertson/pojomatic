@@ -104,10 +104,6 @@ public class BeanSpeedTest {
       }
     };
 
-    public void checkEquals(Bean[] beans) {
-      checkEquals(beans, beans.length * beans.length);
-    }
-
     public void checkEquals(Bean[] beans, int reps) {
       int i = 0, j = 0, rep = 0;
 
@@ -120,10 +116,6 @@ public class BeanSpeedTest {
           i = (i + 1) % beans.length;
         }
       }
-    }
-
-    public void checkHashCode(Bean[] beans) {
-      checkHashCode(beans, beans.length * beans.length);
     }
 
     public void checkHashCode(Bean[] beans, int reps) {
