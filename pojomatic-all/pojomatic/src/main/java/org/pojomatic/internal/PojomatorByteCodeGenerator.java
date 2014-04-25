@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.util.CheckClassAdapter;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Handle;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
+import org.kohsuke.asm4.ClassWriter;
+import org.kohsuke.asm4.util.CheckClassAdapter;
+import org.kohsuke.asm4.ClassVisitor;
+import org.kohsuke.asm4.Handle;
+import org.kohsuke.asm4.Label;
+import org.kohsuke.asm4.MethodVisitor;
+import org.kohsuke.asm4.Type;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.CanBeArray;
@@ -29,7 +29,7 @@ import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
 import org.pojomatic.formatter.EnhancedPojoFormatter;
 import org.pojomatic.formatter.EnhancedPropertyFormatter;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.kohsuke.asm4.Opcodes.*;
 
 class PojomatorByteCodeGenerator {
   @Deprecated
