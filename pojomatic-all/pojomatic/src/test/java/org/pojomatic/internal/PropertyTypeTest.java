@@ -116,42 +116,47 @@ public class PropertyTypeTest {
     for (Type type: allTypes) {
       allValues.addAll(type.getSampleValues());
     }
+    // Ideally, this would be a data provider. However, as there are 90 different possible values, and we're doing a
+    // self-cartesian product, it would add 8100 test cases, and just be a pain. Instead, delegate the real work
+    // to a sub method, so that if we have problems, we can do a drop-to-frame in that method to diagnose.
     for (Object value1: allValues) {
       Object pojo1 = pojoFactory.create(value1);
       for (Object value2: allValues) {
-        Object value2PossibleClone = maybeCloneObject(value2);
-        Object pojo2 = pojoFactory.create(value2PossibleClone);;
-        boolean expectedToBeEqual;
-        if (value1 == value2PossibleClone) {
-          expectedToBeEqual = true;
-        }
-        else if (value1 == null || value2 == null) {
-          expectedToBeEqual = false;
-        }
-        else {
-          Class<?> type1 = value1.getClass();
-          Class<?> type2 = value2.getClass();
-          if (type1.equals(Object[].class) && type2.equals(boolean[][].class) && (canBeArray || deepArray)) {
-            System.out.println("heads up!!!");
-          }
-          if (type1.equals(type2)) {
-            if (! type1.isArray()) {
-              expectedToBeEqual= value1.equals(value2PossibleClone);
-            }else if (canBeArray || deepArray) {
-              expectedToBeEqual = value1 == value2
-                && (deepArray || ! type1.getComponentType().isArray());
-            }
-            else {
-              expectedToBeEqual = false;
-            }
-          }
-          else {
-            expectedToBeEqual = false;
-          }
-        }
-        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
+        testMixedTypesAsObjectEqualsAndDiffWorker(canBeArray, deepArray, pojoFactory, value1, pojo1, value2);
       }
     }
+  }
+
+  private void testMixedTypesAsObjectEqualsAndDiffWorker(boolean canBeArray, boolean deepArray,
+    PojoFactory pojoFactory, Object value1, Object pojo1, Object value2) {
+    Object value2PossibleClone = maybeCloneObject(value2);
+    Object pojo2 = pojoFactory.create(value2PossibleClone);;
+    boolean expectedToBeEqual;
+    if (value1 == value2PossibleClone) {
+      expectedToBeEqual = true;
+    }
+    else if (value1 == null || value2 == null) {
+      expectedToBeEqual = false;
+    }
+    else {
+      Class<?> type1 = value1.getClass();
+      Class<?> type2 = value2.getClass();
+      if (type1.equals(type2)) {
+        if (! type1.isArray()) {
+          expectedToBeEqual= value1.equals(value2PossibleClone);
+        }else if (canBeArray || deepArray) {
+          expectedToBeEqual = value1 == value2
+            && (deepArray || ! type1.getComponentType().isArray() || ! containsNonNullElements(value1));
+        }
+        else {
+          expectedToBeEqual = false;
+        }
+      }
+      else {
+        expectedToBeEqual = false;
+      }
+    }
+    checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2PossibleClone, pojo1, pojo2);
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
@@ -370,5 +375,14 @@ public class PropertyTypeTest {
       Array.set(clone, i, element);
     }
     return clone;
+  }
+
+  private boolean containsNonNullElements(Object array) {
+    for (int i = 0; i < Array.getLength(array); i++) {
+      if (Array.get(array, i) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 }
