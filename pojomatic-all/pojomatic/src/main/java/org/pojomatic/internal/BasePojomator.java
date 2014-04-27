@@ -82,9 +82,8 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   }
 
   /**
-   * Compare two values of static type Object for equality. If both values are arrays of the same primitive component
-   * type, or if both values are arrays of non-primitive component type, then the appropriate {@code equals} method
-   * on {@link Arrays} is used to determine equality.
+   * Compare two values of static type Object for equality. If both values are arrays, then they will be considered
+   * equal iff they have the same class, and (recursively) an equal set of elements.
    * @param instanceValue the first value to compare
    * @param otherValue the second value to compare
    * @param deepArray whether to do a deep array check for Object arrays
@@ -104,79 +103,57 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
         }
       }
       else {
-        if (!otherValue.getClass().isArray()) {
+        if (!instanceValue.getClass().equals(otherValue.getClass())) {
           return false;
         }
         final Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
-        if (!instanceComponentClass.isPrimitive()) {
-          if (otherValue.getClass().getComponentType().isPrimitive()) {
-            return false;
-          }
-          if (deepArray) {
-            if (!Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue)) {
-              return false;
-            }
-          }
-          else {
-            if (!Arrays.equals((Object[]) instanceValue, (Object[]) otherValue)) {
-              return false;
-            }
-          }
-        }
-        else { // instanceComponentClass is primitive
-          if (otherValue.getClass().getComponentType() != instanceComponentClass) {
-            return false;
-          }
-
-          if (Boolean.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((boolean[]) instanceValue, (boolean[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Byte.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((byte[]) instanceValue, (byte[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Character.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((char[]) instanceValue, (char[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Short.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((short[]) instanceValue, (short[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Integer.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((int[]) instanceValue, (int[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Long.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((long[]) instanceValue, (long[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Float.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((float[]) instanceValue, (float[]) otherValue)) {
-              return false;
-            }
-          }
-          else if (Double.TYPE == instanceComponentClass) {
-            if (!Arrays.equals((double[]) instanceValue, (double[]) otherValue)) {
-              return false;
-            }
-          }
-          else {
-            // should NEVER happen
-            throw new IllegalStateException(
-              "unknown primitive type " + instanceComponentClass.getName());
-          }
-        }
+        return compareArrays(instanceValue, otherValue, deepArray, instanceComponentClass);
       }
     }
     return true;
+  }
+
+  private static boolean compareArrays(Object instanceValue, Object otherValue,
+    boolean deepArray, final Class<?> instanceComponentClass) {
+    if (!instanceComponentClass.isPrimitive()) {
+      if (deepArray) {
+        return Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue);
+      }
+      else {
+        return Arrays.equals((Object[]) instanceValue, (Object[]) otherValue);
+      }
+    }
+    else { // instanceComponentClass is primitive
+      if (Boolean.TYPE == instanceComponentClass) {
+        return Arrays.equals((boolean[]) instanceValue, (boolean[]) otherValue);
+      }
+      else if (Byte.TYPE == instanceComponentClass) {
+        return Arrays.equals((byte[]) instanceValue, (byte[]) otherValue);
+      }
+      else if (Character.TYPE == instanceComponentClass) {
+        return Arrays.equals((char[]) instanceValue, (char[]) otherValue);
+      }
+      else if (Short.TYPE == instanceComponentClass) {
+        return Arrays.equals((short[]) instanceValue, (short[]) otherValue);
+      }
+      else if (Integer.TYPE == instanceComponentClass) {
+        return Arrays.equals((int[]) instanceValue, (int[]) otherValue);
+      }
+      else if (Long.TYPE == instanceComponentClass) {
+        return Arrays.equals((long[]) instanceValue, (long[]) otherValue);
+      }
+      else if (Float.TYPE == instanceComponentClass) {
+        return Arrays.equals((float[]) instanceValue, (float[]) otherValue);
+      }
+      else if (Double.TYPE == instanceComponentClass) {
+        return Arrays.equals((double[]) instanceValue, (double[]) otherValue);
+      }
+      else {
+        // should NEVER happen
+        throw new IllegalStateException(
+          "unknown primitive type " + instanceComponentClass.getName());
+      }
+    }
   }
 
 
