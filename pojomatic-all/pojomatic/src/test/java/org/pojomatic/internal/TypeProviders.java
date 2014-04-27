@@ -29,6 +29,14 @@ public class TypeProviders {
     return annotatedTypes(doubleArrays());
   }
 
+  @SuppressWarnings("unchecked")
+  @DataProvider(name = "annotations")
+  public static Object[][] annotationCombinations() {
+    return FluentIterable.from(Sets.<Object>cartesianProduct(booleans(), booleans()))
+      .transform(ListToArray.INSTANCE)
+      .toArray(Object[].class);
+  }
+
   @SafeVarargs
   @SuppressWarnings("unchecked")
   private static Object[][] annotatedTypes(Iterable<Type>... types) {
@@ -39,6 +47,14 @@ public class TypeProviders {
         booleans()))
       .transform(ListToArray.INSTANCE)
       .toArray(Object[].class);
+  }
+
+  static Iterable<Type> simpleArrays() {
+    return Iterables.transform(simpleTypes(), Arrayify.INSTANCE);
+  }
+
+  static Iterable<Type> doubleArrays() {
+    return Iterables.transform(simpleArrays(), Arrayify.INSTANCE);
   }
 
   private static enum Arrayify implements Function<Type, Type> {
@@ -59,13 +75,5 @@ public class TypeProviders {
 
   private static Iterable<Type> simpleTypes() {
     return Arrays.<Type>asList(BaseType.values());
-  }
-
-  private static Iterable<Type> simpleArrays() {
-    return Iterables.transform(simpleTypes(), Arrayify.INSTANCE);
-  }
-
-  private static Iterable<Type> doubleArrays() {
-    return Iterables.transform(simpleArrays(), Arrayify.INSTANCE);
   }
 }

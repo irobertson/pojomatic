@@ -21,6 +21,8 @@ import org.pojomatic.internal.factory.PojoFactory;
 import org.pojomatic.internal.factory.PropertyDescriptor;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.Iterables;
+
 public class PropertyTypeTest {
 
   @Test(dataProvider = "types", dataProviderClass = TypeProviders.class)
@@ -101,6 +103,54 @@ public class PropertyTypeTest {
       assertFalse(
         pojoFactory.pojomator().doEquals(pojo1, null),
         "type: " + type.getClazz() + ", value1: " + value1);
+    }
+  }
+
+  @Test(dataProvider = "annotations", dataProviderClass = TypeProviders.class)
+  public void testMixedTypesAsObjectEqualsAndDiff(boolean canBeArray, boolean deepArray) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
+    Iterable<Type> allTypes =
+      Iterables.concat(Arrays.asList(BaseType.OBJECT), TypeProviders.simpleArrays(), TypeProviders.doubleArrays());
+    List<Object> allValues = new ArrayList<>();
+    for (Type type: allTypes) {
+      allValues.addAll(type.getSampleValues());
+    }
+    for (Object value1: allValues) {
+      Object pojo1 = pojoFactory.create(value1);
+      for (Object value2: allValues) {
+        Object value2PossibleClone = maybeCloneObject(value2);
+        Object pojo2 = pojoFactory.create(value2PossibleClone);;
+        boolean expectedToBeEqual;
+        if (value1 == value2PossibleClone) {
+          expectedToBeEqual = true;
+        }
+        else if (value1 == null || value2 == null) {
+          expectedToBeEqual = false;
+        }
+        else {
+          Class<?> type1 = value1.getClass();
+          Class<?> type2 = value2.getClass();
+          if (type1.equals(Object[].class) && type2.equals(boolean[][].class) && (canBeArray || deepArray)) {
+            System.out.println("heads up!!!");
+          }
+          if (type1.equals(type2)) {
+            if (! type1.isArray()) {
+              expectedToBeEqual= value1.equals(value2PossibleClone);
+            }else if (canBeArray || deepArray) {
+              expectedToBeEqual = value1 == value2
+                && (deepArray || ! type1.getComponentType().isArray());
+            }
+            else {
+              expectedToBeEqual = false;
+            }
+          }
+          else {
+            expectedToBeEqual = false;
+          }
+        }
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
+      }
     }
   }
 
@@ -224,7 +274,8 @@ public class PropertyTypeTest {
 
   private void checkEqualsAndDiff(boolean expectedToBeEqual, PojoFactory pojoFactory,
     Object value1, Object value2, Object pojo1, Object pojo2) {
-    assertEquals((Object) pojoFactory.pojomator().doEquals(pojo1, pojo2), (Object) expectedToBeEqual, label(value1, value2));
+    if (pojoFactory.pojomator().doEquals(pojo1, pojo2) != expectedToBeEqual)
+      assertEquals(pojoFactory.pojomator().doEquals(pojo1, pojo2), expectedToBeEqual, label(value1, value2));
     assertEquals(pojoFactory.pojomator().doDiff(pojo1, pojo2), expectedDifferences(expectedToBeEqual, value1, value2), label(value1, value2));
   }
 
@@ -260,13 +311,21 @@ public class PropertyTypeTest {
   }
 
   private String label(Object value1, Object value2) {
-    return "value1: " + possibleArrayToList(value1) + ", value2: " + possibleArrayToList(value2);
+    return "value1: " + labelString(value1) + ", value2: " + labelString(value2);
   }
 
   private String label(Object value) {
-    return "value: " + possibleArrayToList(value);
+    return "value: " + labelString(value);
   }
 
+  private String labelString(Object value) {
+    if (value == null) {
+      return "null";
+    }
+    else {
+      return possibleArrayToList(value) + "(" + value.getClass().getName() + ")";
+    }
+  }
   /**
    * Convert arrays to lists, leaving other types alone.
    * @param value
@@ -281,6 +340,21 @@ public class PropertyTypeTest {
       result.add(possibleArrayToList(Array.get(value, i)));
     }
     return result;
+  }
+
+  private Object maybeCloneObject(Object object) {
+    if (object == null) {
+      return null;
+    }
+    if (object.getClass().isArray()) {
+      return cloneArray(object, true);
+    }
+    else if (object instanceof String) {
+      return new String((String) object);
+    }
+    else {
+      return object;
+    }
   }
 
   private Object cloneArray(Object array, boolean deep) {
