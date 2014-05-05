@@ -1,6 +1,6 @@
 package org.pojomatic.internal.factory;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.kohsuke.asm4.Opcodes.*;
 
 public enum Access {
   PRIVATE(ACC_PRIVATE),
