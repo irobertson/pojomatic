@@ -17,7 +17,6 @@
     <dependency>
       <groupId>org.pojomatic</groupId>
       <artifactId>pojomatic</artifactId>
-      <version>trunk-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>
@@ -39,7 +38,6 @@
           <arguments>
             <argument>--run-name=pojomatic-2</argument>
             <argument>--vm=jdk7,jdk8</argument>
-            <argument>--verbose</argument>
           </arguments>
         </configuration>
       </plugin>
