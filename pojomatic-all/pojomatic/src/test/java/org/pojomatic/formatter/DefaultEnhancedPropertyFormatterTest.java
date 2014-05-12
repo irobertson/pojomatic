@@ -9,21 +9,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.pojomatic.annotations.DeepArray;
+import org.pojomatic.annotations.SkipArrayCheck;
 import org.pojomatic.internal.Type;
 import org.pojomatic.internal.TypeProviders;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class DefaultEnhancedPropertyFormatterTest {
-  private Field unAnnotated;
 
-  @DeepArray
-  private Field deepArrayAnnotated;
+  @SuppressWarnings("unused") // used to initialize the formatter.
+  private Object unAnnotated;
+
+  @SkipArrayCheck
+  private Object skipArrayCheckAnnotated;
+
+  private Field unAnnotatedField, skipArrayCheckAnnotatedField;
 
   @BeforeClass public void setUp() throws Exception {
-    unAnnotated = getClass().getDeclaredField("unAnnotated");
-    deepArrayAnnotated = getClass().getDeclaredField("deepArrayAnnotated");
+    unAnnotatedField = getClass().getDeclaredField("unAnnotated");
+    skipArrayCheckAnnotatedField = getClass().getDeclaredField("skipArrayCheckAnnotated");
   }
 
   @Test(dataProvider = "types", dataProviderClass = TypeProviders.class)
@@ -42,24 +46,30 @@ public class DefaultEnhancedPropertyFormatterTest {
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsObjectToString(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsObjectToString(Type type, boolean skipArrayCheck) {
     DefaultEnhancedPropertyFormatter simpleFormatter = new DefaultEnhancedPropertyFormatter();
     for (Object value: type.getSampleValues()) {
-      StringBuilder builder = new StringBuilder();
-      simpleFormatter.initialize(deepArray ? deepArrayAnnotated : unAnnotated);
-      if (canBeArray) {
-        simpleFormatter.appendFormattedPossibleArray(builder, value);
-      }
-      else {
-        simpleFormatter.appendFormatted(builder, value);
-      }
-      assertEquals(
-        builder.toString(),
-        (canBeArray
-          ? ( deepArray ? type.deepToString(value) : type.toString(value) )
-          : Objects.toString(value)),
-        "value: " + possibleArrayToList(value));
+      testArrayAsObjectToStringForValue(type, skipArrayCheck, simpleFormatter,
+        value);
     }
+  }
+
+  private void testArrayAsObjectToStringForValue(Type type,
+    boolean skipArrayCheck, DefaultEnhancedPropertyFormatter simpleFormatter,
+    Object value) {
+    StringBuilder builder = new StringBuilder();
+    simpleFormatter.initialize(skipArrayCheck ? skipArrayCheckAnnotatedField : unAnnotatedField);
+    if (skipArrayCheck) {
+      simpleFormatter.appendFormatted(builder, value);
+    }
+    else {
+      simpleFormatter.appendFormattedPossibleArray(builder, value);
+    }
+    if (! builder.toString().equals(skipArrayCheck ? Objects.toString(value) : type.deepToString(value)))
+    assertEquals(
+      builder.toString(),
+      skipArrayCheck ? Objects.toString(value) : type.deepToString(value),
+      "value: " + possibleArrayToList(value));
   }
 
 

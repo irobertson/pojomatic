@@ -86,10 +86,9 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * equal iff they have the same class, and (recursively) an equal set of elements.
    * @param instanceValue the first value to compare
    * @param otherValue the second value to compare
-   * @param deepArray whether to do a deep array check for Object arrays
    * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
    */
-  protected static boolean areObjectValuesEqual(Object instanceValue, Object otherValue, boolean deepArray) {
+  protected static boolean areObjectValuesEqual(Object instanceValue, Object otherValue) {
     if (instanceValue == otherValue) {
       return true;
     }
@@ -103,35 +102,43 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
         }
       }
       else {
-        if (!instanceValue.getClass().equals(otherValue.getClass())) {
-          return false;
-        }
-        final Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
-        return compareArrays(instanceValue, otherValue, deepArray, instanceComponentClass);
+        return compareArrays(instanceValue, otherValue);
       }
     }
     return true;
   }
 
-  private static boolean compareArrays(Object instanceValue, Object otherValue,
-    boolean deepArray, final Class<?> instanceComponentClass) {
+  /**
+   * Compare two values of array type for equality. They will be considered
+   * equal iff they have the same class, and (recursively) an equal set of elements.
+   * @param instanceValue the first value to compare
+   * @param otherValue the second value to compare
+   * @return true if {@code instanceValue} and {@code otherValue} are equal to each other.
+   */
+  protected static boolean compareArrays(Object instanceValue, Object otherValue) {
+    if (instanceValue == otherValue) {
+      return true;
+    }
+    if (instanceValue == null || otherValue == null) {
+      return false;
+    }
+    if (!instanceValue.getClass().equals(otherValue.getClass())) {
+      return false;
+    }
+    final Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
+
     if (!instanceComponentClass.isPrimitive()) {
-      if (deepArray) {
-        Object[] instanceArray = (Object[]) instanceValue;
-        Object[] otherArray = (Object[]) otherValue;
-        if (instanceArray.length != otherArray.length) {
+      Object[] instanceArray = (Object[]) instanceValue;
+      Object[] otherArray = (Object[]) otherValue;
+      if (instanceArray.length != otherArray.length) {
+        return false;
+      }
+      for (int i = 0; i < instanceArray.length; i++) {
+        if (!areObjectValuesEqual(instanceArray[i], otherArray[i])) {
           return false;
         }
-        for (int i = 0; i < instanceArray.length; i++) {
-          if (!areObjectValuesEqual(instanceArray[i], otherArray[i], deepArray)) {
-            return false;
-          }
-        }
-        return true;
       }
-      else {
-        return Arrays.equals((Object[]) instanceValue, (Object[]) otherValue);
-      }
+      return true;
     }
     else { // instanceComponentClass is primitive
       if (Boolean.TYPE == instanceComponentClass) {

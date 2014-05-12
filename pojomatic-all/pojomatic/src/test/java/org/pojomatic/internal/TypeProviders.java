@@ -32,7 +32,7 @@ public class TypeProviders {
   @SuppressWarnings("unchecked")
   @DataProvider(name = "annotations")
   public static Object[][] annotationCombinations() {
-    return FluentIterable.from(Sets.<Object>cartesianProduct(booleans(), booleans()))
+    return FluentIterable.from(Sets.<Object>cartesianProduct(booleans()))
       .transform(ListToArray.INSTANCE)
       .toArray(Object[].class);
   }
@@ -41,10 +41,7 @@ public class TypeProviders {
   @SuppressWarnings("unchecked")
   private static Object[][] annotatedTypes(Iterable<Type>... types) {
     return FluentIterable.from(
-      Sets.cartesianProduct(
-        Sets.newLinkedHashSet(Iterables.concat(types)),
-        booleans(),
-        booleans()))
+      Sets.cartesianProduct(Sets.newLinkedHashSet(Iterables.concat(types)), booleans()))
       .transform(ListToArray.INSTANCE)
       .toArray(Object[].class);
   }

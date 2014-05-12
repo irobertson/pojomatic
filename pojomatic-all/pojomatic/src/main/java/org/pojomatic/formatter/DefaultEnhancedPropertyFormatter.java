@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.pojomatic.annotations.DeepArray;
+import org.pojomatic.annotations.SkipArrayCheck;
 
 /**
  * The default property formatter used by Pojomatic.  While the particulars of the formatting
@@ -15,7 +15,7 @@ import org.pojomatic.annotations.DeepArray;
  * representation of Java arrays.
  */
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
-  private boolean isDeepArray;
+  private boolean checkForDeepArray;
 
   /**
    * {@inheritDoc}
@@ -25,13 +25,31 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
    */
   @Override
   public void initialize(AnnotatedElement element) {
-    isDeepArray = element.isAnnotationPresent(DeepArray.class)
-      || (element instanceof Field && isDeepArray(((Field) element).getType()))
-      || (element instanceof Method && isDeepArray(((Method) element).getReturnType()));
+    Class<?> type = getType(element);
+    checkForDeepArray = isDeepArray(element, type);
   }
 
-  private boolean isDeepArray(Class<?> type) {
-    return type.isArray() && type.getComponentType().isArray();
+  private boolean isDeepArray(AnnotatedElement element, Class<?> type) {
+    if (type.equals(Object.class)) {
+      return ! element.isAnnotationPresent(SkipArrayCheck.class);
+    }
+    else if (type.isArray()) {
+      Class<?> componentType = type.getComponentType();
+      return componentType.equals(Object.class) || componentType.isArray();
+    }
+    else {
+      return false;
+    }
+  }
+
+  private static Class<?> getType(AnnotatedElement element) {
+    if (element instanceof Field) {
+      return ((Field) element).getType();
+    }
+    else if (element instanceof Method) {
+      return ((Method) element).getReturnType();
+    }
+    else throw new IllegalArgumentException("Annotated element has type " + element.getClass().getName());
   }
 
   @Override
@@ -93,7 +111,7 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
 
   @Override
   public void appendFormatted(StringBuilder builder, Object[] array) {
-    if (isDeepArray) {
+    if (checkForDeepArray) {
       appendFormattedDeep(builder, array, new HashSet<>());
     }
     else {

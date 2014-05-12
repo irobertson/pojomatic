@@ -5,8 +5,8 @@ import java.util.Random;
 
 import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
-import org.pojomatic.annotations.CanBeArray;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.annotations.SkipArrayCheck;
 
 import com.google.caliper.BeforeExperiment;
 import com.google.caliper.Benchmark;
@@ -32,7 +32,6 @@ public class ArrayInObject {
 
   public static class ArrayPossible implements ObjectBean {
     @Property
-    @CanBeArray
     Object x;
 
     @Override
@@ -43,6 +42,7 @@ public class ArrayInObject {
 
   public static class ArrayNotPossible implements ObjectBean {
     @Property
+    @SkipArrayCheck
     Object x;
 
     @Override

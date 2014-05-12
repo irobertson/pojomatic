@@ -9,8 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.pojomatic.annotations.CanBeArray;
-import org.pojomatic.annotations.DeepArray;
+import org.pojomatic.annotations.SkipArrayCheck;
 import org.pojomatic.diff.Difference;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
@@ -34,24 +33,22 @@ public class PropertyTypeTest {
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsObjectHashCode(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsObjectHashCode(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(skipArrayCheck))));
     for (Object value: type.getSampleValues()) {
-      int propertyHashCode = deepArray
-        ? type.deepHashCode(value)
-        : canBeArray
-          ? type.hashCode(value)
-          : Objects.hashCode(value);
+      int propertyHashCode = skipArrayCheck
+        ? Objects.hashCode(value)
+        : type.deepHashCode(value);
 
       checkHashCode(pojoFactory, value, propertyHashCode);
     }
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsArrayHashCode(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsArrayHashCode(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(skipArrayCheck))));
     for (Object value: type.getSampleValues()) {
       checkHashCode(pojoFactory, value, type.deepHashCode(value));
     }
@@ -66,24 +63,19 @@ public class PropertyTypeTest {
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsObjectToString(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsObjectToString(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(skipArrayCheck))));
     for (Object value: type.getSampleValues()) {
-      String expectedPropertyValue =
-        deepArray
-          ? type.deepToString(value)
-          : canBeArray
-            ? type.toString(value)
-            : Objects.toString(value);
+      String expectedPropertyValue = skipArrayCheck ? Objects.toString(value) : type.deepToString(value);
       checkToString(pojoFactory, value, expectedPropertyValue);
     }
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsArrayToString(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsArrayToString(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(skipArrayCheck))));
     for (Object value: type.getSampleValues()) {
       checkToString(pojoFactory, value, type.deepToString(value));
     }
@@ -107,9 +99,9 @@ public class PropertyTypeTest {
   }
 
   @Test(dataProvider = "annotations", dataProviderClass = TypeProviders.class)
-  public void testMixedTypesAsObjectEqualsAndDiff(boolean canBeArray, boolean deepArray) {
+  public void testMixedTypesAsObjectEqualsAndDiff(boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(skipArrayCheck))));
     Iterable<Type> allTypes =
       Iterables.concat(Arrays.asList(BaseType.OBJECT), TypeProviders.simpleArrays(), TypeProviders.doubleArrays());
     List<Object> allValues = new ArrayList<>();
@@ -122,12 +114,12 @@ public class PropertyTypeTest {
     for (Object value1: allValues) {
       Object pojo1 = pojoFactory.create(value1);
       for (Object value2: allValues) {
-        testMixedTypesAsObjectEqualsAndDiffWorker(canBeArray, deepArray, pojoFactory, value1, pojo1, value2);
+        testMixedTypesAsObjectEqualsAndDiffWorker(skipArrayCheck, pojoFactory, value1, pojo1, value2);
       }
     }
   }
 
-  private void testMixedTypesAsObjectEqualsAndDiffWorker(boolean canBeArray, boolean deepArray,
+  private void testMixedTypesAsObjectEqualsAndDiffWorker(boolean skipArrayCheck,
     PojoFactory pojoFactory, Object value1, Object pojo1, Object value2) {
     Object value2PossibleClone = maybeCloneObject(value2);
     Object pojo2 = pojoFactory.create(value2PossibleClone);;
@@ -143,10 +135,9 @@ public class PropertyTypeTest {
       Class<?> type2 = value2.getClass();
       if (type1.equals(type2)) {
         if (! type1.isArray()) {
-          expectedToBeEqual= value1.equals(value2PossibleClone);
-        }else if (canBeArray || deepArray) {
-          expectedToBeEqual = value1 == value2
-            && (deepArray || ! type1.getComponentType().isArray() || ! containsNonNullElements(value1));
+          expectedToBeEqual = value1.equals(value2PossibleClone);
+        }else if (!skipArrayCheck) {
+          expectedToBeEqual = value1 == value2;  // FIXME - is this right?
         }
         else {
           expectedToBeEqual = false;
@@ -160,19 +151,19 @@ public class PropertyTypeTest {
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsObjectEqualsAndDiff(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsObjectEqualsAndDiff(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(skipArrayCheck))));
     for (Object value1: type.getSampleValues()) {
       Object pojo1 = pojoFactory.create(value1);
       for (Object value2: type.getSampleValues()) {
-        // Equality of different arrays should only be detected if the CanBeArray or DeepArray is present.
-        // Note that in this test, we only clone the inner array if deepArray is true.
-        boolean expectedToBeEqual = (value1 == value2) && (value1 == null || canBeArray || deepArray);
-        Object pojo2 = pojoFactory.create(cloneArray(value2, deepArray));
+        // Equality of different arrays should only be detected if SkipArrayCheck is not present
+        // Note that in this test, we only clone the inner array if skipArrayCheck is false.
+        boolean expectedToBeEqual = (value1 == value2) && (value1 == null || (!skipArrayCheck));
+        Object pojo2 = pojoFactory.create(cloneArray(value2, !skipArrayCheck));
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
-        if (!canBeArray) {
-          // however, even if CanBeArray is not present, identical arrays should still match
+        if (skipArrayCheck) {
+          // however, even if SkipArrayCheck is mpresent, identical arrays should still match
           checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
         }
       }
@@ -183,20 +174,15 @@ public class PropertyTypeTest {
   }
 
   @Test(dataProvider = "arrayTypes", dataProviderClass = TypeProviders.class)
-  public void testArrayAsArrayEqualsAndDiff(Type type, boolean canBeArray, boolean deepArray) {
+  public void testArrayAsArrayEqualsAndDiff(Type type, boolean skipArrayCheck) { // skipArrayCheck shouldn't matter here
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(skipArrayCheck))));
     for (Object value1: type.getSampleValues()) {
       for (Object value2: type.getSampleValues()) {
-        // equality of different arrays should only be detected if the CanBeArray is present
         Object pojo1 = pojoFactory.create(value1);
         Object pojo2 = pojoFactory.create(cloneArray(value2, true));
         boolean expectedToBeEqual = (value1 == value2);
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
-        if (!canBeArray) {
-          // however, even if CanBeArray is not present, identical arrays should still match
-          checkEqualsAndDiff(value1 == value2, pojoFactory, value1, value2, pojo1, pojoFactory.create(value2));
-        }
       }
     }
   }
@@ -208,19 +194,15 @@ public class PropertyTypeTest {
    * @param deepArray
    */
   @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
-  public void testDeepArrayAsObjectEqualsAndDiff(Type type, boolean canBeArray, boolean deepArray) {
+  public void testDeepArrayAsObjectEqualsAndDiff(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(Object.class, extraAnnotations(skipArrayCheck))));
     for (Object value1: type.getSampleValues()) {
       for (Object value2: type.getSampleValues()) {
-        // equality of different arrays should only be detected if the CanBeArray is present
+        // equality of different arrays should only be detected if SkipArrayCheck is not present
         // If value1 != value 2, then doEquals should always return false.
-        // If value1 == value2, but canBeArray is false, then the only way doEquals can return true is if value1 == null
-        // If value1 == value2 != null and canBeArray is true, then without deepArray, they can only be equal if
-        //  there are no second level arrays that can be cloned.
-        // The presence of @DeepArray on a field of type @Object should imply @CanBeArray
-        boolean expectedToBeEqual =
-          (value1 == value2) && (value1 == null || canBeArray || deepArray) && (deepArray || (noNestedArrays(value1)));
+        // If value1 == value2, but skipArrayCheck is false, then the only way doEquals can return true is if value1 == null
+        boolean expectedToBeEqual = (value1 == value2) && (value1 == null || ! skipArrayCheck);
         Object pojo1 = pojoFactory.create(value1);
         Object pojo2 = pojoFactory.create(cloneArray(value2, true));
         checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
@@ -235,9 +217,9 @@ public class PropertyTypeTest {
    * @param deepArray - likewise - deep arrays should be detected
    */
   @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
-  public void testDeepArrayAsArrayEquals(Type type, boolean canBeArray, boolean deepArray) {
+  public void testDeepArrayAsArrayEquals(Type type, boolean skipArrayCheck) {
     PojoFactory pojoFactory = new PojoFactory(
-      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(canBeArray, deepArray))));
+      new PojoDescriptor(new PropertyDescriptor(type.getClazz(), extraAnnotations(skipArrayCheck))));
     for (Object value1: type.getSampleValues()) {
       for (Object value2: type.getSampleValues()) {
         // If value1 != value 2, then doEquals should always return false.
@@ -252,14 +234,60 @@ public class PropertyTypeTest {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private Class<? extends Annotation>[] extraAnnotations(boolean canBeArray, boolean deepArray) {
-    List<Class<? extends Annotation>> classes = new ArrayList<>();
-    if (canBeArray) {
-      classes.add(CanBeArray.class);
+  @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
+  public void testDeepArraysAsShallowArraysEqualsAndDiff(Type type, boolean skipArrayCheck) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(Object[].class, extraAnnotations(skipArrayCheck))));
+    for (Object value1: type.getSampleValues()) {
+      for (Object value2: type.getSampleValues()) {
+        // If value1 != value 2, then doEquals should always return false.
+        // If value1 == value2, but canBeArray is false, then the only way doEquals can return true is if value1 == null
+        // If value1 == value2 != null and canBeArray is true, then without deepArray, they can only be equal if
+        //  there are no second level arrays that can be cloned.
+        Object pojo1 = pojoFactory.create(value1);
+        Object pojo2 = pojoFactory.create(cloneArray(value2, true));
+        boolean expectedToBeEqual = value1 == value2;
+        checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2, pojo1, pojo2);
+      }
     }
-    if (deepArray) {
-      classes.add(DeepArray.class);
+  }
+
+  @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
+  public void testDeepArraysAsShallowArraysToString(Type type, boolean skipArrayCheck) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(Object[].class, extraAnnotations(skipArrayCheck))));
+    for (Object value: type.getSampleValues()) {
+      checkToString(pojoFactory, value, type.deepToString(value));
+    }
+  }
+
+  @Test(dataProvider = "annotations", dataProviderClass = TypeProviders.class)
+  public void testMixedTypesAsObjectArrayEqualsAndDiff(boolean skipArrayCheck) {
+    PojoFactory pojoFactory = new PojoFactory(
+      new PojoDescriptor(new PropertyDescriptor(Object[].class, extraAnnotations(skipArrayCheck))));
+    Iterable<Type> allTypes =
+      Iterables.concat(Arrays.asList(new ArrayType(BaseType.OBJECT)), TypeProviders.doubleArrays());
+    List<Object> allValues = new ArrayList<>();
+    for (Type type: allTypes) {
+      allValues.addAll(type.getSampleValues());
+    }
+    // Ideally, this would be a data provider. However, as there are 90 different possible values, and we're doing a
+    // self-cartesian product, it would add 8100 test cases, and just be a pain. Instead, delegate the real work
+    // to a sub method, so that if we have problems, we can do a drop-to-frame in that method to diagnose.
+    for (Object value1: allValues) {
+      Object pojo1 = pojoFactory.create(value1);
+      for (Object value2: allValues) {
+        testMixedTypesAsObjectEqualsAndDiffWorker(false, pojoFactory, value1, pojo1, value2);
+      }
+    }
+  }
+
+
+  @SuppressWarnings("unchecked")
+  private Class<? extends Annotation>[] extraAnnotations(boolean skipArrayCheck) {
+    List<Class<? extends Annotation>> classes = new ArrayList<>();
+    if (skipArrayCheck) {
+      classes.add(SkipArrayCheck.class);
     }
     return classes.toArray(new Class[0]);
   }
@@ -296,23 +324,6 @@ public class PropertyTypeTest {
     return expectedToBeEqual
       ? NoDifferences.getInstance()
       : new PropertyDifferences(Arrays.<Difference>asList(new ValueDifference("x", value1, value2)));
-  }
-
-  /**
-   * Determine if the passed array has no nested arrays
-   * @param array an object of array type, where elements are presumed to be either null, or themselves arrays.
-   * @return {@code true} if {@code array} has no nested elements.
-   */
-  private boolean noNestedArrays(Object array) {
-    if (array == null) {
-      return true;
-    }
-    for (Object o: (Object[]) array) {
-      if (o != null && o.getClass().isArray()) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private String label(Object value1, Object value2) {
@@ -375,14 +386,5 @@ public class PropertyTypeTest {
       Array.set(clone, i, element);
     }
     return clone;
-  }
-
-  private boolean containsNonNullElements(Object array) {
-    for (int i = 0; i < Array.getLength(array); i++) {
-      if (Array.get(array, i) != null) {
-        return true;
-      }
-    }
-    return false;
   }
 }

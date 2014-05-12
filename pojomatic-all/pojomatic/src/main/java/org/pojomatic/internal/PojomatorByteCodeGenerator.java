@@ -18,9 +18,8 @@ import org.kohsuke.asm4.MethodVisitor;
 import org.kohsuke.asm4.Type;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
-import org.pojomatic.annotations.CanBeArray;
-import org.pojomatic.annotations.DeepArray;
 import org.pojomatic.annotations.PojoFormat;
+import org.pojomatic.annotations.SkipArrayCheck;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.diff.PropertyDifferences;
@@ -64,13 +63,8 @@ class PojomatorByteCodeGenerator {
      */
     boolean wideProperty;
 
-    /**
-     * At least one call has been made to {@link BasePojomator#areObjectValuesEqual(Object, Object, boolean)}
-     */
-    boolean callAreObjectValuesEqual;
-
     int adjustments(int widePropertyWeight, int callAreObjectValuesEqualWeight) {
-      return (wideProperty ? widePropertyWeight : 0) + (callAreObjectValuesEqual ? callAreObjectValuesEqualWeight : 0);
+      return (wideProperty ? widePropertyWeight : 0);
     }
   }
 
@@ -351,24 +345,30 @@ class PojomatorByteCodeGenerator {
     }
     else {
       if(propertyType.isArray()) {
-        // Compare array values element by element
-        Class<? extends Object> arrayPropertyType =
-          propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class;
-        mv.visitMethodInsn(
-          INVOKESTATIC,
-          internalName(Arrays.class),
-          isDeepArray(propertyElement) ? "deepEquals" : "equals",
-          methodDesc(boolean.class, arrayPropertyType, arrayPropertyType));
+        Class<?> componentType = propertyType.getComponentType();
+        if (componentType.isPrimitive()) {
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            internalName(Arrays.class),
+            "equals",
+            methodDesc(boolean.class, propertyType, propertyType));
+        }
+        else {
+          mv.visitMethodInsn(
+            INVOKESTATIC,
+            BASE_POJOMATOR_INTERNAL_NAME,
+            "compareArrays",
+            methodDesc(boolean.class, Object.class, Object.class));
+        }
       }
       else {
-        if (canBeArray(propertyElement)) {
-          stackAdjustments.callAreObjectValuesEqual = true;
-          mv.visitInsn(isDeepArray(propertyElement) ? ICONST_1 : ICONST_0);
+        if (propertyType.equals(Object.class)
+            && ! propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class)) {
           mv.visitMethodInsn(
             INVOKESTATIC,
             BASE_POJOMATOR_INTERNAL_NAME,
             "areObjectValuesEqual",
-            methodDesc(boolean.class, Object.class, Object.class, boolean.class));
+            methodDesc(boolean.class, Object.class, Object.class));
         }
         else {
           mv.visitMethodInsn(
@@ -498,7 +498,7 @@ class PojomatorByteCodeGenerator {
           mv.visitLabel(isArray);
           mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] { INTEGER, Type.getInternalName(propertyType) });
 
-          mv.visitInsn(isDeepArray(propertyElement) ? ICONST_1 : ICONST_0);
+          mv.visitInsn(ICONST_1);
           mv.visitMethodInsn(
             INVOKESTATIC,
             BASE_POJOMATOR_INTERNAL_NAME,
@@ -863,8 +863,9 @@ class PojomatorByteCodeGenerator {
    * Determine if the given propertyElement should be treated as possibly containing a multi-level array.
    * This will be the case if it is:
    * <ul>
-   *   <li>annotated with {@link DeepArray} and is not of a primitive type or array of primitive type, or</li>
-   *   <li>is of array type with a component type of array type</li>
+   *   <li>of type Object and is not annotated with @{@link SkipArrayCheck}</li>
+   *   <li>of type Object[]</li>
+   *   <li>of array type with a component type of array type</li>
    * </ul>
    * @param propertyElement
    * @return {@code true} if the given propertyElement should be treated as possibly containing a multi-level array,
@@ -873,22 +874,22 @@ class PojomatorByteCodeGenerator {
   private boolean isDeepArray(PropertyElement propertyElement) {
     Class<?> propertyType = propertyElement.getPropertyType();
     return
-      (propertyElement.getElement().isAnnotationPresent(DeepArray.class)
-        && !propertyType.isPrimitive()
-        && !(propertyType.isArray() && propertyType.getComponentType().isPrimitive()))
-      || (propertyType.isArray() && propertyType.getComponentType().isArray());
+      propertyType.equals(Object[].class)
+      || (propertyType.isArray() && propertyType.getComponentType().isArray())
+      || ((propertyType.equals(Object.class) || propertyType.equals(Object[].class))
+          && !propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class));
   }
 
   /**
    * Determine if the given propertyElement should be treated as one that could be an array.
    * @param propertyElement
-   * @return {@code true} if the given propertyElement is annotated with {@link CanBeArray} or {@link DeepArray},
-   *  or {@code false} otherwise.
+   * @return {@code true} if the given propertyElement is either of array type, or is of type Object and not annotated
+   * with @{@link SkipArrayCheck}
    */
   private boolean canBeArray(PropertyElement propertyElement) {
     return propertyElement.getPropertyType().isArray()
-      || propertyElement.getElement().isAnnotationPresent(CanBeArray.class)
-      || propertyElement.getElement().isAnnotationPresent(DeepArray.class);
+      || (propertyElement.getPropertyType().equals(Object.class)
+          && ! propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class));
   }
 
   /**

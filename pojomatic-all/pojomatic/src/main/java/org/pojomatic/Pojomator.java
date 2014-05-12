@@ -3,11 +3,10 @@ package org.pojomatic;
 import java.util.Arrays;
 import java.util.List;
 
-import org.pojomatic.annotations.CanBeArray;
-import org.pojomatic.annotations.DeepArray;
 import org.pojomatic.annotations.OverridesEquals;
 import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.annotations.SkipArrayCheck;
 import org.pojomatic.annotations.SubclassCannotOverrideEquals;
 import org.pojomatic.diff.Differences;
 import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
@@ -21,42 +20,12 @@ import org.pojomatic.formatter.EnhancedPropertyFormatter;
  * well as a useful method to aid in debugging, {@link #doDiff(Object, Object)}.
  *
  * <h3>Treatment of arrays</h3>
- * When encountering an array, there are three approaches that can be taken:
- * <ul>
- *   <li>
- *     Treat the array as an opaque object reference. Equality and hashCodes will be based on object identity, and
- *     toString will return a relatively unhelpful string like "{@code [Ljava.lang.String;@5195da41}".
- *   </li>
- *   <li>
- *     Treat the array as a a single-dimensional array. Equality, hashCode and toString will also look not at the array
- *     instance itself, but the contents of the array. If elements of the array are arrays themselves, treat those
- *     elements as opaque object references.
- *   </li>
- *   <li>
- *     Treat the array as a potentially multi-dimensional array. If any of the arrays elements are themselves arrays,
- *     look at the elements of those sub-arrays, and so on recursively.
- *   </li>
- * </ul>
- * <p>
- * Which option a Pojomator will choose depends on the declared type of the property and on the presence or absence of a
- * pair of annotations, {@link CanBeArray @CanBeArray} and {@link DeepArray @DeepArray}. Specifically:
- * <ul>
- *   <li>
- *     If the declared type of the property is a multi-dimensional array, then Pojomatic will treat it as such.
- *   </li>
- *   <li>
- *     If the declared type of the property is a single dimensional array, then Pojomatic will treat it as such, unless
- *     the component type of the array is {@link Object} and the property is annotated with
- *     {@link DeepArray @DeepArray}, in which case it will be treated as a potentially multi-dimensional array
- *   </li>
- *   <li>
- *     If the declared type of the property is {@link Object}, then pojomatic will treat values as opaque object
- *     references, unless the property is annotated with {@link CanBeArray @CanBeArray} or
- *     {@link DeepArray @DeepArray}, in which case the Pojomator will treat it as either a single-dimensional or
- *     multiple-dimensional array, depending on whether a {@link DeepArray @DeepArray} annotation is absent or present
- *     on the property.
- *   </li>
- * <ul>
+ * Normally, when encountering an array,Pojomatic looks into the array, examining each of the array elements. Moreover,
+ * if any of these elements are themselves arrays, then it recursively looks into them. However, there is one exception
+ * to this rule. If a property of type {@code Object} is annotated with {@link SkipArrayCheck @SkipArrayCheck}, then
+ * Pojomatic will not check to see if it's value might be of array type. Typically, the reason for annotating a property
+ * with {@code @SkipArrayCheck} would be to gain a slight performance advantage by avoiding a call to
+ * {@link Object#getClass()}.{@link Class#isArray() isArray()}.
  *
  * @param <T> the class this {@code Pojomator} is generated for.
  */
@@ -135,19 +104,24 @@ public interface Pojomator<T> {
    * <li>Both are reference-equals (==) to each other, or</li>
    * <li>Both are primitive of the same type, and equal to each other, or</li>
    * <li>The property {@code p} in {@code instance} is an object not of array type, and {@code
-   * instanceP.equals(otherP)} returns true.
-   * <li>The declared type of the property {@code p} is {@link Object}, the property is not annotated with
-   * {@link CanBeArray @CanBeArray},
-   * and {@code instanceP.equals(otherP)} returns true.
+   * instanceP.equals(otherP)} returns true.</li>
+   * <li>The declared type of the property {@code p} is {@link Object}, the property is annotated with
+   * {@link SkipArrayCheck @SkipArrayCheck}, and {@code instanceP.equals(otherP)} returns true.</li>
    * <li>The declared type of the property is either an array type, or is of type {@link Object}, and the property is
-   * annotated with {@link CanBeArray @CanBeArray}, and:
+   * not annotated with {@link SkipArrayCheck @SkipArrayCheck}, and:
    * <ul>
-   *   <li>If the property is annotated with {@link DeepArray @DeepArray} or has a declared type of a multi-dimensional array, then
-   *     {@link Arrays#deepEquals(Object[], Object[]) Arrays.deepEquals(instanceP, otherP)} returns true</li>
-   *   <li>If the property is not annotated with {@link DeepArray @DeepArray}, then the appropriate {@code equals} method of
-   *     {@link Arrays} returns true</li>
+   *   <li>{@code instanceP.getClass().equals(otherP.getClass())},</li>
+   *   <li>{@code instanceP.length == otherP.length}, and</li>
+   *   <li>Recursively, each element of {@code instanceP} is equal to the corresponding element of {@otherP}.</li>
    * </ul></li>
    * </ul>
+   * </p>
+   * <p>
+   * Note that Pojomator's treatment of multi-dimensional arrays can differ from
+   * {@link Arrays#deepEquals(Object[], Object[])}, in that the latter only looks at array length and element-wise
+   * equality, but not array type. For example, {@code Arrays.deepEquals()} would consider {@code new Integer[0]} and
+   * {@code new boolean[0][][])} to be equal, where as Pojomatic does not. Version 1.0 of Pojomatic simply delegated to
+   * {@code Arrays.deepEquals()}, and hence would have considered those two arrays to be equal.
    * </p>
    * @param instance the instance to test against - must not be {@code null}
    * @param other the instance to test

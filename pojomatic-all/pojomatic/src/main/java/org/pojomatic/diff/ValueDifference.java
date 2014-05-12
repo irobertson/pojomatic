@@ -1,8 +1,6 @@
 package org.pojomatic.diff;
 
 import org.pojomatic.Pojomatic;
-import org.pojomatic.annotations.CanBeArray;
-import org.pojomatic.annotations.DeepArray;
 import org.pojomatic.annotations.Property;
 
 public class ValueDifference implements Difference {
@@ -10,13 +8,9 @@ public class ValueDifference implements Difference {
   private final String propertyName;
 
   @Property
-  @CanBeArray
-  @DeepArray
   private final Object leftValue;
 
   @Property
-  @CanBeArray
-  @DeepArray
   private final Object rightValue;
 
   public ValueDifference(String propertyName, Object lhs, Object rhs) {
