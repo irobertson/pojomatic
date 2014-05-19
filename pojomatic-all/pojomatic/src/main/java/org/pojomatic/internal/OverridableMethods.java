@@ -77,6 +77,7 @@ class OverridableMethods {
   private static class PackageMethod {
     //TODO: Consider tracking the return type as well, to deal with byte-code-generated overloads
     // that have different return types, as well as return type narrowing in a subclass.
+    // Alternatively, skip synthetic methods.
     PackageMethod(Method method) {
       name = method.getName();
       pakage = method.getDeclaringClass().getPackage();
