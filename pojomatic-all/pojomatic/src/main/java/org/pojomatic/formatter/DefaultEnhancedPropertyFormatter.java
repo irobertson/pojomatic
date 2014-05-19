@@ -1,12 +1,8 @@
 package org.pojomatic.formatter;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.pojomatic.annotations.SkipArrayCheck;
 
 /**
  * The default property formatter used by Pojomatic.  While the particulars of the formatting
@@ -15,42 +11,12 @@ import org.pojomatic.annotations.SkipArrayCheck;
  * representation of Java arrays.
  */
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
-  private boolean checkForDeepArray;
 
   /**
    * {@inheritDoc}
-   *
-   * This implementation checks to see if the element has been annotated with {@link DeepArray}. Overrides of this
-   * method should call {@code super.initialize(element)}.
    */
   @Override
-  public void initialize(AnnotatedElement element) {
-    Class<?> type = getType(element);
-    checkForDeepArray = isDeepArray(element, type);
-  }
-
-  private boolean isDeepArray(AnnotatedElement element, Class<?> type) {
-    if (type.equals(Object.class)) {
-      return ! element.isAnnotationPresent(SkipArrayCheck.class);
-    }
-    else if (type.isArray()) {
-      Class<?> componentType = type.getComponentType();
-      return componentType.equals(Object.class) || componentType.isArray();
-    }
-    else {
-      return false;
-    }
-  }
-
-  private static Class<?> getType(AnnotatedElement element) {
-    if (element instanceof Field) {
-      return ((Field) element).getType();
-    }
-    else if (element instanceof Method) {
-      return ((Method) element).getReturnType();
-    }
-    else throw new IllegalArgumentException("Annotated element has type " + element.getClass().getName());
-  }
+  public void initialize(AnnotatedElement element) {}
 
   @Override
   final public String format(Object value) {
@@ -111,29 +77,7 @@ public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatt
 
   @Override
   public void appendFormatted(StringBuilder builder, Object[] array) {
-    if (checkForDeepArray) {
       appendFormattedDeep(builder, array, new HashSet<>());
-    }
-    else {
-      appendFormattedShallow(builder, array);
-    }
-  }
-
-  private void appendFormattedShallow(StringBuilder builder, Object[] array) {
-    if (array == null) {
-      builder.append("null");
-    }
-    else {
-      builder.append('[');
-      int iMax = array.length - 1;
-      for (int i = 0; i <= iMax; i++) {
-        appendFormatted(builder, array[i]);
-        if (i != iMax) {
-          builder.append(", ");
-        }
-      }
-      builder.append(']');
-    }
   }
 
   private void appendFormattedDeep(StringBuilder builder, Object[] array, Set<Object> dejaVu) {
