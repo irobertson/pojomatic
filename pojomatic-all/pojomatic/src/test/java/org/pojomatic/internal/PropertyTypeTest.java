@@ -123,30 +123,9 @@ public class PropertyTypeTest {
     PojoFactory pojoFactory, Object value1, Object pojo1, Object value2) {
     Object value2PossibleClone = maybeCloneObject(value2);
     Object pojo2 = pojoFactory.create(value2PossibleClone);;
-    boolean expectedToBeEqual;
-    if (value1 == value2PossibleClone) {
-      expectedToBeEqual = true;
-    }
-    else if (value1 == null || value2 == null) {
-      expectedToBeEqual = false;
-    }
-    else {
-      Class<?> type1 = value1.getClass();
-      Class<?> type2 = value2.getClass();
-      if (type1.equals(type2)) {
-        if (! type1.isArray()) {
-          expectedToBeEqual = value1.equals(value2PossibleClone);
-        }else if (!skipArrayCheck) {
-          expectedToBeEqual = value1 == value2;  // FIXME - is this right?
-        }
-        else {
-          expectedToBeEqual = false;
-        }
-      }
-      else {
-        expectedToBeEqual = false;
-      }
-    }
+    boolean expectedToBeEqual = Objects.equals(value1, value2PossibleClone)
+      || !skipArrayCheck && value1 == value2;
+
     checkEqualsAndDiff(expectedToBeEqual, pojoFactory, value1, value2PossibleClone, pojo1, pojo2);
   }
 
