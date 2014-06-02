@@ -14,8 +14,8 @@ import java.lang.reflect.AnnotatedElement;
 public interface PropertyFormatter {
   /**
    * Initialize the formatter for use; this method will be called exactly once on an instance, prior
-   * to any calls to {@link #format(Object)}.  This method does not need to be
-   * thread-safe.
+   * to any calls to {@link #format(Object)}.  This method does not need to be thread-safe. A typical implementation
+   * might inspect the element for additional annotations used to configure the formatter.
    * @param element the field or method this formatter will be used for.
    */
   public void initialize(AnnotatedElement element);

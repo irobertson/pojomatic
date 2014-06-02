@@ -13,7 +13,7 @@ import java.util.Arrays;
  */
 @Deprecated
 public class DefaultPropertyFormatter implements PropertyFormatter {
-  //FIXME - this currently prevents formatter reusability, and for very little benefit.
+  //FIXME - this currently prevents formatter reusability, and for very little benefit. Perhaps an initializable annotation?
   @Override
   public void initialize(AnnotatedElement element) {
     //Not applicable
