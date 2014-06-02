@@ -30,6 +30,8 @@ import org.pojomatic.formatter.EnhancedPropertyFormatter;
 
 import static org.kohsuke.asm4.Opcodes.*;
 
+//FIXME - add line-number code for diagnostic purposes. Consider pointing to a separate do-nothing class with
+// comments explaining how to interpret line numbers. This would allow us to use new numbers for each property.
 class PojomatorByteCodeGenerator {
   @Deprecated
   private static final String ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME =
