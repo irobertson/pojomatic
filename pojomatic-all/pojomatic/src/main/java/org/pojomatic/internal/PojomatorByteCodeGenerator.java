@@ -362,8 +362,7 @@ class PojomatorByteCodeGenerator {
         }
       }
       else {
-        if (propertyType.equals(Object.class)
-            && ! propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class)) {
+        if (isObjectPossiblyHoldingArray(propertyElement)) {
           mv.visitMethodInsn(
             INVOKESTATIC,
             BASE_POJOMATOR_INTERNAL_NAME,
@@ -481,8 +480,8 @@ class PojomatorByteCodeGenerator {
               int.class, propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class)
               );
         }
-        else if (propertyType == Object.class && canBeArray(propertyElement)) { // FIXME - should canBeArray check propertyType?
-          // it *could* be an array; if so, we want to do an array hashCode. (or do we?)
+        else if (isObjectPossiblyHoldingArray(propertyElement)) {
+          // it *could* be an array; if so, we want to do an array hashCode.
 
           mv.visitInsn(DUP); // we'll still want the property value handy after calling getClass().isArray()
           invokeGetClass(mv);
@@ -585,7 +584,7 @@ class PojomatorByteCodeGenerator {
       varBuilder.acceptLoad(mv);
       visitLineNumber(mv, 202);
       visitAccessor(mv, varPojo, propertyElement);
-      if (propertyElement.getPropertyType().equals(Object.class) && canBeArray(propertyElement)) {
+      if (isObjectPossiblyHoldingArray(propertyElement)) {
         visitLineNumber(mv, 203);
         mv.visitMethodInsn(
           INVOKEINTERFACE,
@@ -886,10 +885,9 @@ class PojomatorByteCodeGenerator {
    * @return {@code true} if the given propertyElement is either of array type, or is of type Object and not annotated
    * with @{@link SkipArrayCheck}
    */
-  private boolean canBeArray(PropertyElement propertyElement) {
-    return propertyElement.getPropertyType().isArray()
-      || (propertyElement.getPropertyType().equals(Object.class)
-          && ! propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class));
+  private boolean isObjectPossiblyHoldingArray(PropertyElement propertyElement) {
+    return Object.class.equals(propertyElement.getPropertyType())
+          && ! propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class);
   }
 
   /**
