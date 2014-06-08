@@ -896,7 +896,7 @@ class PojomatorByteCodeGenerator {
    * If the parameter on the stack (of type propertyType) is primitive, convert it to the appropriate wrapper object.
    * Otherwise, leave it alone
    * @param mv
-   * @param propertyType TODO
+   * @param propertyType the type of the parameter on the stack
    */
   private void convertToObject(MethodVisitor mv, Class<?> propertyType) {
     if (propertyType.isPrimitive()) {

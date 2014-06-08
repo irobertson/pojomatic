@@ -167,7 +167,8 @@ public class Pojomatic {
   /**
    * Get the {@code Pojomator} for {@code pojoClass}. While the same instance will be returned every time
    * for a given value of {@code pojoClass}, highly performance-sensitive applications may want to cache the value
-   * returned in a static variable on the class in question.
+   * returned in a static variable on the class in question. Note that a static Pojomator for a parent class
+   * will miss any additional properties when used on a child class.
    * @param <T> the type represented by {@code pojoClass}
    * @param pojoClass the class to create a {@code Pojomator} for.
    * @return a {@code Pojomator<T>}
