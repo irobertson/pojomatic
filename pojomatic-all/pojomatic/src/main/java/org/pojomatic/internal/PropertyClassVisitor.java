@@ -112,7 +112,7 @@ class PropertyClassVisitor extends ClassVisitor {
   @Override
   public MethodVisitor visitMethod(int access, String name, String desc,
       String signature, String[] exceptions) {
-    if (desc.startsWith("()") && (access & Opcodes.ACC_STATIC) == 0) {
+    if (desc.startsWith("()") && ((access & (Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC)) == 0)) {
       for (PropertyRole role: PropertyRole.values()) {
         PropertyElement propertyElement = methodsMap.get(role).get(name);
         if (propertyElement != null) {

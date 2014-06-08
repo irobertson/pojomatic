@@ -222,6 +222,13 @@ public class ClassPropertiesTest {
   }
 
   @Test
+  public void testSyntheticMethod() throws Exception {
+    assertEquals (
+      asSet(ClassProperties.forClass(Synthetic.class).getEqualsProperties()),
+      asSet(TestUtils.method(Synthetic.class, "getA")));
+  }
+
+  @Test
   public void testAnnotatedStaticMethod() {
     try {
       ClassProperties.forClass(StaticMethod.class);
@@ -388,6 +395,13 @@ public class ClassPropertiesTest {
     @Override public int getFoo() { return 2; }
   }
 
+  public static class ParentOfSynthetic {
+    public Number getA() { return null; }
+  }
+
+  public static class Synthetic extends ParentOfSynthetic {
+    @Override @Property public Integer getA() { return 3; }
+  }
   @AutoProperty(autoDetect=AutoDetectPolicy.METHOD)
   public static interface Interface {
     int getFoo();
