@@ -247,8 +247,8 @@ public class PojomatorFactoryTest {
 
       assertEquals(pojomator.getClass().getName(), stackTrace[1].getClassName());
       assertStackTraceElementFromGeneratedByteCode(
-        stackTrace[1], pojomator, "get_method_" + Pojo.class.getName().replace('.', '$')+ "_getY", 101);
-      assertStackTraceElementFromGeneratedByteCode(stackTrace[2], pojomator, "doHashCode", 4);
+        stackTrace[1], pojomator, "get_method_" + Pojo.class.getName().replace('.', '$')+ "_getY", 204);
+      assertStackTraceElementFromGeneratedByteCode(stackTrace[2], pojomator, "doHashCode", 225);
     }
   }
 

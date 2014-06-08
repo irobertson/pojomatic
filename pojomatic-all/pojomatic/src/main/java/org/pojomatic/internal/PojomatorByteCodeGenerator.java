@@ -5,7 +5,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -30,8 +32,6 @@ import org.pojomatic.formatter.EnhancedPropertyFormatter;
 
 import static org.kohsuke.asm4.Opcodes.*;
 
-//FIXME - add line-number code for diagnostic purposes. Consider pointing to a separate do-nothing class with
-// comments explaining how to interpret line numbers. This would allow us to use new numbers for each property.
 class PojomatorByteCodeGenerator {
   @Deprecated
   private static final String ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME =
@@ -55,6 +55,7 @@ class PojomatorByteCodeGenerator {
   private final String pojoDescriptor;
   private final ClassProperties classProperties;
   private final Handle bootstrapMethod;
+  private final Map<PropertyElement, Integer> propertyNumbers = new HashMap<>();
 
   /**
    * Class for tracking adjustments to be made to the max stack and/or localvariable size
@@ -82,6 +83,10 @@ class PojomatorByteCodeGenerator {
       pojomatorInternalClassName,
       BOOTSTRAP_METHOD_NAME,
       methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class));
+    int propertyNumber = 1;
+    for (PropertyElement property: classProperties.getAllProperties()) {
+      propertyNumbers.put(property, propertyNumber++);
+    }
   }
 
   byte[] makeClassBytes() {
@@ -153,13 +158,14 @@ class PojomatorByteCodeGenerator {
     caller.acceptLoad(mv);
     name.acceptLoad(mv);
     type.acceptLoad(mv);
-    visitLineNumber(mv, 200);
+    visitLineNumber(mv, 1, null);
     mv.visitLdcInsn(Type.getObjectType(pojomatorInternalClassName));
-    visitLineNumber(mv, 201);
+    visitLineNumber(mv, 2, null);
     mv.visitMethodInsn(
       INVOKESTATIC, BASE_POJOMATOR_INTERNAL_NAME,
       "bootstrap",
       methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class));
+    visitLineNumber(mv, 3, null);
     mv.visitInsn(ARETURN);
     Label end = visitNewLabel(mv);
     caller.withScope(start, end).acceptLocalVariable(mv);
@@ -184,9 +190,9 @@ class PojomatorByteCodeGenerator {
     mv.visitCode();
     Label start = visitNewLabel(mv);
     pojo.acceptLoad(mv);
-    visitLineNumber(mv, 101);
+    visitLineNumber(mv, 4, propertyElement);
     mv.visitInvokeDynamicInsn(accessorName, accessorMethodDescription(propertyElement), bootstrapMethod);
-    visitLineNumber(mv, 102);
+    visitLineNumber(mv, 5, propertyElement);
 
     // return using the appropriate return byte code, based on type
     Class<?> propertyType = propertyElement.getPropertyType();
@@ -227,6 +233,7 @@ class PojomatorByteCodeGenerator {
     varThis.acceptLoad(mv);
     varPojoClass.acceptLoad(mv);
     varClassProperties.acceptLoad(mv);
+    visitLineNumber(mv, 6, null);
     mv.visitMethodInsn(
       INVOKESPECIAL, BASE_POJOMATOR_INTERNAL_NAME, "<init>", methodDesc(void.class, Class.class, ClassProperties.class));
     mv.visitInsn(RETURN);
@@ -262,9 +269,10 @@ class PojomatorByteCodeGenerator {
     mv.visitCode();
     Label start = visitNewLabel(mv);
     varPojo1.acceptLoad(mv);
+    visitLineNumber(mv, 7, null);
     checkNotNull(mv);
     varPojo2.acceptLoad(mv);
-    visitLineNumber(mv, 1);
+    visitLineNumber(mv, 8, null);
     Label notSameInstance = new Label();
     mv.visitJumpInsn(IF_ACMPNE, notSameInstance);
 
@@ -276,21 +284,25 @@ class PojomatorByteCodeGenerator {
 
     // if other is null, return false.
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
-    visitLineNumber(mv, 2);
+    visitLineNumber(mv, 9, null);
     varPojo2.acceptLoad(mv);
     mv.visitJumpInsn(IFNULL, returnFalse);
 
     // common case: if both types are the same, they are compatible for equality
     varThis.acceptLoad(mv);
+    visitLineNumber(mv, 10, null);
     invokeGetClass(mv);
     varPojo1.acceptLoad(mv);
+    visitLineNumber(mv, 11, null);
     invokeGetClass(mv);
     mv.visitJumpInsn(IF_ACMPEQ, compatibleTypes);
 
     // types are not the same; check for compatibility
     varThis.acceptLoad(mv);
     varPojo2.acceptLoad(mv);
+    visitLineNumber(mv, 12, null);
     invokeGetClass(mv);
+    visitLineNumber(mv, 13, null);
     mv.visitMethodInsn(
       INVOKEVIRTUAL, BASE_POJOMATOR_INTERNAL_NAME, "isCompatibleForEquality", methodDesc(boolean.class, Class.class));
     mv.visitJumpInsn(IFEQ, returnFalse);
@@ -301,8 +313,11 @@ class PojomatorByteCodeGenerator {
 
     // Compare properties
     for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
+      visitLineNumber(mv, 14, propertyElement);
       visitAccessorAndConvert(mv, varPojo1, propertyElement);
+      visitLineNumber(mv, 15, propertyElement);
       visitAccessorAndConvert(mv, varPojo2, propertyElement);
+      visitLineNumber(mv, 16, propertyElement);
       compareProperties(mv, returnFalse, propertyElement, stackAdjustments);
     }
     // If we have gotten this far, all properties are equal, so return true.
@@ -349,6 +364,7 @@ class PojomatorByteCodeGenerator {
       if(propertyType.isArray()) {
         Class<?> componentType = propertyType.getComponentType();
         if (componentType.isPrimitive()) {
+          visitLineNumber(mv, 17, propertyElement);
           mv.visitMethodInsn(
             INVOKESTATIC,
             internalName(Arrays.class),
@@ -356,6 +372,7 @@ class PojomatorByteCodeGenerator {
             methodDesc(boolean.class, propertyType, propertyType));
         }
         else {
+          visitLineNumber(mv, 18, propertyElement);
           mv.visitMethodInsn(
             INVOKESTATIC,
             BASE_POJOMATOR_INTERNAL_NAME,
@@ -365,6 +382,7 @@ class PojomatorByteCodeGenerator {
       }
       else {
         if (isObjectPossiblyHoldingArray(propertyElement)) {
+          visitLineNumber(mv, 19, propertyElement);
           mv.visitMethodInsn(
             INVOKESTATIC,
             BASE_POJOMATOR_INTERNAL_NAME,
@@ -372,6 +390,7 @@ class PojomatorByteCodeGenerator {
             methodDesc(boolean.class, Object.class, Object.class));
         }
         else {
+          visitLineNumber(mv, 20, propertyElement);
           mv.visitMethodInsn(
             INVOKESTATIC,
             internalName(Objects.class),
@@ -397,8 +416,9 @@ class PojomatorByteCodeGenerator {
     MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "doHashCode", methodDesc(int.class, Object.class), null, null);
     mv.visitCode();
     Label start = visitNewLabel(mv);
-    visitLineNumber(mv, 1);
+    visitLineNumber(mv, 21, null);
     varPojo.acceptLoad(mv);
+    visitLineNumber(mv, 22, null);
     checkNotNullPop(mv);
 
     //algorithm:
@@ -408,18 +428,19 @@ class PojomatorByteCodeGenerator {
 
     for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
       // multiply what we have so far by 31.
-      visitLineNumber(mv, 2);
+      visitLineNumber(mv, 23, propertyElement);
       mv.visitIntInsn(BIPUSH, 31);
-      visitLineNumber(mv, 3);
+      visitLineNumber(mv, 24, propertyElement);
       mv.visitInsn(IMUL);
-      visitLineNumber(mv, 4);
 
+      visitLineNumber(mv, 25, propertyElement);
       visitAccessorAndConvert(mv, varPojo, propertyElement); // grab the property value, converting a float or double
       Class<?> propertyType = propertyElement.getPropertyType();
       if (propertyType.isPrimitive()) {
         // need to compute the hash code for this primitive value, based on its type
         switch (propertyType.getName()) {
           case "boolean":
+            visitLineNumber(mv, 26, propertyElement);
             Label ifeq = new Label();
             mv.visitJumpInsn(IFEQ, ifeq);
             mv.visitIntInsn(SIPUSH, Boolean.TRUE.hashCode());
@@ -443,6 +464,7 @@ class PojomatorByteCodeGenerator {
 
             // compute bits ^ (bits >> 32)
 
+            visitLineNumber(mv, 27, propertyElement);
             // we'll need a second copy to do the xor:
             mv.visitInsn(DUP2);
             // bitshift 32 right:
@@ -474,6 +496,7 @@ class PojomatorByteCodeGenerator {
           F_FULL, 2, localVars, 2, new Object[] {INTEGER, Type.getInternalName(effectiveType(propertyType))});
 
         if(propertyType.isArray()) {
+          visitLineNumber(mv, 28, propertyElement);
           mv.visitMethodInsn(
             INVOKESTATIC,
             internalName(Arrays.class),
@@ -487,11 +510,13 @@ class PojomatorByteCodeGenerator {
 
           mv.visitInsn(DUP); // we'll still want the property value handy after calling getClass().isArray()
           invokeGetClass(mv);
+          visitLineNumber(mv, 29, propertyElement);
           mv.visitMethodInsn(INVOKEVIRTUAL, internalName(Class.class), "isArray", "()Z");
           Label isArray = new Label();
           mv.visitJumpInsn(IFNE, isArray); // if true
 
           // regular old hashCode
+          visitLineNumber(mv, 30, propertyElement);
           mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
           mv.visitJumpInsn(GOTO, hashCodeDetermined);
 
@@ -500,6 +525,7 @@ class PojomatorByteCodeGenerator {
           mv.visitFrame(F_FULL, 2, localVars, 2, new Object[] { INTEGER, Type.getInternalName(propertyType) });
 
           mv.visitInsn(ICONST_1);
+          visitLineNumber(mv, 31, propertyElement);
           mv.visitMethodInsn(
             INVOKESTATIC,
             BASE_POJOMATOR_INTERNAL_NAME,
@@ -507,6 +533,7 @@ class PojomatorByteCodeGenerator {
             methodDesc(int.class, Object.class, boolean.class));
         }
         else {
+          visitLineNumber(mv, 32, propertyElement);
           mv.visitMethodInsn(INVOKEVIRTUAL, OBJECT_INTERNAL_NAME, "hashCode", "()I");
         }
 
@@ -545,6 +572,7 @@ class PojomatorByteCodeGenerator {
     constructEnhancedPojoFormatter(mv);
     varPojoFormatter.acceptStore(mv);
 
+    visitLineNumber(mv, 33, null);
     mv.visitTypeInsn(NEW, internalName(StringBuilder.class));
     mv.visitInsn(DUP);
     mv.visitMethodInsn(INVOKESPECIAL, internalName(StringBuilder.class), "<init>", "()V");
@@ -554,7 +582,7 @@ class PojomatorByteCodeGenerator {
     varBuilder.acceptLoad(mv);
     loadPojoClass(mv);
 
-    visitLineNumber(mv, 200);
+    visitLineNumber(mv, 34, null);
 
     mv.visitMethodInsn(INVOKEINTERFACE, internalName(EnhancedPojoFormatter.class), "appendToStringPrefix",
       methodDesc(void.class, StringBuilder.class, Class.class));
@@ -567,7 +595,9 @@ class PojomatorByteCodeGenerator {
       // append the property prefix
       varPojoFormatter.acceptLoad(mv);
       varBuilder.acceptLoad(mv);
+      visitLineNumber(mv, 35, propertyElement);
       loadPropertyElementField(mv, propertyElement);
+      visitLineNumber(mv, 36, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
         internalName(EnhancedPojoFormatter.class),
@@ -575,19 +605,19 @@ class PojomatorByteCodeGenerator {
         methodDesc(void.class, StringBuilder.class, PropertyElement.class));
 
       // get the propertyFormatter for this property
+      visitLineNumber(mv, 37, propertyElement);
       mv.visitFieldInsn(
         GETSTATIC,
         pojomatorInternalClassName,
         propertyFormatterName(propertyElement),
         classDesc(EnhancedPropertyFormatter.class));
-      visitLineNumber(mv, 201);
 
       // The propertyFormatter will format the property value and append the results to our StringBuilder
       varBuilder.acceptLoad(mv);
-      visitLineNumber(mv, 202);
+      visitLineNumber(mv, 38, propertyElement);
       visitAccessor(mv, varPojo, propertyElement);
       if (isObjectPossiblyHoldingArray(propertyElement)) {
-        visitLineNumber(mv, 203);
+        visitLineNumber(mv, 39, propertyElement);
         mv.visitMethodInsn(
           INVOKEINTERFACE,
           internalName(EnhancedPropertyFormatter.class),
@@ -599,7 +629,7 @@ class PojomatorByteCodeGenerator {
           );
       }
       else {
-        visitLineNumber(mv, 204);
+        visitLineNumber(mv, 40, propertyElement);
         mv.visitMethodInsn(
           INVOKEINTERFACE,
           internalName(EnhancedPropertyFormatter.class),
@@ -610,12 +640,13 @@ class PojomatorByteCodeGenerator {
             appendFormattedType(propertyElement.getPropertyType()))
             );
       }
-      visitLineNumber(mv, 205);
 
       // have any property suffix appended to the StringBuilder
       varPojoFormatter.acceptLoad(mv);
       varBuilder.acceptLoad(mv);
+      visitLineNumber(mv, 41, propertyElement);
       loadPropertyElementField(mv, propertyElement);
+      visitLineNumber(mv, 42, propertyElement);
       mv.visitMethodInsn(
         INVOKEINTERFACE,
         internalName(EnhancedPojoFormatter.class),
@@ -627,11 +658,13 @@ class PojomatorByteCodeGenerator {
     varPojoFormatter.acceptLoad(mv);
     varBuilder.acceptLoad(mv);
     loadPojoClass(mv);
+    visitLineNumber(mv, 43, null);
     mv.visitMethodInsn(INVOKEINTERFACE, internalName(EnhancedPojoFormatter.class), "appendToStringSuffix",
       methodDesc(void.class, StringBuilder.class, Class.class));
 
     // invoke toString and return the result
     varBuilder.acceptLoad(mv);
+    visitLineNumber(mv, 44, null);
     mv.visitMethodInsn(INVOKEVIRTUAL, internalName(StringBuilder.class), "toString", "()Ljava/lang/String;");
     mv.visitInsn(ARETURN);
 
@@ -674,6 +707,7 @@ class PojomatorByteCodeGenerator {
     if (format == null) {
       mv.visitTypeInsn(NEW, internalName(DefaultEnhancedPojoFormatter.class));
       mv.visitInsn(DUP);
+      visitLineNumber(mv, 45, null);
       mv.visitMethodInsn(INVOKESPECIAL, internalName(DefaultEnhancedPojoFormatter.class), "<init>", "()V");
     }
     else {
@@ -683,13 +717,16 @@ class PojomatorByteCodeGenerator {
       // invoke new on the wrapper, then construct the underlying formatter, then call the constructor on the wrapper.
       boolean isEnhancedFormatter = EnhancedPojoFormatter.class.isAssignableFrom(pojoFormatterClass);
       if (! isEnhancedFormatter) {
+        visitLineNumber(mv, 46, null);
         mv.visitTypeInsn(NEW, ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME);
         mv.visitInsn(DUP);
       }
       mv.visitTypeInsn(NEW, internalName(pojoFormatterClass));
       mv.visitInsn(DUP);
+      visitLineNumber(mv, 47, null);
       mv.visitMethodInsn(INVOKESPECIAL, internalName(pojoFormatterClass), "<init>", "()V");
       if (! isEnhancedFormatter) {
+        visitLineNumber(mv, 48, null);
         mv.visitMethodInsn(
           INVOKESPECIAL,
           ENHANCED_POJO_FORMATTER_WRAPPER_INTERNAL_NAME,
@@ -705,6 +742,7 @@ class PojomatorByteCodeGenerator {
    * @param mv
    */
   private void loadPojoClass(MethodVisitor mv) {
+    visitLineNumber(mv, 49, null);
     mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
   }
 
@@ -728,6 +766,7 @@ class PojomatorByteCodeGenerator {
     mv.visitCode();
     Label start = visitNewLabel(mv);
     varPojo1.acceptLoad(mv);
+    visitLineNumber(mv, 50, null);
     checkNotNull(mv, "instance is null");
     varPojo2.acceptLoad(mv);
     checkNotNull(mv, "other is null");
@@ -741,7 +780,9 @@ class PojomatorByteCodeGenerator {
     // not the same instance, some work to do
     mv.visitLabel(notSameInstance);
     mv.visitFrame(F_FULL, 3, localVarTypes, 0, NO_STACK);
+    visitLineNumber(mv, 51, null);
     checkCompatibleForEquality(mv, varThis, varPojo1, "instance");
+    visitLineNumber(mv, 52, null);
     checkCompatibleForEquality(mv, varThis, varPojo2, "other");
 
     Label makeDiferences = notSameInstance;
@@ -765,16 +806,21 @@ class PojomatorByteCodeGenerator {
 
       Label blockStart = visitNewLabel(mv);
 
+      visitLineNumber(mv, 53, propertyElement);
       visitAccessor(mv, varPojo1, propertyElement);
       varProp1.acceptStore(mv);
+      visitLineNumber(mv, 54, propertyElement);
       visitAccessor(mv, varPojo2, propertyElement);
       varProp2.acceptStore(mv);
 
+      visitLineNumber(mv, 55, propertyElement);
       visitAccessorAndConvert(mv, varPojo1, propertyElement);
+      visitLineNumber(mv, 56, propertyElement);
       visitAccessorAndConvert(mv, varPojo2, propertyElement);
 
       Label propertiesNotEqual = new Label();
       Label next = new Label();
+      visitLineNumber(mv, 57, propertyElement);
       compareProperties(mv, propertiesNotEqual, propertyElement, stackAdjustments);
       mv.visitJumpInsn(GOTO, next); // there were no differences.
 
@@ -791,9 +837,12 @@ class PojomatorByteCodeGenerator {
       mv.visitInsn(DUP);
       mv.visitLdcInsn(propertyElement.getName());
       varProp1.acceptLoad(mv);
+      visitLineNumber(mv, 58, propertyElement);
       convertToObject(mv, propertyType);
       varProp2.acceptLoad(mv);
+      visitLineNumber(mv, 59, propertyElement);
       convertToObject(mv, propertyType);
+      visitLineNumber(mv, 60, propertyElement);
       mv.visitMethodInsn(
         INVOKESPECIAL,
         internalName(ValueDifference.class),
@@ -801,6 +850,7 @@ class PojomatorByteCodeGenerator {
         methodDesc(void.class, String.class, Object.class, Object.class));
 
       // add the ValueDifference instance to our list
+      visitLineNumber(mv, 61, propertyElement);
       mv.visitMethodInsn(INVOKEINTERFACE, internalName(List.class), "add", methodDesc(boolean.class, Object.class));
       mv.visitInsn(POP); // ignore the return value of List#add
       mv.visitLabel(next);
@@ -812,9 +862,11 @@ class PojomatorByteCodeGenerator {
 
     // if our list is empty, return the NoDifferences instance
     varDifferencesList.acceptLoad(mv);
+    visitLineNumber(mv, 62, null);
     mv.visitMethodInsn(INVOKEINTERFACE, internalName(List.class), "isEmpty", "()Z");
     Label hasDifferences = new Label();
     mv.visitJumpInsn(IFEQ, hasDifferences);
+    visitLineNumber(mv, 63, null);
     mv.visitMethodInsn(INVOKESTATIC, internalName(NoDifferences.class), "getInstance", methodDesc(NoDifferences.class));
     mv.visitInsn(ARETURN);
 
@@ -822,9 +874,11 @@ class PojomatorByteCodeGenerator {
     mv.visitLabel(hasDifferences);
     mv.visitFrame(F_FULL, 4, localVarTypes, 0, NO_STACK);
 
+    visitLineNumber(mv, 64, null);
     mv.visitTypeInsn(NEW, internalName(PropertyDifferences.class));
     mv.visitInsn(DUP);
     varDifferencesList.acceptLoad(mv);
+    visitLineNumber(mv, 65, null);
     mv.visitMethodInsn(
       INVOKESPECIAL, internalName(PropertyDifferences.class), "<init>", methodDesc(void.class, List.class));
     mv.visitInsn(ARETURN);
@@ -853,6 +907,7 @@ class PojomatorByteCodeGenerator {
     varThis.acceptLoad(mv);
     var.acceptLoad(mv);
     mv.visitLdcInsn(message);
+    visitLineNumber(mv, 66, null);
     mv.visitMethodInsn(
       INVOKEVIRTUAL,
       BASE_POJOMATOR_INTERNAL_NAME,
@@ -969,8 +1024,23 @@ class PojomatorByteCodeGenerator {
     return label;
   }
 
-  private static void visitLineNumber(MethodVisitor mv, int lineNumber) {
-    mv.visitLineNumber(lineNumber, visitNewLabel(mv));
+  /**
+   * Visit a line number, based on a provided number, and a propertyElement (possibly null). The propertyElement will
+   * be used to distinguish line numbers generated from the same place in the code of this class, but for different
+   * properties.
+   * </p>
+   * To ensure unique line numbers, run the following:
+   * <code>
+   *   perl -pi -e 'if (/visitLineNumber\(/) { $i++; s/visitLineNumber\(mv, \d+/visitLineNumber\(mv, $i/; }' \
+   *     src/main/java/org/pojomatic/internal/PojomatorByteCodeGenerator.java
+   * </code>
+   * @param mv
+   * @param lineNumberBase
+   * @param propertyElement
+   */
+  private void visitLineNumber(MethodVisitor mv, int lineNumberBase, PropertyElement propertyElement) {
+    Integer offset = propertyNumbers.get(propertyElement);
+    mv.visitLineNumber(lineNumberBase + 100 * (offset == null ? 0 : offset), visitNewLabel(mv));
   }
 
   /**

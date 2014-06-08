@@ -111,7 +111,9 @@ public class ClassProperties {
   }
 
   /**
-   * Get the union of all properties used for any Pojomator methods.
+   * Get the union of all properties used for any Pojomator methods. The resulting set will have a predictable iteration
+   * order: first, the ordered list of elements used for equals, followed by an ordered list of any additional elements
+   * used for toString.
    * @return the union of all properties used for any Pojomator methods.
    */
   public Set<PropertyElement> getAllProperties() {
