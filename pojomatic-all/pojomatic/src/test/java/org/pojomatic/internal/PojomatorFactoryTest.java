@@ -1,12 +1,13 @@
 package org.pojomatic.internal;
 
-
 import static org.testng.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
+import java.util.regex.Pattern;
 
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
@@ -222,5 +223,40 @@ public class PojomatorFactoryTest {
     Pojomator<Pojo> pojomator = PojomatorFactory.makePojomator(Pojo.class);
     assertEquals(DummyPropertyFormatter.initializedElement, Pojo.class.getDeclaredField("x"));
     assertEquals(pojomator.doToString(new Pojo()), "Pojo{x: {-0-}}");
+  }
+
+  @Test
+  public void testStacktrace() {
+    class Pojo {
+      @Property int getX() { return 3; }
+      @Property int getY() throws Exception { throw new Exception("testing"); }
+    }
+    Pojomator<Pojo> pojomator = PojomatorFactory.makePojomator(Pojo.class);
+    assertThat(
+      pojomator.getClass().getName(),
+      RegexMatcher.matches(Pattern.quote(PojomatorStub.class.getName()+ "$") + "\\d+"));
+
+    Pojo pojo = new Pojo();
+    try {
+      pojomator.doHashCode(pojo);
+      fail("Exception expected");
+    }
+    catch (Exception e) {
+      assertEquals(e.getMessage(), "testing");
+      StackTraceElement[] stackTrace = e.getStackTrace();
+
+      assertEquals(pojomator.getClass().getName(), stackTrace[1].getClassName());
+      assertStackTraceElementFromGeneratedByteCode(
+        stackTrace[1], pojomator, "get_method_" + Pojo.class.getName().replace('.', '$')+ "_getY", 101);
+      assertStackTraceElementFromGeneratedByteCode(stackTrace[2], pojomator, "doHashCode", 4);
+    }
+  }
+
+  private void assertStackTraceElementFromGeneratedByteCode(
+    StackTraceElement element, Pojomator<?> pojomator, String methodName, int lineNumber) {
+    assertEquals(element.getClassName(), pojomator.getClass().getName());
+    assertEquals(element.getMethodName(), methodName);
+    assertEquals(element.getFileName(), "Look for visitLineNumber");
+    assertEquals(element.getLineNumber(), lineNumber);
   }
 }

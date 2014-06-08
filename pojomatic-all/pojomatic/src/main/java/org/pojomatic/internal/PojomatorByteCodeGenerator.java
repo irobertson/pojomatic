@@ -71,7 +71,7 @@ class PojomatorByteCodeGenerator {
   }
 
   PojomatorByteCodeGenerator(Class<?> pojoClass, ClassProperties classProperties) {
-    this.pojomatorClassName = getClass().getName() + "$Pojomator$" + counter.incrementAndGet();
+    this.pojomatorClassName = PojomatorStub.class.getName() + "$" + counter.incrementAndGet();
     this.pojomatorInternalClassName = internalName(pojomatorClassName);
     this.pojomatorInternalClassDesc = "L" + pojomatorInternalClassName + ";";
     this.pojoClass = pojoClass;
