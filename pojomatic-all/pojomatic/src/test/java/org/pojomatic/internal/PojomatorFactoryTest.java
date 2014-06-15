@@ -7,8 +7,11 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import org.mockito.Mockito;
+import org.pojomatic.Pojomatic;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
@@ -258,5 +261,23 @@ public class PojomatorFactoryTest {
     assertEquals(element.getMethodName(), methodName);
     assertEquals(element.getFileName(), "Look for visitLineNumber");
     assertEquals(element.getLineNumber(), lineNumber);
+  }
+
+  @Test
+  public void testProxiedClass() {
+    class Pojo {
+      @Property int getX() { return 3; }
+    }
+    Pojo spy = Mockito.spy(new Pojo());
+    assertEquals(Pojomatic.hashCode(spy), 31 + 3);
+  }
+
+  @Test
+  public void testParentJarClass() {
+   class Pojo extends ArrayList<Integer> {
+    private static final long serialVersionUID = 1L;
+    @Property int age = 3;
+   }
+   assertEquals(PojomatorFactory.makePojomator(Pojo.class).doHashCode(new Pojo()), 31 + 3);
   }
 }
