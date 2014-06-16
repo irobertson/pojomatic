@@ -1,6 +1,10 @@
 package org.pojomatic.internal.factory;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.kohsuke.asm4.ClassWriter;
 import org.kohsuke.asm4.FieldVisitor;
@@ -14,12 +18,22 @@ import static org.kohsuke.asm4.Opcodes.*;
 public class PojoClassFactory {
 
   private static final class DynamicClassLoader extends ClassLoader {
+    private final static Map<String, byte[]> classes= new HashMap<>();
     private DynamicClassLoader(ClassLoader parent) {
       super(parent);
     }
 
     Class<?> loadClass(String name, byte[] classBytes) {
+      classes.put(name.replace('.', '/') + ".class", classBytes.clone());
       return defineClass(name, classBytes, 0, classBytes.length);
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String name) {
+      if (classes.containsKey(name)) {
+        return new ByteArrayInputStream(classes.get(name));
+      }
+      return super.getResourceAsStream(name);
     }
   }
 

@@ -145,6 +145,13 @@ public class ClassProperties {
     }
   }
 
+  /**
+   * Walk up to the top of the hierarchy of {@code clazz}, then start extracting properties from it, working back down
+   * the inheritance chain from parent to child.
+   * @param clazz the class to inspect
+   * @param overridableMethods used to track which methods can be overridden
+   * @param classContributionTracker used to track the most specific class which contributes properties
+   */
   private void walkHierarchy(
     Class<?> clazz,
     OverridableMethods overridableMethods,
@@ -172,18 +179,26 @@ public class ClassProperties {
       clazz, classPolicy, autoDetectPolicy, classContributionTracker);
     Map<PropertyRole, Map<String, PropertyElement>> methodsMap = extractMethods(
       clazz, classPolicy, autoDetectPolicy, overridableMethods, classContributionTracker);
-    PropertyClassVisitor propertyClassVisitor = PropertyClassVisitor.visitClass(clazz, fieldsMap, methodsMap);
-    if (propertyClassVisitor != null) {
-      for (PropertyRole role: PropertyRole.values()) {
-        properties.get(role).addAll(propertyClassVisitor.getSortedProperties().get(role));
+    if (containsValues(fieldsMap) || containsValues(methodsMap)) {
+      PropertyClassVisitor propertyClassVisitor = PropertyClassVisitor.visitClass(clazz, fieldsMap, methodsMap);
+      if (propertyClassVisitor != null) {
+        for (PropertyRole role: PropertyRole.values()) {
+          properties.get(role).addAll(propertyClassVisitor.getSortedProperties().get(role));
+        }
+      }
+      else {
+        throw new RuntimeException("no class bytes for " + clazz);
       }
     }
-    else {
-      for (PropertyRole role: PropertyRole.values()) {
-        properties.get(role).addAll(fieldsMap.get(role).values());
-        properties.get(role).addAll(methodsMap.get(role).values());
-       }
+  }
+
+  private static boolean containsValues(Map<?, ? extends Map<?, ?>> mapOfMaps) {
+    for (Map<?, ?> map: mapOfMaps.values()) {
+      if (! map.isEmpty()) {
+        return true;
+      }
     }
+    return false;
   }
 
   private Map<PropertyRole, Map<String, PropertyElement>> extractMethods(

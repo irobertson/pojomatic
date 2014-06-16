@@ -302,8 +302,13 @@ public class ClassPropertiesTest {
 
     ClassOnlyClassLoader classLoader = new ClassOnlyClassLoader(Bean.class.getClassLoader());
     Class<?> beanClass = classLoader.loadClass(Bean.class.getName());
-    ClassProperties classProperties = ClassProperties.forClass(beanClass);
-    assertEquals(classProperties.getEqualsProperties().size(), 3);
+    try {
+      ClassProperties.forClass(beanClass);
+      fail("Exception expected");
+    }
+    catch (RuntimeException e) {
+      assertEquals(e.getMessage(), "no class bytes for class " + beanClass.getName());
+    }
   }
 
   //Not all classes can be made internal.  In particular, autodetect=FIELD classes cannot, because of the synthetic
