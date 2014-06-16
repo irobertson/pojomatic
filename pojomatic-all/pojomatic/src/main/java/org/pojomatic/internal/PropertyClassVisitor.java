@@ -2,7 +2,6 @@ package org.pojomatic.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
@@ -36,24 +35,18 @@ class PropertyClassVisitor extends ClassVisitor {
       Class<?> clazz,
       Map<PropertyRole, Map<String, PropertyElement>> fieldsMap,
       Map<PropertyRole, Map<String, PropertyElement>> methodsMap) {
-    URL location = null;
-    try {
-      location = clazz.getProtectionDomain().getCodeSource().getLocation();
-    }
-    catch (NullPointerException e) {
+    String classPath = clazz.getName().replace(".", "/") + ".class";
+    ClassLoader classLoader = clazz.getClassLoader();
+    if (classLoader == null) {
       return null;
     }
-    try {
-      URL url = new URL(location, clazz.getName().replace(".", "/") + ".class");
-      try (InputStream stream = url.openStream()) {
-        ClassReader classReader = new ClassReader(stream);
-        PropertyClassVisitor propertyClassVisitor = new PropertyClassVisitor(fieldsMap, methodsMap);
-        classReader.accept(propertyClassVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG);
-        verifyAllPropertiesFound(clazz, fieldsMap, methodsMap, propertyClassVisitor);
-        return propertyClassVisitor;
-      }
+    try (InputStream stream = classLoader.getResourceAsStream(classPath)) {
+      ClassReader classReader = new ClassReader(stream);
+      PropertyClassVisitor propertyClassVisitor = new PropertyClassVisitor(fieldsMap, methodsMap);
+      classReader.accept(propertyClassVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG);
+      verifyAllPropertiesFound(clazz, fieldsMap, methodsMap, propertyClassVisitor);
+      return propertyClassVisitor;
     } catch (IOException e) {
-      //FIXME - should we hook into a logger here?
       return null;
     }
   }

@@ -102,7 +102,6 @@ public class SecurityTest {
       ImmutableSet.of(
         new FilePermission(testClassPath + simplePojoPath, "read"),
         new RuntimePermission("accessDeclaredMembers"),
-        new RuntimePermission("getProtectionDomain"),
         new ReflectPermission("suppressAccessChecks")));
   }
 
