@@ -1,0 +1,8 @@
+org.pojomatic
+org.pojomatic.annotations
+org.pojomatic.diff
+org.pojomatic.formatter
+org.pojomatic.internal
+org.pojomatic.junit
+org.pojomatic.test
+org.pojomatic.testng
