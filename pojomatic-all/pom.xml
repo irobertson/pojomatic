@@ -5,6 +5,11 @@
   <packaging>pom</packaging>
   <version>trunk-SNAPSHOT</version>
   <name>PojomaticAll</name>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>9</version>
+  </parent>
   <description>
     Parent and aggregator for all artifacts related to the Pojomatic project.
   </description>
@@ -64,25 +69,6 @@
     <url>https://github.com/irobertson/pojomatic/issues</url>
   </issueManagement>
 
-  <distributionManagement>
-    <repository>
-      <id>pojomatic-releases</id>
-      <name>Pojomatic Release Repository</name>
-      <url>sftp://web.sourceforge.net/home/groups/p/po/pojomatic/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>pojomatic-snapshots</id>
-      <name>Pojomatic snapshot Repository</name>
-      <url>sftp://web.sourceforge.net/home/groups/p/po/pojomatic/snapshots</url>
-    </snapshotRepository>
-    <site>
-      <id>pojomatic-site</id>
-      <name>Pojomatic</name>
-      <!--  before deploying, you'll need to run ssh <username>,pojomatic@shell.sf.net create -->
-      <url>scp://shell.sourceforge.net/home/groups/p/po/pojomatic/htdocs</url>
-    </site>
-  </distributionManagement>
-
   <mailingLists>
     <mailingList>
       <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=pojomatic-users</archive>
@@ -116,13 +102,30 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.3</version>
+        <configuration>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.8</version>
+        <configuration>
+          <server>github</server>
+          <path>${project.artifactId}/${project.version}</path>
+          <message>Creating site for ${project.artifactId}/${project.version}</message>
+          <merge>true</merge>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>site-deploy</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
