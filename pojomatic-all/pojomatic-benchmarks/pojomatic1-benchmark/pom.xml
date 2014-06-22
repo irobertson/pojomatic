@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.pojomatic</groupId>
     <artifactId>pojomatic-benchmarks</artifactId>
-    <version>trunk-SNAPSHOT</version>
+    <version>master-SNAPSHOT</version>
   </parent>
   <artifactId>pojomatic1-benchmark</artifactId>
   <name>Pojomatic1 benchmark</name>
@@ -12,7 +12,7 @@
     <dependency>
       <groupId>org.pojomatic</groupId>
       <artifactId>pojomatic-base-benchmark</artifactId>
-      <version>trunk-SNAPSHOT</version>
+      <version>master-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.pojomatic</groupId>

@@ -3,7 +3,7 @@
   <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic-all</artifactId>
   <packaging>pom</packaging>
-  <version>trunk-SNAPSHOT</version>
+  <version>master-SNAPSHOT</version>
   <name>PojomaticAll</name>
   <parent>
     <groupId>org.sonatype.oss</groupId>
