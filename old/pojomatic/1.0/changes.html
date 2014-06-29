@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Pojomatic - Changes in Pojomatic</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            Pojomatic
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2010-04-25 | Version 1.0
+                      </div>
+            <div class="xright">      
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Overview</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">Introduction</a>
+          </li>
+              
+    <li class="none">
+                    <a href="apidocs/index.html">Javadocs</a>
+          </li>
+              
+    <li class="none">
+              <strong>Changes</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="eclipse.html">Eclipse</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2><a name="Changes_in_Pojomatic"></a>Changes in Pojomatic</h2>
+<div class="section"><h3><a name="Release_1.0_2010-04-25"></a>Release 1.0 (2010-04-25)</h3>
+<ul><li>
+            Simplification of the Differences API.  As part of this simplification,
+            <code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>
+            now requires that both arguments be non-null.
+          </li>
+<li>
+            Add new method, <a href="apidocs/org/pojomatic/Pojomatic.html#areCompatibleForEquals(java.lang.Class,%20java.lang.Class)">Pojomatic.areCompatibleForEquals</a>.
+          </li>
+</ul>
+</div>
+<div class="section"><h3><a name="Release_1.0-RC3_2009-12-06"></a>Release 1.0-RC3 (2009-12-06)</h3>
+<ul><li><code><a href="apidocs/org/pojomatic/Pojomatic.html#equals%28T,%20java.lang.Object%29">Pojomatic.equals()</a></code>
+            now properly handles inheritance, including comparing instances of two separate child
+            classes of a parent class
+             (<a href="https://sourceforge.net/tracker/?func=detail&amp;aid=2845939&amp;group_id=239113&amp;atid=1108645" class="externalLink">bug 2845939</a>).
+          </li>
+<li>A <code>Pojomator</code> can now be created for an interface.</li>
+<li>
+            New annotations,
+            <code><a href="apidocs/index.html?org/pojomatic/annotations/OverridesEquals.html">OverridesEquals</a></code>
+            and
+            <code><a href="apidocs/index.html?org/pojomatic/annotations/SubclassCannotOverrideEquals.html">SubclassCannotOverrideEquals</a></code><code>SubclassCannotOverrideEquals</code> help control how inheritance is handled.
+          </li>
+<li>
+            Properties from the parent class now come before those of the child in
+            <code>equals</code> calculations and in the <code>toString()</code> representation.
+          </li>
+<li>
+            Pojomatic will no longer add a method property multiple times if it is overridden
+            (even if the overridden method is explicitly annotated).
+          </li>
+<li><code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>
+            no longer requires a non-null first argument.
+          </li>
+</ul>
+</div>
+<div class="section"><h3><a name="Release_1.0-RC2_2009-04-07"></a>Release 1.0-RC2 (2009-04-07)</h3>
+<ul><li>
+            A new method, <code><a href="apidocs/org/pojomatic/Pojomatic.html#diff%28T,%20S%29">Pojomatic.diff</a></code>,
+            will show top-level differences between two instances of a pojomated class.
+          </li>
+<li>
+            The property name derived from a method such as getFoo() is now &quot;foo&quot; instead
+            of &quot;getFoo&quot; in the default <code>toString()</code> representation.
+          </li>
+<li>
+            Names of properties in the default <code>toString()</code> representation can be overridden
+            via the <code>name</code> attribute on the <code>Property</code> annotation.
+          </li>
+<li>
+            Static fields and methods are no longer picked up by <code>@AutoProperty</code>
+            (<a href="https://sourceforge.net/tracker/?func=detail&amp;aid=2739467&amp;group_id=239113&amp;atid=1108645" class="externalLink">bug 2739467</a>)
+          </li>
+</ul>
+</div>
+<div class="section"><h3><a name="Release_1.0-RC1_2009-01-01"></a>Release 1.0-RC1 (2009-01-01)</h3>
+<ul><li>Initial Release</li>
+</ul>
+</div>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008-2010
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

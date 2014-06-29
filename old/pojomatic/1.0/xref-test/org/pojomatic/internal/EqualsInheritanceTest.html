@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+<title>EqualsInheritanceTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
+</head>
+<body>
+<pre>
+
+<a name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.pojomatic.internal;
+<a name="2" href="#2">2</a>   
+<a name="3" href="#3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a name="4" href="#4">4</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.*;
+<a name="5" href="#5">5</a>   <strong class="jxr_keyword">import</strong> org.pojomatic.annotations.Property;
+<a name="6" href="#6">6</a>   <strong class="jxr_keyword">import</strong> org.pojomatic.Pojomator;
+<a name="7" href="#7">7</a>   <strong class="jxr_keyword">import</strong> org.pojomatic.Pojomatic;
+<a name="8" href="#8">8</a>   
+<a name="9" href="#9">9</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">EqualsInheritanceTest</a> {
+<a name="10" href="#10">10</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> {
+<a name="11" href="#11">11</a>      @SuppressWarnings(<span class="jxr_string">"unused"</span>) @Property <strong class="jxr_keyword">int</strong> x = 3;
+<a name="12" href="#12">12</a>  
+<a name="13" href="#13">13</a>      @Override
+<a name="14" href="#14">14</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
+<a name="15" href="#15">15</a>        <strong class="jxr_keyword">return</strong> Pojomatic.hashCode(<strong class="jxr_keyword">this</strong>);
+<a name="16" href="#16">16</a>      }
+<a name="17" href="#17">17</a>  
+<a name="18" href="#18">18</a>      @Override
+<a name="19" href="#19">19</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object o) {
+<a name="20" href="#20">20</a>        <strong class="jxr_keyword">return</strong> Pojomatic.equals(<strong class="jxr_keyword">this</strong>, o);
+<a name="21" href="#21">21</a>      }
+<a name="22" href="#22">22</a>    }
+<a name="23" href="#23">23</a>  
+<a name="24" href="#24">24</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Pojomator&lt;Parent&gt; PARENT_POJOMATOR = <strong class="jxr_keyword">new</strong> PojomatorImpl&lt;Parent&gt;(Parent.<strong class="jxr_keyword">class</strong>);
+<a name="25" href="#25">25</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> PARENT = <strong class="jxr_keyword">new</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a>();
+<a name="26" href="#26">26</a>  
+<a name="27" href="#27">27</a>    @Test <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testChildWithNoNewProperties() {
+<a name="28" href="#28">28</a>      <strong class="jxr_keyword">class</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Child</a> <strong class="jxr_keyword">extends</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> {}
+<a name="29" href="#29">29</a>      <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Child</a> child = <strong class="jxr_keyword">new</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Child</a>();
+<a name="30" href="#30">30</a>      Pojomator&lt;Child&gt; childPojomator = <strong class="jxr_keyword">new</strong> PojomatorImpl&lt;Child&gt;(Child.<strong class="jxr_keyword">class</strong>);
+<a name="31" href="#31">31</a>  
+<a name="32" href="#32">32</a>      assertTrue(PARENT_POJOMATOR.doEquals(PARENT, child));
+<a name="33" href="#33">33</a>      assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
+<a name="34" href="#34">34</a>      assertTrue(childPojomator.doEquals(child, PARENT));
+<a name="35" href="#35">35</a>    }
+<a name="36" href="#36">36</a>  
+<a name="37" href="#37">37</a>    @Test <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testChildWithNewProperty() {
+<a name="38" href="#38">38</a>      <strong class="jxr_keyword">class</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Child</a> <strong class="jxr_keyword">extends</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> { @SuppressWarnings(<span class="jxr_string">"unused"</span>) @Property <strong class="jxr_keyword">int</strong> y = 4; }
+<a name="39" href="#39">39</a>      <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Child</a> child = <strong class="jxr_keyword">new</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Child</a>();
+<a name="40" href="#40">40</a>      Pojomator&lt;Child&gt; childPojomator = <strong class="jxr_keyword">new</strong> PojomatorImpl&lt;Child&gt;(Child.<strong class="jxr_keyword">class</strong>);
+<a name="41" href="#41">41</a>  
+<a name="42" href="#42">42</a>      assertFalse(PARENT.equals(child));
+<a name="43" href="#43">43</a>      assertFalse(child.equals(PARENT));
+<a name="44" href="#44">44</a>      assertFalse(PARENT_POJOMATOR.doEquals(PARENT, child));
+<a name="45" href="#45">45</a>      assertFalse(childPojomator.doEquals(child, PARENT));
+<a name="46" href="#46">46</a>      <em class="jxr_comment">// If we explicitly use a PARENT_POJOMATOR to compare child to parent, we'll miss the additional</em>
+<a name="47" href="#47">47</a>      <em class="jxr_comment">//child property.</em>
+<a name="48" href="#48">48</a>      <em class="jxr_comment">//TODO - document this a as a danger of creating your own Pojomators.</em>
+<a name="49" href="#49">49</a>      assertTrue(PARENT_POJOMATOR.doEquals(child, PARENT));
+<a name="50" href="#50">50</a>    }
+<a name="51" href="#51">51</a>  
+<a name="52" href="#52">52</a>    @Test <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTwoChildrenWithNoNewProperties() {
+<a name="53" href="#53">53</a>      <strong class="jxr_keyword">class</strong> Child1 <strong class="jxr_keyword">extends</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> {}
+<a name="54" href="#54">54</a>      <strong class="jxr_keyword">class</strong> Child2 <strong class="jxr_keyword">extends</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> {}
+<a name="55" href="#55">55</a>      Child1 child1 = <strong class="jxr_keyword">new</strong> Child1();
+<a name="56" href="#56">56</a>      Child2 child2 = <strong class="jxr_keyword">new</strong> Child2();
+<a name="57" href="#57">57</a>      Pojomator&lt;Child1&gt; childPojomator = <strong class="jxr_keyword">new</strong> PojomatorImpl&lt;Child1&gt;(Child1.<strong class="jxr_keyword">class</strong>);
+<a name="58" href="#58">58</a>  
+<a name="59" href="#59">59</a>      assertTrue(PARENT_POJOMATOR.doEquals(child1, child2));
+<a name="60" href="#60">60</a>      assertTrue(childPojomator.doEquals(child1, child2));
+<a name="61" href="#61">61</a>    }
+<a name="62" href="#62">62</a>  
+<a name="63" href="#63">63</a>    @Test <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTwoChildrenWithOneHavingNewProperties() {
+<a name="64" href="#64">64</a>      <strong class="jxr_keyword">class</strong> Child1 <strong class="jxr_keyword">extends</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> { @SuppressWarnings(<span class="jxr_string">"unused"</span>) @Property <strong class="jxr_keyword">int</strong> y = 4; }
+<a name="65" href="#65">65</a>      <strong class="jxr_keyword">class</strong> Child2 <strong class="jxr_keyword">extends</strong> <a href="../../../org/pojomatic/internal/EqualsInheritanceTest.html">Parent</a> {}
+<a name="66" href="#66">66</a>      Child1 child1 = <strong class="jxr_keyword">new</strong> Child1();
+<a name="67" href="#67">67</a>      Child2 child2 = <strong class="jxr_keyword">new</strong> Child2();
+<a name="68" href="#68">68</a>      Pojomator&lt;Child1&gt; child1Pojomator = <strong class="jxr_keyword">new</strong> PojomatorImpl&lt;Child1&gt;(Child1.<strong class="jxr_keyword">class</strong>);
+<a name="69" href="#69">69</a>      Pojomator&lt;Child2&gt; child2Pojomator = <strong class="jxr_keyword">new</strong> PojomatorImpl&lt;Child2&gt;(Child2.<strong class="jxr_keyword">class</strong>);
+<a name="70" href="#70">70</a>  
+<a name="71" href="#71">71</a>      assertFalse(child1Pojomator.doEquals(child1, child2));
+<a name="72" href="#72">72</a>      assertFalse(child2Pojomator.doEquals(child2, child1));
+<a name="73" href="#73">73</a>    }
+<a name="74" href="#74">74</a>  }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+

@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Pojomatic - Pojomatic</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+            Pojomatic
+    
+            </span>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2010-04-25 | Version 1.0
+                      </div>
+            <div class="xright">      
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Overview</h5>
+            <ul>
+              
+    <li class="none">
+              <strong>Introduction</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="apidocs/index.html">Javadocs</a>
+          </li>
+              
+    <li class="none">
+                    <a href="changes.html">Changes</a>
+          </li>
+              
+    <li class="none">
+                    <a href="eclipse.html">Eclipse</a>
+          </li>
+          </ul>
+              <h5>Project Documentation</h5>
+            <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-info.html">Project Information</a>
+                </li>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+                    <a href="project-reports.html">Project Reports</a>
+                </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <head><style type="text/css">
+    .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+    .s0 { color: rgb(0,0,128); font-weight: bold; }
+    .s1 { }
+    </style></head><p>
+Pojomatic provides configurable implementations of the <code>equals(Object)</code>, <code>hashCode()</code>
+and <code>toString()</code> methods inherited from <code>java.lang.Object</code>.
+</p>
+<p>For example, the following bean has been &quot;pojomated&quot;:</p>
+<div class="source"><pre><span class="s0">import </span><span class="s1">org.pojomatic.Pojomatic;
+</span><span class="s0">import </span><span class="s1">org.pojomatic.annotations.AutoProperty;
+
+@AutoProperty
+</span><span class="s0">public class </span><span class="s1">Person {
+  </span><span class="s0">private final </span><span class="s1">String firstName;
+  </span><span class="s0">private final </span><span class="s1">String lastName;
+  </span><span class="s0">private final int </span><span class="s1">age;
+
+  </span><span class="s0">public </span><span class="s1">Person(String firstName, String lastName, </span><span class="s0">int </span><span class="s1">age) {
+    </span><span class="s0">this</span><span class="s1">.firstName = firstName;
+    </span><span class="s0">this</span><span class="s1">.lastName = lastName;
+    </span><span class="s0">this</span><span class="s1">.age = age;
+  }
+
+  </span><span class="s0">public </span><span class="s1">String getFirstName() { return this</span><span class="s1">.firstName; }
+  </span><span class="s0">public </span><span class="s1">String getLastName() { return this</span><span class="s1">.lastName; }
+  </span><span class="s0">public int </span><span class="s1">getAge() { return this</span><span class="s1">.age; }
+
+  @Override </span><span class="s0">public boolean </span><span class="s1">equals(Object o) {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.equals(</span><span class="s0">this</span><span class="s1">, o);
+  }
+
+  @Override </span><span class="s0">public int </span><span class="s1">hashCode() {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.hashCode(</span><span class="s0">this</span><span class="s1">);
+  }
+
+  @Override </span><span class="s0">public </span><span class="s1">String toString() {
+    </span><span class="s0">return </span><span class="s1">Pojomatic.toString(</span><span class="s0">this</span><span class="s1">);
+  }
+}
+</span></pre></div><p>
+ The above class implements <code>equals</code> and <code>hashCode</code> methods following the best practices
+ outlined in Josh Bloch's <em>Efective Java</em>.  Moreover, running
+</p>
+<div class="source"><pre>System.out.println(new Person(&quot;John&quot;, &quot;Doe&quot;, 32).toString());</pre>
+</div>
+
+will result in the following output:
+<div class="source"><pre>Person{firstName: {John}, lastName: {Doe}, age: {32}}</pre>
+</div>
+<p>For more information and examples, see the <a href="apidocs/index.html">JavaDocs</a>.</p>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2008-2010
+    
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
