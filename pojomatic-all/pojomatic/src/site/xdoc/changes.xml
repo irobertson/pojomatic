@@ -7,6 +7,43 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 2.0 (2014-06-29)">
+        <ul>
+          <li>Pojomatic now requires Java version 7 or higher</li>
+          <li>
+            Pojomators are now created by generating byte code. The generated code uses InvokeDynamic rather than
+            ordinary reflection to access properties.
+          </li>
+          <li>
+            Because, as of Java 7, the order in which fields and methods are returned by the Reflection API has become
+            somewhat arbitrary, ASM is used to visit the byte code used to define the class, and determine the order
+            of properties from that.
+          </li>
+          <li>
+            <a href="apidocs/index.html?org/pojomatic/formatter/PojoFormatter.html">PojoFormatter</a> has been
+            deprecated in favor of the new
+            <a href="apidocs/index.html?org/pojomatic/formatter/EnhancedPojoFormatter.html">EnhancedPojoFormatter</a>.
+            Similarly,
+            <a href="apidocs/index.html?org/pojomatic/formatter/DefaultPojoFormatter.html">DefaultPojoFormatter</a> has been
+            deprecated in favor of the new
+            <a href="apidocs/index.html?org/pojomatic/formatter/DefaultEnhancedPojoFormatter.html">DefaultEnhancedPojoFormatter</a>.
+          </li>
+          <li>
+            <a href="apidocs/index.html?org/pojomatic/formatter/PropertyFormatter.html">PropertyFormatter</a> has been
+            deprecated in favor of the new
+            <a href="apidocs/index.html?org/pojomatic/formatter/EnhancedPropertyFormatter.html">EnhancedPropertyFormatter</a>.
+            Similarly,
+            <a href="apidocs/index.html?org/pojomatic/formatter/DefaultPropertyFormatter.html">DefaultPropertyFormatter</a> has been
+            deprecated in favor of the new
+            <a href="apidocs/index.html?org/pojomatic/formatter/DefaultEnhancedPropertyFormatter.html">DefaultEnhancedPropertyFormatter</a>.
+          </li>
+          <li>
+            New annotation,
+            <a href="apidocs/index.html?org/pojomatic/annotations/SkipArrayCheck.html">SkipArrayCheck</a>, provides an
+            optimization for fields of type Object which should never be treated as arrays.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 1.0 (2010-04-25)">
         <ul>
           <li>
