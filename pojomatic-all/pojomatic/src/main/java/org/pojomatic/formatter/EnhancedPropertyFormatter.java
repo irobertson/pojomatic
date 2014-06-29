@@ -8,6 +8,7 @@ import java.lang.reflect.AnnotatedElement;
  * Any implementation of {@code EnhancedPropertyFormatter} must have a public no-argument constructor. A single instance
  * will be created for each property; consequently, implementations must be thread safe.
  *
+ * @since 2.0
  * @see DefaultEnhancedPropertyFormatter
  */
 @SuppressWarnings("deprecation")

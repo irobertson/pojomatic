@@ -9,6 +9,8 @@ import java.util.Set;
  * strategy are subject to change, the general principle is to provide a meaningful representation.
  * In particular, arrays are formatted "deeply", rather than simply showing the default toString
  * representation of Java arrays.
+ *
+ * @since 2.0
  */
 public class DefaultEnhancedPropertyFormatter implements EnhancedPropertyFormatter {
 

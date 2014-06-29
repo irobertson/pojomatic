@@ -112,7 +112,7 @@ public interface Pojomator<T> {
    * <ul>
    *   <li>{@code instanceP.getClass().equals(otherP.getClass())},</li>
    *   <li>{@code instanceP.length == otherP.length}, and</li>
-   *   <li>Recursively, each element of {@code instanceP} is equal to the corresponding element of {@otherP}.</li>
+   *   <li>Recursively, each element of {@code instanceP} is equal to the corresponding element of {@code otherP}.</li>
    * </ul></li>
    * </ul>
    * </p>

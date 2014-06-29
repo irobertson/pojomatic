@@ -12,6 +12,8 @@ import org.pojomatic.PropertyElement;
  * are using {@link DefaultPropertyFormatter}, then the Person
  * instance representing Joe Blow would be represented as
  * <code>"Person{firstName: {Joe}, lastName: {Blow}}"</code>
+ *
+ * @since 2.0
  */
 public class DefaultEnhancedPojoFormatter implements EnhancedPojoFormatter {
   private boolean firstPropertyPrinted = false;

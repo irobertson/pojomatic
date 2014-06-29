@@ -9,7 +9,7 @@ import java.util.Arrays;
  * In particular, arrays are formatted "deeply", rather than simply showing the default toString
  * representation of Java arrays.
  *
- * @deprecated use {@link DefaultEnhancedPropertyFormatter} instead.
+ * @deprecated Since 2.0. Use {@link DefaultEnhancedPropertyFormatter} instead.
  */
 @Deprecated
 public class DefaultPropertyFormatter implements PropertyFormatter {

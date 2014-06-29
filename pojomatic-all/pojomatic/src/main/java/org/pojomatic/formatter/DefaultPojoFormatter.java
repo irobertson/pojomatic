@@ -13,7 +13,7 @@ import org.pojomatic.PropertyElement;
  * instance representing Joe Blow would be represented as
  * <code>"Person{firstName: {Joe}, lastName: {Blow}}"</code>
  *
- * @deprecated Use {@link DefaultEnhancedPojoFormatter} instead.
+ * @deprecated Since 2.0. Use {@link DefaultEnhancedPojoFormatter} instead.
  */
 @Deprecated
 public class DefaultPojoFormatter implements PojoFormatter {

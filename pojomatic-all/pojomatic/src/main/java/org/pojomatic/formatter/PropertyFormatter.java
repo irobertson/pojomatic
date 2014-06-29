@@ -7,8 +7,8 @@ import java.lang.reflect.AnnotatedElement;
  * <p>
  * Any implementation of {@code PropertyFormatter} must have a public no-argument constructor.
  *
- * @deprecated implement {@link EnhancedPropertyFormatter} instead. This class is unaware of primitives, and does not
- * leverage string buffers.
+ * @deprecated Since 2.0. Implement {@link EnhancedPropertyFormatter} instead. This class is unaware of primitives,
+ * and does not leverage StringBuilder.
  */
 @Deprecated
 public interface PropertyFormatter {

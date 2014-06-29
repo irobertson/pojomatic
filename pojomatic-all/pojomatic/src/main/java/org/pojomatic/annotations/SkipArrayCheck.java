@@ -16,6 +16,8 @@ import java.lang.annotation.Target;
  * {@link Object#getClass()}.{@link Class#isArray() isArray()}
  * <p>
  * If the annotated property is not of type {@code Object}, this annotation has no effect.
+ *
+ * @since 2.0
  */
 @Target({FIELD, METHOD})
 @Retention(RetentionPolicy.RUNTIME)

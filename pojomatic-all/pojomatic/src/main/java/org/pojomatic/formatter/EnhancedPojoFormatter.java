@@ -9,7 +9,8 @@ import org.pojomatic.PropertyElement;
  * Any implementation of {@code EnhancedPojoFormatter} must have a public no-argument constructor. A new instance will
  * be created for each time that {@link Pojomator#doToString(Object)} is called. Consequently, implementations do
  * <em>not</em> need to be thread safe.
- * 
+ *
+ * @since 2.0
  * @see DefaultEnhancedPojoFormatter
  */
 @SuppressWarnings("deprecation")
