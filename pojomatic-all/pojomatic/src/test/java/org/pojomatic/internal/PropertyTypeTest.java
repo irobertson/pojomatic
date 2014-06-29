@@ -167,7 +167,7 @@ public class PropertyTypeTest {
   }
 
   /**
-   * Verify that doEquals honors the @{@link DeepArray} annotation on properties of type {@link Object}.
+   * Verify that doEquals honors the {@link DeepArray} annotation on properties of type {@link Object}.
    * @param type
    * @param canBeArray
    * @param deepArray
@@ -190,7 +190,7 @@ public class PropertyTypeTest {
   }
 
   /**
-   * Verify that doEquals honors the @{@link DeepArray} annotation on properties of array type
+   * Verify that doEquals honors the {@link DeepArray} annotation on properties of array type
    * @param type
    * @param canBeArray - this should have no impact
    * @param deepArray - likewise - deep arrays should be detected
