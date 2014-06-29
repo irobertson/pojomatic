@@ -1,13 +1,8 @@
 <project>
   <body>
     <menu name="Overview">
-      <item name="Introduction" href="index.html"/>
-      <item name="Javadocs" href="apidocs/index.html"/>
-      <item name="Changes" href="changes.html"/>
-      <item name="Pojomatic Project" href="../index.html">
-        <item name="Pojomatic" href="../pojomatic/index.html"/>
-        <item name="Pojomatic Test Utils" href="../pojomatic-test-utils/index.html"/>
-      </item>
+      <item name="Pojomatic" href="pojomatic/index.html"/>
+      <item name="Pojomatic Test Utils" href="pojomatic-test-utils/index.html"/>
     </menu>
     <menu ref="reports"/>
   </body>
@@ -25,6 +20,8 @@
       </gitHub>
       <topBarEnabled>true</topBarEnabled>
       <sideBarEnabled>true</sideBarEnabled>
+      <leftColumnClass>span2</leftColumnClass>
+      <bodyColumnClass>span10</bodyColumnClass>
     </fluidoSkin>
   </custom>
 </project>

@@ -5,6 +5,10 @@
       <item name="Javadocs" href="apidocs/index.html"/>
       <item name="Changes" href="changes.html"/>
       <item name="Eclipse" href="eclipse.html"/>
+      <item name="Pojomatic Project" href="../index.html">
+        <item name="Pojomatic" href="../pojomatic/index.html"/>
+        <item name="Pojomatic Test Utils" href="../pojomatic-test-utils/index.html"/>
+      </item>
     </menu>
     <menu ref="reports"/>
   </body>
@@ -21,7 +25,7 @@
         <ribbonColor>blue</ribbonColor>
       </gitHub>
       <topBarEnabled>true</topBarEnabled>
-      <sideBarEnabled>false</sideBarEnabled>
+      <sideBarEnabled>true</sideBarEnabled>
     </fluidoSkin>
   </custom>
 </project>

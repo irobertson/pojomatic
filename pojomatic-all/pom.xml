@@ -4,7 +4,7 @@
   <artifactId>pojomatic-all</artifactId>
   <packaging>pom</packaging>
   <version>master-SNAPSHOT</version>
-  <name>PojomaticAll</name>
+  <name>Pojomatic Project</name>
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
@@ -20,6 +20,13 @@
     <developerConnection>scm:git:https://github.com/irobertson/pojomatic</developerConnection>
     <url>https://github.com/irobertson/pojomatic</url>
   </scm>
+
+  <distributionManagement>
+    <site>
+      <id>www.pojomatic.org</id>
+      <url>file:target/site-stage</url>
+    </site>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -114,7 +121,7 @@
         <version>0.8</version>
         <configuration>
           <server>github</server>
-          <path>${project.artifactId}/${project.version}</path>
+          <path>${project.version}/${project.artifactId}/</path>
           <message>Creating site for ${project.artifactId}/${project.version}</message>
           <merge>true</merge>
         </configuration>
@@ -139,11 +146,6 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.3</version>
       </plugin>
@@ -164,6 +166,25 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.6</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>aggregate</id>
+            <inherited>false</inherited>
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
     </plugins>
   </reporting>

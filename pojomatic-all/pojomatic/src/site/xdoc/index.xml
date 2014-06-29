@@ -5,15 +5,7 @@
   <properties>
     <title>Pojomatic</title>
   </properties>
-  <head>
-    <title/>
-    <style type="text/css">
-    .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
-    .s0 { color: rgb(0,0,128); font-weight: bold; }
-    .s1 { }
-    </style>
-  </head>
-  <body>
+<body>
 <section name="Pojomatic">
 <p>
 Pojomatic provides configurable implementations of the <code>equals(Object)</code>, <code>hashCode()</code>
