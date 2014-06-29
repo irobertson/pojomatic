@@ -38,6 +38,11 @@ the three methods.
   {@code SubclassCannotOverrideEquals} annotation that no additional properties will be added by
   child classes.
 </p>
+<p>
+  By default, when Pojomatic sees a property of type object, it will inspect the value to see if it is an array,
+  and if so, treat it as such. If the {@link org.pojomatic.annotations.SkipArrayCheck} annotation is present on the
+  property declaration, then this skip is checked, providing a small performance gain.
+</p>
 <h2>Implementing {@code equals}, {@code hashCode} and {@code toString}</h2>
 To implement {@code equals}, {@code hashCode} and {@code toString}, simply annotate the class for pojomation (see below),
 and delegate to the static methods in
@@ -230,7 +235,6 @@ Taking all of this together, a Customer POJO using Pojomatic might look like:
  &nbsp;&nbsp;permission {@link java.io.FilePermission} "/path/to/jar/with/pojos.jar", "read"<br>
  &nbsp;&nbsp;permission {@link java.io.FilePermission} "/path/to/dir/with/pojos/classes/-", "read"<br>
  &nbsp;&nbsp;permission {@link java.lang.RuntimePermission} "accessDeclaredMembers"<br>
- &nbsp;&nbsp;permission {@link java.lang.RuntimePermission} "getProtectionDomain"<br>
  &nbsp;&nbsp;permission {@link java.lang.reflect.ReflectPermission} "suppressAccessChecks"<br>
  };<br>
  </code>
