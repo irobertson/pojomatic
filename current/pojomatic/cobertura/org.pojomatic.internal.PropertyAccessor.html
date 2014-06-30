@@ -35,24 +35,24 @@
   <td class="src"><pre class="src">&nbsp;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;9</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">public</span> PropertyAccessor(Method method, String name) {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;10</td>  <td class="nbHitsCovered"><a title="Line 10: Conditional coverage 100% (2/2).">&nbsp;1272</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 10: Conditional coverage 100% (2/2).">    <span class="keyword">super</span>(method, name.length() == 0 ? getName(method) : name);</a></pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;11</td>  <td class="nbHitsCovered">&nbsp;1272</td>  <td class="src"><pre class="src">&nbsp;  }</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;10</td>  <td class="nbHitsCovered"><a title="Line 10: Conditional coverage 100% (2/2).">&nbsp;106</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 10: Conditional coverage 100% (2/2).">    <span class="keyword">super</span>(method, name.length() == 0 ? getName(method) : name);</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;11</td>  <td class="nbHitsCovered">&nbsp;106</td>  <td class="src"><pre class="src">&nbsp;  }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;12</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;13</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">private</span> <span class="keyword">static</span> String getName(Method method) {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;14</td>  <td class="nbHitsCovered">&nbsp;1248</td>  <td class="src"><pre class="src">&nbsp;    String methodName = method.getName();</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;15</td>  <td class="nbHitsCovered"><a title="Line 15: Conditional coverage 100% (2/2).">&nbsp;1248</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 15: Conditional coverage 100% (2/2).">    <span class="keyword">if</span> (isPrefixedWith(methodName, GET)) {</a></pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;16</td>  <td class="nbHitsCovered">&nbsp;564</td>  <td class="src"><pre class="src">&nbsp;      <span class="keyword">return</span> Introspector.decapitalize(methodName.substring(GET.length()));</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;14</td>  <td class="nbHitsCovered">&nbsp;104</td>  <td class="src"><pre class="src">&nbsp;    String methodName = method.getName();</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;15</td>  <td class="nbHitsCovered"><a title="Line 15: Conditional coverage 100% (2/2).">&nbsp;104</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 15: Conditional coverage 100% (2/2).">    <span class="keyword">if</span> (isPrefixedWith(methodName, GET)) {</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;16</td>  <td class="nbHitsCovered">&nbsp;47</td>  <td class="src"><pre class="src">&nbsp;      <span class="keyword">return</span> Introspector.decapitalize(methodName.substring(GET.length()));</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;17</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    }</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;18</td>  <td class="nbHitsCovered"><a title="Line 18: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">&nbsp;684</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 18: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">    <span class="keyword">else</span> <span class="keyword">if</span> (isBoolean(method.getReturnType()) &amp;&amp; isPrefixedWith(methodName, IS)) {</a></pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;19</td>  <td class="nbHitsCovered">&nbsp;48</td>  <td class="src"><pre class="src">&nbsp;      <span class="keyword">return</span> Introspector.decapitalize(methodName.substring(IS.length()));</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;18</td>  <td class="nbHitsCovered"><a title="Line 18: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">&nbsp;57</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 18: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">    <span class="keyword">else</span> <span class="keyword">if</span> (isBoolean(method.getReturnType()) &amp;&amp; isPrefixedWith(methodName, IS)) {</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;19</td>  <td class="nbHitsCovered">&nbsp;4</td>  <td class="src"><pre class="src">&nbsp;      <span class="keyword">return</span> Introspector.decapitalize(methodName.substring(IS.length()));</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;20</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;21</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    <span class="keyword">else</span> {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;22</td>  <td class="nbHitsCovered">&nbsp;636</td>  <td class="src"><pre class="src">&nbsp;      <span class="keyword">return</span> methodName;</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;22</td>  <td class="nbHitsCovered">&nbsp;53</td>  <td class="src"><pre class="src">&nbsp;      <span class="keyword">return</span> methodName;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;23</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;24</td>  <td class="nbHits">&nbsp;</td>
@@ -61,14 +61,14 @@
   <td class="src"><pre class="src">&nbsp;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;26</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> isBoolean(Class&lt;?&gt; clazz) {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;27</td>  <td class="nbHitsCovered"><a title="Line 27: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">&nbsp;684</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 27: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">    <span class="keyword">return</span> Boolean.<span class="keyword">class</span>.equals(clazz) || Boolean.TYPE.equals(clazz);</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;27</td>  <td class="nbHitsCovered"><a title="Line 27: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">&nbsp;57</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 27: Conditional coverage 100% (4/4) [each condition: 100%, 100%].">    <span class="keyword">return</span> Boolean.<span class="keyword">class</span>.equals(clazz) || Boolean.TYPE.equals(clazz);</a></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;28</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;29</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;30</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> isPrefixedWith(String name, String prefix) {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;31</td>  <td class="nbHitsCovered"><a title="Line 31: Conditional coverage 100% (6/6) [each condition: 100%, 100%, 100%].">&nbsp;1380</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 31: Conditional coverage 100% (6/6) [each condition: 100%, 100%, 100%].">    <span class="keyword">return</span> name.length() &gt; prefix.length()</a></pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;31</td>  <td class="nbHitsCovered"><a title="Line 31: Conditional coverage 100% (6/6) [each condition: 100%, 100%, 100%].">&nbsp;115</a></td>  <td class="src"><pre class="src">&nbsp;<a title="Line 31: Conditional coverage 100% (6/6) [each condition: 100%, 100%, 100%].">    <span class="keyword">return</span> name.length() &gt; prefix.length()</a></pre></td></tr>
 <tr>  <td class="numLine">&nbsp;32</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;    &amp;&amp; name.startsWith(prefix)</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;33</td>  <td class="nbHits">&nbsp;</td>
@@ -81,7 +81,7 @@
   <td class="src"><pre class="src">&nbsp;  @Override</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;37</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">public</span> String getElementName() {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;38</td>  <td class="nbHitsCovered">&nbsp;2688</td>  <td class="src"><pre class="src">&nbsp;    <span class="keyword">return</span> element.getName();</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;38</td>  <td class="nbHitsCovered">&nbsp;224</td>  <td class="src"><pre class="src">&nbsp;    <span class="keyword">return</span> element.getName();</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;39</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;40</td>  <td class="nbHits">&nbsp;</td>
@@ -90,7 +90,7 @@
   <td class="src"><pre class="src">&nbsp;  @Override</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;42</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">public</span> String getType() {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;43</td>  <td class="nbHitsCovered">&nbsp;2688</td>  <td class="src"><pre class="src">&nbsp;    <span class="keyword">return</span> <span class="string">"method"</span>;</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;43</td>  <td class="nbHitsCovered">&nbsp;224</td>  <td class="src"><pre class="src">&nbsp;    <span class="keyword">return</span> <span class="string">"method"</span>;</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;44</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;45</td>  <td class="nbHits">&nbsp;</td>
@@ -99,13 +99,13 @@
   <td class="src"><pre class="src">&nbsp;  @Override</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;47</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  <span class="keyword">public</span> Class&lt;?&gt; getPropertyType() {</pre></td></tr>
-<tr>  <td class="numLineCover">&nbsp;48</td>  <td class="nbHitsCovered">&nbsp;5256</td>  <td class="src"><pre class="src">&nbsp;    <span class="keyword">return</span> element.getReturnType();</pre></td></tr>
+<tr>  <td class="numLineCover">&nbsp;48</td>  <td class="nbHitsCovered">&nbsp;438</td>  <td class="src"><pre class="src">&nbsp;    <span class="keyword">return</span> element.getReturnType();</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;49</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;  }</pre></td></tr>
 <tr>  <td class="numLine">&nbsp;50</td>  <td class="nbHits">&nbsp;</td>
   <td class="src"><pre class="src">&nbsp;}</pre></td></tr>
 </table>
 
-<div class="footer">Report generated by <a href="http://cobertura.sourceforge.net/" target="_top">Cobertura</a> 2.0.3 on 6/29/14 12:56 PM.</div>
+<div class="footer">Report generated by <a href="http://cobertura.sourceforge.net/" target="_top">Cobertura</a> 2.0.3 on 6/29/14 10:28 PM.</div>
 </body>
 </html>
