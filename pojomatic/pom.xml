@@ -14,6 +14,11 @@
     Automatically provides configurable implementations of the
     equals(Object), hashCode() and toString() methods inherited from java.lang.Object
   </description>
+  <scm>
+    <connection>scm:git:git@github.com:irobertson/pojomatic</connection>
+    <developerConnection>scm:git:git@github.com:irobertson/pojomatic</developerConnection>
+    <url>https://github.com/irobertson/pojomatic</url>
+  </scm>
 
   <dependencies>
     <dependency>
@@ -47,6 +52,25 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>perform</goal>
+            </goals>
+            <configuration>
+              <pomFileName>pojomatic/pom.xml</pomFileName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <reporting>
     <plugins>
       <plugin>
