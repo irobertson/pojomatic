@@ -16,8 +16,8 @@
   <url>http://www.pojomatic.org</url>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:git:https://github.com/irobertson/pojomatic</connection>
-    <developerConnection>scm:git:https://github.com/irobertson/pojomatic</developerConnection>
+    <connection>scm:git:git@github.com:irobertson/pojomatic</connection>
+    <developerConnection>scm:git:git@github.com:irobertson/pojomatic</developerConnection>
     <url>https://github.com/irobertson/pojomatic</url>
   </scm>
 
