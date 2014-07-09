@@ -7,6 +7,14 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 2.0.1 (2014-07-??)">
+        <ul>
+          <li>
+            Fix for <a href="https://github.com/irobertson/pojomatic/issues/4">GitHub issue #4</a>:
+            Under Java8 ASM classreader fails
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 2.0 (2014-06-29)">
         <ul>
           <li>Pojomatic now requires Java version 7 or higher</li>
