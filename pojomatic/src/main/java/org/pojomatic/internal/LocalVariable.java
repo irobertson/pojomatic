@@ -1,9 +1,9 @@
 package org.pojomatic.internal;
 
-import org.kohsuke.asm4.Label;
-import org.kohsuke.asm4.MethodVisitor;
-import org.kohsuke.asm4.Opcodes;
-import org.kohsuke.asm4.Type;
+import org.kohsuke.asm5.Label;
+import org.kohsuke.asm5.MethodVisitor;
+import org.kohsuke.asm5.Opcodes;
+import org.kohsuke.asm5.Type;
 
 class LocalVariable {
   private final String name;

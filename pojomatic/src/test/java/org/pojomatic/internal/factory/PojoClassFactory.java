@@ -6,14 +6,14 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kohsuke.asm4.ClassWriter;
-import org.kohsuke.asm4.FieldVisitor;
-import org.kohsuke.asm4.Label;
-import org.kohsuke.asm4.MethodVisitor;
-import org.kohsuke.asm4.Type;
+import org.kohsuke.asm5.ClassWriter;
+import org.kohsuke.asm5.FieldVisitor;
+import org.kohsuke.asm5.Label;
+import org.kohsuke.asm5.MethodVisitor;
+import org.kohsuke.asm5.Type;
 import org.pojomatic.annotations.Property;
 
-import static org.kohsuke.asm4.Opcodes.*;
+import static org.kohsuke.asm5.Opcodes.*;
 
 public class PojoClassFactory {
 

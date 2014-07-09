@@ -20,11 +20,15 @@
     <url>https://github.com/irobertson/pojomatic</url>
   </scm>
 
+  <properties>
+    <java8.build.dir>${project.build.directory}/java8-test-classes</java8.build.dir>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.kohsuke</groupId>
-      <artifactId>asm4</artifactId>
-      <version>4.0</version>
+      <artifactId>asm5</artifactId>
+      <version>5.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
@@ -103,4 +107,74 @@
       </plugin>
     </plugins>
   </reporting>
+  <profiles>
+    <profile>
+      <!-- If we are running under java8, then test both with java7 and java8 targets for test classes -->
+      <id>java8</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <jdk>1.8</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>createThriftDir</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <tasks>
+                    <mkdir dir="${java8.build.dir}"/>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>java-8-compile</id>
+                <phase>test-compile</phase>
+                <goals>
+                  <goal>testCompile</goal>
+                </goals>
+                <configuration>
+                  <source>1.8</source>
+                  <target>1.8</target>
+                  <compilerArguments>
+                    <d>${java8.build.dir}</d>
+                  </compilerArguments>
+                  <useIncrementalCompilation>true</useIncrementalCompilation>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <executions>
+              <execution>
+            <id>java-8-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <testClassesDirectory>${java8.build.dir}</testClassesDirectory>
+              <reportsDirectory>${project.build.directory}/java8-surefire-reports</reportsDirectory>
+            </configuration>
+          </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

@@ -3,7 +3,7 @@ package org.pojomatic.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kohsuke.asm4.Opcodes;
+import org.kohsuke.asm5.Opcodes;
 
 class Primitives {
   private final static Map<Class<?>, Class<?>> WRAPPER_CLASSES = new HashMap<>();
