@@ -1119,16 +1119,8 @@ class PojomatorByteCodeGenerator {
     return Type.getDescriptor(clazz);
   }
 
-  private static String methodDesc(Class<?> returnType) {
-    return MethodType.methodType(returnType).toMethodDescriptorString();
-  }
-
-  private static String methodDesc(Class<?> returnType, Class<?> parameterType0) {
-    return MethodType.methodType(returnType, parameterType0).toMethodDescriptorString();
-  }
-
-  private static String methodDesc(Class<?> returnType, Class<?> parameterType0, Class<?>... parameterTypes) {
-    return MethodType.methodType(returnType, parameterType0, parameterTypes).toMethodDescriptorString();
+  private static String methodDesc(Class<?> returnType, Class<?>... parameterTypes) {
+    return MethodType.methodType(returnType, parameterTypes).toMethodDescriptorString();
   }
 
   private static String propertyAccessorName(PropertyElement property) {
