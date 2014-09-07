@@ -78,9 +78,9 @@ class PojomatorByteCodeGenerator {
     this.classProperties = classProperties;
     this.bootstrapMethod = new Handle(
       H_INVOKESTATIC,
-      pojomatorInternalClassName,
+      BASE_POJOMATOR_INTERNAL_NAME,
       BOOTSTRAP_METHOD_NAME,
-      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class));
+      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class));
     int propertyNumber = 1;
     for (PropertyElement property: classProperties.getAllProperties()) {
       propertyNumbers.put(property, propertyNumber++);
@@ -102,7 +102,6 @@ class PojomatorByteCodeGenerator {
     makeFields(classWriter);
 
     makeConstructor(classWriter);
-    makeBootstrapMethod(classWriter);
 
     for (PropertyElement propertyElement: classProperties.getAllProperties()) {
       makeAccessor(classWriter, propertyElement);
@@ -133,48 +132,6 @@ class PojomatorByteCodeGenerator {
   }
 
   /**
-   * Generate a bootstrap method that allows us to access properties without reflection, even though they may not be
-   * public. While the bulk of the work will be done by {@link BasePojomator}, we need to implement a shim which can
-   * provide our classname to
-   * {@link BasePojomator#bootstrap(java.lang.invoke.MethodHandles.Lookup, String, MethodType, Class)},
-   * so that it can in turn access the {@link PropertyElement} field on the class we are generating.
-   * @param classWriter
-   */
-  private void makeBootstrapMethod(ClassVisitor classWriter) {
-    LocalVariable caller = new LocalVariable("caller", MethodHandles.Lookup.class, null, 0);
-    LocalVariable name = new LocalVariable("name", String.class, null, 1);
-    LocalVariable type = new LocalVariable("type", MethodType.class, null, 2);
-    mv = classWriter.visitMethod(
-       ACC_STATIC,
-       BOOTSTRAP_METHOD_NAME,
-       methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class),
-       null,
-       null);
-    mv.visitCode();
-    Label start = visitNewLabel();
-
-    caller.acceptLoad(mv);
-    name.acceptLoad(mv);
-    type.acceptLoad(mv);
-    visitLineNumber(1, null);
-    mv.visitLdcInsn(Type.getObjectType(pojomatorInternalClassName));
-    visitLineNumber(2, null);
-    invokeStatic(
-      BasePojomator.class,
-      "bootstrap",
-      CallSite.class,
-      MethodHandles.Lookup.class, String.class, MethodType.class, Class.class);
-    visitLineNumber(3, null);
-    mv.visitInsn(ARETURN);
-    Label end = visitNewLabel();
-    caller.withScope(start, end).acceptLocalVariable(mv);
-    name.withScope(start, end).acceptLocalVariable(mv);
-    type.withScope(start, end).acceptLocalVariable(mv);
-    mv.visitMaxs(4, 3);
-    mv.visitEnd();
-  }
-
-  /**
    * Generate an accessor method for a property. The generated method uses InvokeDynamic, calling the method generated
    * by {@link #makeBootstrapMethod(ClassVisitor)}
    * @param classWriter
@@ -190,7 +147,8 @@ class PojomatorByteCodeGenerator {
     Label start = visitNewLabel();
     pojo.acceptLoad(mv);
     visitLineNumber(4, propertyElement);
-    mv.visitInvokeDynamicInsn(accessorName, accessorMethodDescription(propertyElement), bootstrapMethod);
+    mv.visitInvokeDynamicInsn(
+      accessorName, accessorMethodDescription(propertyElement), bootstrapMethod, Type.getType(pojomatorInternalClassDesc));
     visitLineNumber(5, propertyElement);
 
     // return using the appropriate return byte code, based on type
