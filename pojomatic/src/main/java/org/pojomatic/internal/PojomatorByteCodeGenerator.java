@@ -116,7 +116,7 @@ class PojomatorByteCodeGenerator {
   }
 
   private void makeFields(ClassVisitor classVisitor) {
-    visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
+    //visitField(classVisitor, ACC_STATIC, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
     for (PropertyElement property: classProperties.getToStringProperties()) {
       visitField(
         classVisitor, ACC_STATIC, propertyFormatterName(property), classDesc(EnhancedPropertyFormatter.class));
@@ -181,7 +181,7 @@ class PojomatorByteCodeGenerator {
 
   private void makeConstructor(ClassVisitor cw) {
     LocalVariable varThis = new LocalVariable("this", pojomatorInternalClassDesc, null, 0);
-    LocalVariable varPojoClass = new LocalVariable("pojoClass", Class.class, null, 1);
+    LocalVariable varPojoClass = new LocalVariable(POJO_CLASS_FIELD_NAME, Class.class, null, 1);
     LocalVariable varClassProperties = new LocalVariable("classProperties", ClassProperties.class, null, 2);
     mv = cw.visitMethod(ACC_PUBLIC, "<init>", methodDesc(void.class, Class.class, ClassProperties.class), null, null);
     mv.visitCode();
@@ -512,7 +512,7 @@ class PojomatorByteCodeGenerator {
 
     varPojoFormatter.acceptLoad(mv);
     varBuilder.acceptLoad(mv);
-    loadPojoClass();
+    loadPojoClass(varThis);
 
     visitLineNumber(34, null);
 
@@ -569,7 +569,7 @@ class PojomatorByteCodeGenerator {
     // Have any toString suffix appended
     varPojoFormatter.acceptLoad(mv);
     varBuilder.acceptLoad(mv);
-    loadPojoClass();
+    loadPojoClass(varThis);
     visitLineNumber(43, null);
     invokeInterface(EnhancedPojoFormatter.class,  "appendToStringSuffix", void.class, StringBuilder.class, Class.class);
 
@@ -646,10 +646,13 @@ class PojomatorByteCodeGenerator {
   /**
    * Load a reference to the pojo class. We cannot refer to this directly, since the class may not be visible to us,
    * so instead, we store a reference in a static field which is populated by {@link PojomatorFactory}
+   * @param varThis TODO
    */
-  private void loadPojoClass() {
+  private void loadPojoClass(LocalVariable varThis) {
     visitLineNumber(49, null);
-    mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
+    varThis.acceptLoad(mv);
+    mv.visitFieldInsn(GETFIELD, BASE_POJOMATOR_INTERNAL_NAME, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
+    //mv.visitFieldInsn(GETSTATIC, pojomatorInternalClassName, POJO_CLASS_FIELD_NAME, classDesc(Class.class));
   }
 
   /**

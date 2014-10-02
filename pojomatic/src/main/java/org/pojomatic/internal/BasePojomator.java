@@ -17,7 +17,7 @@ import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 
 public abstract class BasePojomator<T> implements Pojomator<T> {
-  private final Class<?> pojoClass;
+  protected final Class<?> pojoClass;
   private final ClassProperties classProperties;
 
   protected BasePojomator(Class<?> pojoClass, ClassProperties classProperties) {

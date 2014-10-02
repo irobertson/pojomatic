@@ -67,7 +67,6 @@ public class PojomatorFactory {
     ClassProperties classProperties = ClassProperties.forClass(pojoClass);
     PojomatorByteCodeGenerator generator = new PojomatorByteCodeGenerator(pojoClass, classProperties);
     Class<?> pojomatorClass = getClassLoader().loadClass(generator.pojomatorClassName, generator.makeClassBytes());
-    setStaticField(pojomatorClass, PojomatorByteCodeGenerator.POJO_CLASS_FIELD_NAME, pojoClass);
     @SuppressWarnings("unchecked")
     Pojomator<T> pojomator = (Pojomator<T>) pojomatorClass.getConstructor(Class.class, ClassProperties.class)
       .newInstance(pojoClass, classProperties);
