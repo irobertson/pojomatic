@@ -645,8 +645,8 @@ class PojomatorByteCodeGenerator {
 
   /**
    * Load a reference to the pojo class. We cannot refer to this directly, since the class may not be visible to us,
-   * so instead, we store a reference in a static field which is populated by {@link PojomatorFactory}
-   * @param varThis TODO
+   * so instead, we refer to the instance variable in {@link BasePojomator}.
+   * @param varThis the "this" local variable.
    */
   private void loadPojoClass(LocalVariable varThis) {
     visitLineNumber(49, null);
