@@ -3,12 +3,15 @@ package org.pojomatic.internal.factory;
 import java.util.Arrays;
 import java.util.List;
 
+import org.pojomatic.annotations.AutoDetectPolicy;
+
 public class PojoDescriptor {
   public final String className;
   public final String packageName;
   public final Access access;
   public final PojoDescriptor parent;
   public final List<PropertyDescriptor> properties;
+  public AutoDetectPolicy autoDetectPolicy;
 
   public PojoDescriptor(PropertyDescriptor... properties) {
     this("Pojo", properties);
@@ -32,6 +35,11 @@ public class PojoDescriptor {
     this.access = access;
     this.parent = parent;
     this.properties = Arrays.asList(properties);
+  }
+
+  public PojoDescriptor withAutoDetectPolicy(AutoDetectPolicy autoDetectPolicy) {
+    this.autoDetectPolicy = autoDetectPolicy;
+    return this;
   }
 
   public String qualifiedName() {

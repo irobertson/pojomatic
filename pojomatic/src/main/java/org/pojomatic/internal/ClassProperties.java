@@ -209,6 +209,9 @@ public class ClassProperties {
     final ClassContributionTracker classContributionTracker) {
     Map<PropertyRole, Map<String, PropertyElement>> propertiesMap = makePropertiesMap();
     for (Method method : clazz.getDeclaredMethods()) {
+      if (method.isSynthetic()) {
+        continue;
+      }
       Property property = method.getAnnotation(Property.class);
       if (isStatic(method)) {
         if (property != null) {
@@ -260,6 +263,9 @@ public class ClassProperties {
     final ClassContributionTracker classContributionTracker) {
     Map<PropertyRole, Map<String, PropertyElement>> propertiesMap = makePropertiesMap();
     for (Field field : clazz.getDeclaredFields()) {
+      if (field.isSynthetic()) {
+        continue;
+      }
       Property property = field.getAnnotation(Property.class);
       if (isStatic(field)) {
         if (property != null) {

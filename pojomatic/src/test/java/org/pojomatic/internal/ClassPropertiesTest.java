@@ -11,6 +11,9 @@ import org.pojomatic.annotations.*;
 import org.pojomatic.internal.a.C1;
 import org.pojomatic.internal.b.C2;
 import org.pojomatic.internal.b.C4;
+import org.pojomatic.internal.factory.PojoClassFactory;
+import org.pojomatic.internal.factory.PojoDescriptor;
+import org.pojomatic.internal.factory.PropertyDescriptor;
 
 public class ClassPropertiesTest {
   @Test public void testForClass() {
@@ -49,6 +52,16 @@ public class ClassPropertiesTest {
   }
 
   @Test
+  public void testAutoFieldWithSynthetic() throws Exception {
+    Set<PropertyElement> properties = asSet(TestUtils.field(AuthFieldPojoWithSyntheticEnclosingThis.class, "findMe"));
+    ClassProperties classProperties = ClassProperties.forClass(AuthFieldPojoWithSyntheticEnclosingThis.class);
+
+    assertEquals(classProperties.getEqualsProperties(), properties);
+    assertEquals(classProperties.getHashCodeProperties(), properties);
+    assertEquals(classProperties.getToStringProperties(), properties);
+  }
+
+  @Test
   public void testAnnotatedMethods() throws Exception {
     class MethodPojo {
       @Property public int getInt() { return 0; }
@@ -82,6 +95,22 @@ public class ClassPropertiesTest {
     assertEquals(asSet(classProperties.getEqualsProperties()), equalsHashCodeProperties);
     assertEquals(asSet(classProperties.getHashCodeProperties()), equalsHashCodeProperties);
     assertEquals(asSet(classProperties.getToStringProperties()), commonProperties);
+  }
+
+  @Test
+  public void testAutoMethodsWithSynthetic() throws Exception {
+    Class<?> pojoClass = new PojoClassFactory().generateClass(
+      new PojoDescriptor(
+        new PropertyDescriptor(String.class).withName("getX").asMethod(),
+        new PropertyDescriptor(Object.class).withName("getY").asMethod().asSynthetic())
+      .withAutoDetectPolicy(AutoDetectPolicy.METHOD));
+    final Set<PropertyElement> properties = asSet(TestUtils.method(pojoClass, "getX"));
+
+    ClassProperties classProperties = ClassProperties.forClass(pojoClass);
+
+    assertEquals(asSet(classProperties.getEqualsProperties()), properties);
+    assertEquals(asSet(classProperties.getHashCodeProperties()), properties);
+    assertEquals(asSet(classProperties.getToStringProperties()), properties);
   }
 
   @Test(expectedExceptions=IllegalArgumentException.class)
@@ -343,6 +372,12 @@ public class ClassPropertiesTest {
 
     /* static fields are not detected */
     public static String staticField;
+  }
+
+  @AutoProperty(autoDetect=AutoDetectPolicy.FIELD)
+  public class AuthFieldPojoWithSyntheticEnclosingThis {
+    @SuppressWarnings("unused")
+    private String findMe;
   }
 
   @AutoProperty(autoDetect=AutoDetectPolicy.METHOD, policy=DefaultPojomaticPolicy.ALL)

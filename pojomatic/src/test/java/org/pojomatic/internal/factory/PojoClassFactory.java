@@ -4,13 +4,18 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.kohsuke.asm5.AnnotationVisitor;
 import org.kohsuke.asm5.ClassWriter;
 import org.kohsuke.asm5.FieldVisitor;
 import org.kohsuke.asm5.Label;
 import org.kohsuke.asm5.MethodVisitor;
 import org.kohsuke.asm5.Type;
+import org.pojomatic.annotations.AutoDetectPolicy;
+import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.Property;
 
 import static org.kohsuke.asm5.Opcodes.*;
@@ -35,12 +40,21 @@ public class PojoClassFactory {
       }
       return super.getResourceAsStream(name);
     }
+
+    void definePackage(String packageName) {
+      definePackage(packageName, null, null, null, null, null, null, null);
+    }
   }
 
-  private DynamicClassLoader classLoader = new DynamicClassLoader(
+  private final DynamicClassLoader classLoader = new DynamicClassLoader(
     PojoClassFactory.class.getClassLoader());
 
+  private final Set<String> definedPackageNames = new HashSet<>();
+
   public Class<?> generateClass(PojoDescriptor pojoDescriptor) {
+    if (definedPackageNames.add(pojoDescriptor.packageName)) {
+      classLoader.definePackage(pojoDescriptor.packageName);
+    }
     return classLoader.loadClass(pojoDescriptor.qualifiedName(), generateClassBytes(pojoDescriptor));
   }
 
@@ -55,9 +69,14 @@ public class PojoClassFactory {
       pojoDescriptor.parentInternalName(),
       null);
 
+    if (pojoDescriptor.autoDetectPolicy != null) {
+      AnnotationVisitor annotationVisitor = cw.visitAnnotation(Type.getDescriptor(AutoProperty.class), true);
+      annotationVisitor.visitEnum(
+        "autoDetect", Type.getDescriptor(AutoDetectPolicy.class), pojoDescriptor.autoDetectPolicy.name());
+    }
     generateConstructor(cw, pojoDescriptor);
     for (PropertyDescriptor property : pojoDescriptor.properties) {
-      generatePropertyField(cw, property);
+      generateProperty(cw, property);
     }
     return cw.toByteArray();
   }
@@ -83,9 +102,18 @@ public class PojoClassFactory {
     mv.visitEnd();
   }
 
+  private void generateProperty(ClassWriter cw, PropertyDescriptor property) {
+     if (property.isMethod) {
+       generatePropertyMethod(cw, property);
+     }
+     else {
+       generatePropertyField(cw, property);
+     }
+  }
+
   private void generatePropertyField(ClassWriter cw, PropertyDescriptor property) {
     FieldVisitor fv = cw.visitField(
-      property.access.getCode(),
+      property.getFlags(),
       property.name,
       Type.getDescriptor(property.type),
       null,
@@ -95,5 +123,35 @@ public class PojoClassFactory {
       fv.visitAnnotation(Type.getDescriptor(annotationClass), true).visitEnd();
     }
     fv.visitEnd();
+  }
+
+  public Object getX() {
+    return null;
+  }
+
+  private void generatePropertyMethod(ClassWriter cw, PropertyDescriptor property) {
+    if (property.type.isPrimitive()) {
+      throw new UnsupportedOperationException("Cannot generate methods returning primitives");
+    }
+    MethodVisitor mv = cw.visitMethod(
+      property.getFlags(),
+      property.name,
+      Type.getMethodDescriptor(Type.getType(property.type)),
+      null,
+      null);
+    mv.visitAnnotation(Type.getDescriptor(Property.class), true).visitEnd();
+    for (Class<? extends Annotation> annotationClass: property.annotations) {
+      mv.visitAnnotation(Type.getDescriptor(annotationClass), true).visitEnd();
+    }
+    mv.visitCode();
+    Label l0 = new Label();
+    mv.visitLabel(l0);
+    mv.visitInsn(ACONST_NULL);
+    mv.visitInsn(ARETURN);
+    Label l1 = new Label();
+    mv.visitLabel(l1);
+    mv.visitLocalVariable("this", "Lorg/pojomatic/internal/factory/PojoClassFactory;", null, l0, l1, 0);
+    mv.visitMaxs(1, 1);
+    mv.visitEnd();
   }
 }
