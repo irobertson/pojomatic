@@ -19,8 +19,7 @@
 ${:import(org.pojomatic.Pojomatic)}
       </source>
       <p>
-        After that, to pojomate a class, simply add an <code>@AutoProperty</code> annotation to the
-        class, and insert the macro in the class body by typing "pojomatic" and hitting Control-space.
+        After that, to Pojomate a class, insert the macro in the class body by typing "pojomatic" and hitting Control-space.
       </p>
     </section>
   </body>

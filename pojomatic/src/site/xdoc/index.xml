@@ -14,9 +14,7 @@ and <code>toString()</code> methods inherited from <code>java.lang.Object</code>
 <p>For example, the following bean has been "pojomated":</p>
 <div class="source"><pre>
 <span class="s0">import </span><span class="s1">org.pojomatic.Pojomatic;
-</span><span class="s0">import </span><span class="s1">org.pojomatic.annotations.AutoProperty;
 
-@AutoProperty
 </span><span class="s0">public class </span><span class="s1">Person {
   </span><span class="s0">private final </span><span class="s1">String firstName;
   </span><span class="s0">private final </span><span class="s1">String lastName;

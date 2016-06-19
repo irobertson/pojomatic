@@ -2,7 +2,6 @@ package org.pojomatic.internal;
 
 import static org.testng.Assert.*;
 
-import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.AutoDetectPolicy;
 import org.pojomatic.annotations.AutoProperty;
@@ -153,11 +152,6 @@ public class PojomatorImplTest {
     catch (IllegalArgumentException e) {
       assertEquals(e.getMessage(), "instance has type java.lang.String which is not compatible for equality with org.pojomatic.internal.PojomatorImplTest$ObjectPairProperty");
     }
-  }
-
-  @Test(expectedExceptions= NoPojomaticPropertiesException.class)
-  public void testNonPojomatedClass() {
-    makePojomator(String.class);
   }
 
   @Test public void testInterface() {

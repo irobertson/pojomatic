@@ -42,14 +42,31 @@ public class ClassProperties {
 
   private final static class ClassContributionTracker {
     private Class<?> clazz = Object.class;
+    private boolean annotationsSeen;
 
+    /**
+     * Note that the supplied class has one or more properties that contribute to .equals();
+     * @param contributingClass
+     */
     public void noteContribution(Class<?> contributingClass) {
       clazz = contributingClass;
+    }
+
+    /**
+     * Note that we've seen an annotation; this will disable the auto-AutoProperty feature
+     */
+    public void noteAnnotation() {
+      annotationsSeen = true;
     }
 
     public Class<?> getMostSpecificContributingClass() {
       return clazz;
     }
+
+    public boolean annotationsSeen() {
+      return annotationsSeen;
+    }
+
   }
 
   /**
@@ -73,12 +90,20 @@ public class ClassProperties {
    */
   private ClassProperties(Class<?> pojoClass) throws NoPojomaticPropertiesException {
     if (pojoClass.isInterface()) {
-      extractClassProperties(pojoClass, new OverridableMethods(), new ClassContributionTracker());
+      ClassContributionTracker classContributionTracker = new ClassContributionTracker();
+      extractClassProperties(pojoClass, new OverridableMethods(), classContributionTracker, false);
+      if (! classContributionTracker.annotationsSeen()) {
+        extractClassProperties(pojoClass, new OverridableMethods(), new ClassContributionTracker(), true);
+      }
       equalsParentClass = pojoClass;
     }
     else {
       ClassContributionTracker classContributionTracker = new ClassContributionTracker();
-      walkHierarchy(pojoClass, new OverridableMethods(), classContributionTracker);
+      walkHierarchy(pojoClass, new OverridableMethods(), classContributionTracker, false);
+      if (! classContributionTracker.annotationsSeen()) {
+        classContributionTracker = new ClassContributionTracker();
+        walkHierarchy(pojoClass, new OverridableMethods(), classContributionTracker, true);
+      }
       equalsParentClass = classContributionTracker.getMostSpecificContributingClass();
     }
     verifyPropertiesNotEmpty(pojoClass);
@@ -151,14 +176,16 @@ public class ClassProperties {
    * @param clazz the class to inspect
    * @param overridableMethods used to track which methods can be overridden
    * @param classContributionTracker used to track the most specific class which contributes properties
+   * @param assumeDefaultAutoProperty if true, treat all classes as if they were annotated with {@code @AutoProperty}
    */
   private void walkHierarchy(
     Class<?> clazz,
     OverridableMethods overridableMethods,
-    ClassContributionTracker classContributionTracker) {
+    ClassContributionTracker classContributionTracker,
+    boolean assumeDefaultAutoProperty) {
     if (clazz != Object.class) {
-      walkHierarchy(clazz.getSuperclass(), overridableMethods, classContributionTracker);
-      extractClassProperties(clazz, overridableMethods, classContributionTracker);
+      walkHierarchy(clazz.getSuperclass(), overridableMethods, classContributionTracker, assumeDefaultAutoProperty);
+      extractClassProperties(clazz, overridableMethods, classContributionTracker, assumeDefaultAutoProperty);
       if (clazz.isAnnotationPresent(OverridesEquals.class)) {
         classContributionTracker.noteContribution(clazz);
       }
@@ -168,12 +195,16 @@ public class ClassProperties {
   private void extractClassProperties(
     Class<?> clazz,
     OverridableMethods overridableMethods,
-    ClassContributionTracker classContributionTracker) {
+    ClassContributionTracker classContributionTracker,
+    boolean assumeDefaultAutoProperty) {
     AutoProperty autoProperty = clazz.getAnnotation(AutoProperty.class);
+    if (autoProperty != null && ! assumeDefaultAutoProperty) {
+      classContributionTracker.noteAnnotation();
+    }
     final DefaultPojomaticPolicy classPolicy =
-      (autoProperty != null) ? autoProperty.policy() : null;
+      (autoProperty != null) ? autoProperty.policy() : (assumeDefaultAutoProperty ? DefaultPojomaticPolicy.ALL : null);
     final AutoDetectPolicy autoDetectPolicy =
-      (autoProperty != null) ? autoProperty.autoDetect() : null;
+      (autoProperty != null) ? autoProperty.autoDetect() : (assumeDefaultAutoProperty ? AutoDetectPolicy.FIELD : null);
 
     Map<PropertyRole, Map<String, PropertyElement>> fieldsMap = extractFields(
       clazz, classPolicy, autoDetectPolicy, classContributionTracker);
@@ -213,6 +244,9 @@ public class ClassProperties {
         continue;
       }
       Property property = method.getAnnotation(Property.class);
+      if (property != null) {
+        classContributionTracker.noteAnnotation();
+      }
       if (isStatic(method)) {
         if (property != null) {
           throw new IllegalArgumentException(
@@ -267,6 +301,9 @@ public class ClassProperties {
         continue;
       }
       Property property = field.getAnnotation(Property.class);
+      if (property != null) {
+        classContributionTracker.noteAnnotation();
+      }
       if (isStatic(field)) {
         if (property != null) {
           throw new IllegalArgumentException(

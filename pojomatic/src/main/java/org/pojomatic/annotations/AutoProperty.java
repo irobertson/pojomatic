@@ -13,6 +13,10 @@ import org.pojomatic.Pojomatic;
  * Assigns the defaults for {@link Pojomatic} at the class level and provides a way to
  * configure the automatic detection of properties.
  * Note that this can is overridden (case by case) by the {@link Property}} annotation.
+ * <p>
+ * As of Pojomatic 2.1, if no class in the class hierarchy for a class T is annotated with {@code @AutoProperty} or has
+ * any properties annotated with {@code @Property}, then Pojomatic will treat it as if all classes in the hierarchy were
+ * annotated with {@code @AutoProperty(policy = ALL, autoDetect = FIELD)}.
  */
 @Target(TYPE)
 @Retention(RUNTIME)

@@ -88,7 +88,7 @@ public class Pojomatic {
    * @param <T> the type of the POJO
    * @param pojo the POJO - must not be null
    * @return the {@code toString} representation of {@code pojo}.
-   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties annotated for
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties eligible for
    * use with Pojomatic
    * @see Pojomator#doToString(Object)
    */
@@ -101,7 +101,7 @@ public class Pojomatic {
    * @param <T> the type of the POJO
    * @param pojo the POJO - must not be null
    * @return the {@code hashCode} for {@code pojo}.
-   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties annotated for
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties eligible for
    * use with Pojomatic
    * @see Pojomator#doHashCode(Object)
    */
@@ -117,7 +117,7 @@ public class Pojomatic {
    * @param other the object to compare to for equality
    * @return whether {@code pojo} and {@code other} are equal to each other in the sense of
    * {@code Object}'s {@code equals} method.
-   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties annotated for
+   * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties eligible for
    * use with Pojomatic
    * @see Pojomator#doEquals(Object, Object)
    */
@@ -150,7 +150,8 @@ public class Pojomatic {
    * @throws NullPointerException if {@code pojo} or {@code other} are null
    * (this behavior may change in future releases).
    * @throws NoPojomaticPropertiesException if {@code pojo}'s class has no properties
-   * annotated for use with Pojomatic, or if the types of {@code pojo} and {@code other} are not
+   * eligible for use with Pojomatic.
+   * @throws IllegalArgumentException if the types of {@code pojo} and {@code other} are not
    * compatible for equality with each other (this behavior may change in future releases).
    */
   public static <T, S extends T> Differences diff(T pojo, S other)
@@ -172,7 +173,7 @@ public class Pojomatic {
    * @param <T> the type represented by {@code pojoClass}
    * @param pojoClass the class to create a {@code Pojomator} for.
    * @return a {@code Pojomator<T>}
-   * @throws NoPojomaticPropertiesException if {@code pojoClass} has no properties annotated for use
+   * @throws NoPojomaticPropertiesException if {@code pojoClass} has no properties eligible for use
    * with Pojomatic
    */
   @SuppressWarnings("unchecked") // compiler does not know that the type parameter to Pojomator is T

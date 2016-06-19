@@ -25,7 +25,9 @@ the three methods.
   practice is to provide an {@code AutoProperty} annotation at the class level, and then override
   the behavior it specifies on a per-property basis as needed.  This minimizes both the number of
   annotations needed, as well as the number of additional steps needed when adding new properties to
-  a class.
+  a class. If no customization on a per-property basis is needed, the @AutoProperty annotation can be
+  skipped; Pojomatic will use all fields of the class and its superclasses in performing equals,
+  toString and hashCode calculations.
 </p>
 <p>
   The annotations {@link org.pojomatic.annotations.OverridesEquals} and
@@ -86,7 +88,7 @@ and delegate to the static methods in
 
 <h2>Implementing {@code equals}, {@code hashCode} and {@code toString} for interfaces</h2>
 To implement {@code equals}, {@code hashCode} and {@code toString} for an interface, first annotate the interface for
-pojomation (see below) and define a static constant {@code POJOMATOR} in the interface:
+Pojomation (see below) and define a static constant {@code POJOMATOR} in the interface:
 <p class="java">
 <code>
   <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.annotations.AutoProperty;<br />
@@ -119,12 +121,21 @@ and then delegate to {@code POJOMATOR} in the implementing classes:
 </p>
 
 <h2>Example Annotations</h2>
-The simplest way to annotate a class for pojomation is to add a single {@code AutoProperty} annotation:
+The simplest way to annotate a class for Pojomation is to not add any annotations at all; in this case, Pojomatic will
+work as the class and its superclasses were annotated with {@code @AutoProperty(policy = ALL, autoDetect = FIELD)}. However,
+if you wish to override treatment of certain properties, then you must include a class-level {@code @AutoProperty} annotation
+if you want Pojomatic to include fields by default. For example:
 
 <p class="java">
 <code>
 <font color="#646464">@AutoProperty&nbsp;</font><font color="#3f7f5f">//all&nbsp;fields&nbsp;are&nbsp;included&nbsp;by&nbsp;default</font><br />
 <font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Common&nbsp;{<br />
+  private String pojomaticWillUseThisField;<br />
+<br />
+&nbsp;&nbsp;<font color="#646464">@Property</font>(policy = NONE)<br />
+&nbsp;&nbsp;private String pojomaticWillSkipThisField;
+
+
 &nbsp;&nbsp;...<br />
 }<br />
 </code>

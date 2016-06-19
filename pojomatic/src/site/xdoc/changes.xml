@@ -7,6 +7,14 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 2.1.0 (2016-06-??)">
+        <ul>
+          <li>
+            In absence of any Pojomatic annotations in a class's hierarchy, Pojomatic will assume that all the classes
+            of the hierarchy have been annotated with @AutoProperty.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 2.0.1 (2014-07-12)">
         <ul>
           <li>

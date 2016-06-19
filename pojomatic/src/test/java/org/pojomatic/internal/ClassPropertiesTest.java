@@ -3,8 +3,10 @@ package org.pojomatic.internal;
 import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
+
 import java.util.*;
 
+import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.TestUtils;
 import org.pojomatic.annotations.*;
@@ -14,6 +16,8 @@ import org.pojomatic.internal.b.C4;
 import org.pojomatic.internal.factory.PojoClassFactory;
 import org.pojomatic.internal.factory.PojoDescriptor;
 import org.pojomatic.internal.factory.PropertyDescriptor;
+
+import com.google.common.collect.ImmutableList;
 
 public class ClassPropertiesTest {
   @Test public void testForClass() {
@@ -59,6 +63,24 @@ public class ClassPropertiesTest {
     assertEquals(classProperties.getEqualsProperties(), properties);
     assertEquals(classProperties.getHashCodeProperties(), properties);
     assertEquals(classProperties.getToStringProperties(), properties);
+  }
+
+  @Test
+  public void testMixedFields() throws Exception {
+      @AutoProperty
+      class Pojo {
+        @SuppressWarnings("unused")
+        public String string;
+
+        @Property(policy=PojomaticPolicy.EQUALS_TO_STRING)
+        public int id;
+      }
+      final PropertyElement stringField = TestUtils.field(Pojo.class, "string");
+      final PropertyElement idField = TestUtils.field(Pojo.class, "id");
+
+      ClassProperties classProperties = ClassProperties.forClass(Pojo.class);
+
+      assertEquals((Object) classProperties.getToStringProperties(), (Object) ImmutableList.of(stringField, idField));
   }
 
   @Test
@@ -111,6 +133,79 @@ public class ClassPropertiesTest {
     assertEquals(asSet(classProperties.getEqualsProperties()), properties);
     assertEquals(asSet(classProperties.getHashCodeProperties()), properties);
     assertEquals(asSet(classProperties.getToStringProperties()), properties);
+  }
+
+  @Test(expectedExceptions = NoPojomaticPropertiesException.class)
+  public void testAnnotatedClassWithNoProperties() throws Exception {
+    @AutoProperty(autoDetect = AutoDetectPolicy.NONE)
+    class X {
+      @SuppressWarnings("unused")
+      String s;
+    }
+    ClassProperties.forClass(X.class);
+  }
+
+  @Test(expectedExceptions = NoPojomaticPropertiesException.class)
+  public void testAnnotatedFieldsWithNoProperties() throws Exception {
+    @AutoProperty
+    class X {
+      @Property(policy = PojomaticPolicy.NONE)
+      String s;
+    }
+    ClassProperties.forClass(X.class);
+  }
+
+  @Test
+  public void testUnannotatedClass() throws Exception {
+    @SuppressWarnings("unused")
+    class X {
+      String s;
+      int i;
+    }
+    ClassProperties classProperties = ClassProperties.forClass(X.class);
+    List<PropertyElement> properties = Arrays.asList(TestUtils.field(X.class, "s"), TestUtils.field(X.class, "i"));
+    assertEquals(classProperties.getEqualsProperties(), properties);
+    assertEquals(classProperties.getHashCodeProperties(), properties);
+    assertEquals(classProperties.getToStringProperties(), properties);
+  }
+
+  @Test
+  public void testUnannotatedClassWithUnannotatedParent() throws Exception {
+    @SuppressWarnings("unused")
+    class X {
+      String s;
+      int i;
+    }
+    @SuppressWarnings("unused")
+    class Y extends X {
+      Long l;
+    }
+    ClassProperties classProperties = ClassProperties.forClass(Y.class);
+    List<PropertyElement> properties = Arrays.asList(
+      TestUtils.field(X.class, "s"), TestUtils.field(X.class, "i"), TestUtils.field(Y.class, "l"));
+    assertEquals(classProperties.getEqualsProperties(), properties);
+    assertEquals(classProperties.getHashCodeProperties(), properties);
+    assertEquals(classProperties.getToStringProperties(), properties);
+  }
+
+  @Test
+  public void testUnannotatedClassWithAnnotatedParent() throws Exception {
+    @SuppressWarnings("unused")
+    @AutoProperty
+    class X {
+      String s;
+      int i;
+    }
+    @SuppressWarnings("unused")
+    class Y extends X {
+      Long l;
+    }
+    ClassProperties classProperties = ClassProperties.forClass(Y.class);
+    List<PropertyElement> properties = Arrays.asList(
+      TestUtils.field(X.class, "s"), TestUtils.field(X.class, "i"));
+    assertEquals(classProperties.getEqualsProperties(), properties);
+    assertEquals(classProperties.getHashCodeProperties(), properties);
+    assertEquals(classProperties.getToStringProperties(), properties);
   }
 
   @Test(expectedExceptions=IllegalArgumentException.class)

@@ -167,8 +167,8 @@ public interface Pojomator<T> {
    * among the properties examined by {@link #doEquals(Object, Object)}.
    * @throws NullPointerException if {@code instance} or {@code other} is null
    * (this behavior may change in future releases).
-   * @throws IllegalArgumentException the type of {@code instance} or of {@code other} is not a
-   * class which is compatible for equality with {@code T}
+   * @throws IllegalArgumentException the type of {@code other} is not a
+   * class which is compatible for equality with the type of {@code instance}
    * (this behavior may change in future releases).
    * @see #doEquals(Object, Object)
    */
