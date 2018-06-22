@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.kohsuke.asm5.ClassReader;
-import org.kohsuke.asm5.ClassVisitor;
-import org.kohsuke.asm5.FieldVisitor;
-import org.kohsuke.asm5.MethodVisitor;
-import org.kohsuke.asm5.Opcodes;
+import org.kohsuke.asm6.ClassReader;
+import org.kohsuke.asm6.ClassVisitor;
+import org.kohsuke.asm6.FieldVisitor;
+import org.kohsuke.asm6.MethodVisitor;
+import org.kohsuke.asm6.Opcodes;
 import org.pojomatic.PropertyElement;
 
 class PropertyClassVisitor extends ClassVisitor {

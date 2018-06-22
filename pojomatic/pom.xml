@@ -27,8 +27,8 @@
   <dependencies>
     <dependency>
       <groupId>org.kohsuke</groupId>
-      <artifactId>asm5</artifactId>
-      <version>5.0.1</version>
+      <artifactId>asm6</artifactId>
+      <version>6.2</version>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>1.9.5</version>
+      <version>2.19.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

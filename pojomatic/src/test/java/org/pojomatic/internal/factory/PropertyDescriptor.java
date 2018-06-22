@@ -2,7 +2,7 @@ package org.pojomatic.internal.factory;
 
 import java.lang.annotation.Annotation;
 
-import org.kohsuke.asm5.Opcodes;
+import org.kohsuke.asm6.Opcodes;
 
 public class PropertyDescriptor {
   final Class<?> type;
