@@ -64,7 +64,7 @@ class PojomatorByteCodeGenerator {
      */
     boolean wideProperty;
 
-    int adjustments(int widePropertyWeight, int callAreObjectValuesEqualWeight) {
+    int adjustments(int widePropertyWeight) {
       return (wideProperty ? widePropertyWeight : 0);
     }
   }
@@ -80,7 +80,8 @@ class PojomatorByteCodeGenerator {
       H_INVOKESTATIC,
       BASE_POJOMATOR_INTERNAL_NAME,
       BOOTSTRAP_METHOD_NAME,
-      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class));
+      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class),
+      false);
     int propertyNumber = 1;
     for (PropertyElement property: classProperties.getAllProperties()) {
       propertyNumbers.put(property, propertyNumber++);
@@ -286,7 +287,7 @@ class PojomatorByteCodeGenerator {
     varThis.withScope(start, end).acceptLocalVariable(mv);
     varPojo1.withScope(start, end).acceptLocalVariable(mv);
     varPojo2.withScope(start, end).acceptLocalVariable(mv);
-    mv.visitMaxs(2 + stackAdjustments.adjustments(2,  1), 3);
+    mv.visitMaxs(2 + stackAdjustments.adjustments(2), 3);
     mv.visitEnd();
   }
 
@@ -795,7 +796,7 @@ class PojomatorByteCodeGenerator {
     for (LocalVariable var: propertyVariables) {
       var.acceptLocalVariable(mv);
     }
-    mv.visitMaxs(6 + stackAdjustments.adjustments(2, 0), 6 + stackAdjustments.adjustments(2, 0));
+    mv.visitMaxs(6 + stackAdjustments.adjustments(2), 6 + stackAdjustments.adjustments(2));
     mv.visitEnd();
   }
 
