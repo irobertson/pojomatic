@@ -2,11 +2,14 @@ package org.pojomatic.internal;
 
 import static org.testng.Assert.*;
 
+import java.lang.reflect.Field;
+
 import org.pojomatic.NoPojomaticPropertiesException;
 import org.pojomatic.Pojomator;
 import org.pojomatic.annotations.AutoDetectPolicy;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.PojoFormat;
+import org.pojomatic.annotations.PojomaticPolicy;
 import org.pojomatic.annotations.Property;
 import org.pojomatic.annotations.PropertyFormat;
 import org.pojomatic.diff.Differences;
@@ -197,6 +200,36 @@ public class PojomatorImplTest {
     }.getClass()));
   }
 
+  @Test public void testEqualsScopedProperties() throws Exception {
+    assertFalse(PolicyProperties.policyUsedInEquals(PojomaticPolicy.NONE));
+    assertFalse(PolicyProperties.policyUsedInEquals(PojomaticPolicy.TO_STRING));
+
+    assertTrue(PolicyProperties.policyUsedInEquals(PojomaticPolicy.EQUALS));
+    assertTrue(PolicyProperties.policyUsedInEquals(PojomaticPolicy.EQUALS_TO_STRING));
+    assertTrue(PolicyProperties.policyUsedInEquals(PojomaticPolicy.HASHCODE_EQUALS));
+    assertTrue(PolicyProperties.policyUsedInEquals(PojomaticPolicy.ALL));
+  }
+
+  @Test public void testHashCodeScopedProperties() throws Exception {
+    assertFalse(PolicyProperties.policyUsedInHashCode(PojomaticPolicy.NONE));
+    assertFalse(PolicyProperties.policyUsedInHashCode(PojomaticPolicy.TO_STRING));
+    assertFalse(PolicyProperties.policyUsedInHashCode(PojomaticPolicy.EQUALS));
+    assertFalse(PolicyProperties.policyUsedInHashCode(PojomaticPolicy.EQUALS_TO_STRING));
+
+    assertTrue(PolicyProperties.policyUsedInHashCode(PojomaticPolicy.HASHCODE_EQUALS));
+    assertTrue(PolicyProperties.policyUsedInHashCode(PojomaticPolicy.ALL));
+  }
+
+  @Test public void testToStringScopedProperties() throws Exception {
+    assertFalse(PolicyProperties.policyUsedInToString(PojomaticPolicy.NONE));
+    assertFalse(PolicyProperties.policyUsedInToString(PojomaticPolicy.EQUALS));
+    assertFalse(PolicyProperties.policyUsedInToString(PojomaticPolicy.HASHCODE_EQUALS));
+
+    assertTrue(PolicyProperties.policyUsedInToString(PojomaticPolicy.TO_STRING));
+    assertTrue(PolicyProperties.policyUsedInToString(PojomaticPolicy.EQUALS_TO_STRING));
+    assertTrue(PolicyProperties.policyUsedInToString(PojomaticPolicy.ALL));
+  }
+
   @PojoFormat(SimplePojoFormatter.class)
   private static class FormattedObject {
     public FormattedObject(Object s) {
@@ -262,6 +295,55 @@ public class PojomatorImplTest {
 
     private int a, b;
     private boolean getBCalled;
+  }
+
+  private static class PolicyProperties {
+      @Property(policy = PojomaticPolicy.ALL)
+      public int all;
+
+      @Property(policy = PojomaticPolicy.EQUALS)
+      public int equals;
+
+      @Property(policy = PojomaticPolicy.EQUALS_TO_STRING)
+      public int equalsToString;
+
+      @Property(policy = PojomaticPolicy.HASHCODE_EQUALS)
+      public int hashCodeEquals;
+
+      @Property(policy = PojomaticPolicy.TO_STRING)
+      public int toString;
+
+      @Property(policy = PojomaticPolicy.NONE)
+      public int none;
+
+      private static PolicyProperties withPolicyProperty(PojomaticPolicy policy, int value) throws Exception {
+        PolicyProperties instance = new PolicyProperties();
+        for (Field field : instance.getClass().getDeclaredFields()) {
+          if (field.getAnnotation(Property.class).policy() == policy) {
+            field.setInt(instance, value);
+            return instance;
+          }
+        }
+        throw new IllegalArgumentException("No field with policy " + policy.name());
+      }
+
+      public static boolean policyUsedInEquals(PojomaticPolicy policy) throws Exception {
+        return ! POJOMATOR.doEquals(
+          PolicyProperties.withPolicyProperty(policy, 1),
+          PolicyProperties.withPolicyProperty(policy, 2));
+      }
+
+      public static boolean policyUsedInHashCode(PojomaticPolicy policy) throws Exception {
+        return POJOMATOR.doHashCode(PolicyProperties.withPolicyProperty(policy, 1))
+          != POJOMATOR.doHashCode(PolicyProperties.withPolicyProperty(policy, 2));
+      }
+
+      public static boolean policyUsedInToString(PojomaticPolicy policy) throws Exception {
+        return ! POJOMATOR.doToString(PolicyProperties.withPolicyProperty(policy, 1)).equals(
+          POJOMATOR.doToString(PolicyProperties.withPolicyProperty(policy, 2)));
+      }
+
+      private final static Pojomator<PolicyProperties> POJOMATOR = makePojomator(PolicyProperties.class);
   }
 
   @AutoProperty

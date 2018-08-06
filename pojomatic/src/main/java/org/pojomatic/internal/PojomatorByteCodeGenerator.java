@@ -266,7 +266,7 @@ class PojomatorByteCodeGenerator {
     mv.visitFrame(F_FULL, 3, localVars, 0, NO_STACK);
 
     // Compare properties
-    for(PropertyElement propertyElement: classProperties.getHashCodeProperties()) {
+    for(PropertyElement propertyElement: classProperties.getEqualsProperties()) {
       visitLineNumber(14, propertyElement);
       visitAccessorAndConvert(varPojo1, propertyElement);
       visitLineNumber(15, propertyElement);
