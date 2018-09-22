@@ -5,11 +5,6 @@
   <packaging>pom</packaging>
   <version>master-SNAPSHOT</version>
   <name>Pojomatic Project</name>
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>9</version>
-  </parent>
   <description>
     Parent and aggregator for all artifacts related to the Pojomatic project.
   </description>
@@ -22,6 +17,14 @@
   </scm>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
     <site>
       <id>www.pojomatic.org</id>
       <url>file:target/site-stage</url>
@@ -57,9 +60,9 @@
       </roles>
       <email>hansen.chris.w@gmail.com</email>
       <id>hansen.chris.w</id>
-      <organization>Experticity</organization>
-      <organizationUrl>http://www.experticity.com/</organizationUrl>
-      <url>http://polyglot-window.blogspot.com/</url>
+      <organization>PeopleKeep</organization>
+      <organizationUrl>https://www.peoplekeep.com/</organizationUrl>
+      <url>https://www.peoplekeep.com/</url>
     </developer>
   </developers>
 
@@ -115,6 +118,46 @@
           <skipDeploy>true</skipDeploy>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -133,7 +176,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>3.0.5</version>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>
