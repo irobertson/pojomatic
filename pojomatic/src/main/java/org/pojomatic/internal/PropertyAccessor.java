@@ -1,6 +1,5 @@
 package org.pojomatic.internal;
 
-import java.beans.Introspector;
 import java.lang.reflect.Method;
 
 public class PropertyAccessor extends AbstractPropertyElement<Method> {
@@ -13,10 +12,10 @@ public class PropertyAccessor extends AbstractPropertyElement<Method> {
   private static String getName(Method method) {
     String methodName = method.getName();
     if (isPrefixedWith(methodName, GET)) {
-      return Introspector.decapitalize(methodName.substring(GET.length()));
+      return decapitalize(methodName.substring(GET.length()));
     }
     else if (isBoolean(method.getReturnType()) && isPrefixedWith(methodName, IS)) {
-      return Introspector.decapitalize(methodName.substring(IS.length()));
+      return decapitalize(methodName.substring(IS.length()));
     }
     else {
       return methodName;
@@ -46,5 +45,15 @@ public class PropertyAccessor extends AbstractPropertyElement<Method> {
   @Override
   public Class<?> getPropertyType() {
     return element.getReturnType();
+  }
+
+  private static String decapitalize(String name) {
+    if (name.length() > 1 && Character.isUpperCase(name.charAt(1)) &&
+                    Character.isUpperCase(name.charAt(0))){
+        return name;
+    }
+    char chars[] = name.toCharArray();
+    chars[0] = Character.toLowerCase(chars[0]);
+    return new String(chars);
   }
 }
