@@ -27,7 +27,7 @@
     </repository>
     <site>
       <id>www.pojomatic.org</id>
-      <url>file:target/site-stage</url>
+      <url>scm:git:ssh://git@github.com/pojomatic/pojomatic.github.io.git</url>
     </site>
   </distributionManagement>
 
@@ -157,6 +157,16 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <ignorePathsToDelete>
+            <ignorePathsToDelete>old</ignorePathsToDelete>
+          </ignorePathsToDelete>
+        </configuration>
       </plugin>
     </plugins>
   </build>
