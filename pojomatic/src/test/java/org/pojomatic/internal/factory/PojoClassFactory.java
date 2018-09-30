@@ -8,17 +8,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.kohsuke.asm6.AnnotationVisitor;
-import org.kohsuke.asm6.ClassWriter;
-import org.kohsuke.asm6.FieldVisitor;
-import org.kohsuke.asm6.Label;
-import org.kohsuke.asm6.MethodVisitor;
-import org.kohsuke.asm6.Type;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 import org.pojomatic.annotations.AutoDetectPolicy;
 import org.pojomatic.annotations.AutoProperty;
 import org.pojomatic.annotations.Property;
 
-import static org.kohsuke.asm6.Opcodes.*;
+import static org.objectweb.asm.Opcodes.*;
 
 public class PojoClassFactory {
 

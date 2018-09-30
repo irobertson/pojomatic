@@ -11,13 +11,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.kohsuke.asm6.ClassWriter;
-import org.kohsuke.asm6.util.CheckClassAdapter;
-import org.kohsuke.asm6.ClassVisitor;
-import org.kohsuke.asm6.Handle;
-import org.kohsuke.asm6.Label;
-import org.kohsuke.asm6.MethodVisitor;
-import org.kohsuke.asm6.Type;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 import org.pojomatic.Pojomator;
 import org.pojomatic.PropertyElement;
 import org.pojomatic.annotations.PojoFormat;
@@ -30,7 +29,7 @@ import org.pojomatic.formatter.DefaultEnhancedPojoFormatter;
 import org.pojomatic.formatter.EnhancedPojoFormatter;
 import org.pojomatic.formatter.EnhancedPropertyFormatter;
 
-import static org.kohsuke.asm6.Opcodes.*;
+import static org.objectweb.asm.Opcodes.*;
 
 class PojomatorByteCodeGenerator {
   @Deprecated
@@ -90,7 +89,8 @@ class PojomatorByteCodeGenerator {
 
   byte[] makeClassBytes() {
     ClassWriter classWriter = new ClassWriter(0);
-    acceptClassVisitor(new CheckClassAdapter(classWriter));
+    // acceptClassVisitor(new CheckClassAdapter(classWriter));
+    acceptClassVisitor(classWriter);
     return classWriter.toByteArray();
   }
 

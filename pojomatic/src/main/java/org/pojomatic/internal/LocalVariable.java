@@ -1,9 +1,9 @@
 package org.pojomatic.internal;
 
-import org.kohsuke.asm6.Label;
-import org.kohsuke.asm6.MethodVisitor;
-import org.kohsuke.asm6.Opcodes;
-import org.kohsuke.asm6.Type;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 class LocalVariable {
   private final String name;
