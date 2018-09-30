@@ -87,7 +87,7 @@ public class PojoClassFactory {
     Label l0 = new Label();
     mv.visitLabel(l0);
     mv.visitVarInsn(ALOAD, 0);
-    mv.visitMethodInsn(INVOKESPECIAL, pojoDescriptor.parentInternalName(), "<init>", "()V", false);
+    mv.visitMethodInsn(INVOKESPECIAL, pojoDescriptor.parentInternalName(), "<init>", "()V");
     mv.visitInsn(RETURN);
     Label l1 = new Label();
     mv.visitLabel(l1);

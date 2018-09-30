@@ -79,8 +79,7 @@ class PojomatorByteCodeGenerator {
       H_INVOKESTATIC,
       BASE_POJOMATOR_INTERNAL_NAME,
       BOOTSTRAP_METHOD_NAME,
-      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class),
-      false);
+      methodDesc(CallSite.class, MethodHandles.Lookup.class, String.class, MethodType.class, Class.class));
     int propertyNumber = 1;
     for (PropertyElement property: classProperties.getAllProperties()) {
       propertyNumbers.put(property, propertyNumber++);
@@ -882,8 +881,7 @@ class PojomatorByteCodeGenerator {
     var.acceptLoad(mv);
     mv.visitMethodInsn(
       INVOKESTATIC, pojomatorInternalClassName, propertyAccessorName(propertyElement),
-      accessorMethodDescription(propertyElement),
-      false);
+      accessorMethodDescription(propertyElement));
   }
 
   private String accessorMethodDescription(PropertyElement propertyElement) {
@@ -969,25 +967,25 @@ class PojomatorByteCodeGenerator {
 
   private void invokeStatic(Class<?> ownerClass, String methodName, Class<?> returnType, Class<?>... parameterTypes) {
     mv.visitMethodInsn(
-      INVOKESTATIC, internalName(ownerClass), methodName, methodDesc(returnType, parameterTypes), false);
+      INVOKESTATIC, internalName(ownerClass), methodName, methodDesc(returnType, parameterTypes));
   }
 
   private void invokeInterface(
     Class<?> ownerClass, String methodName, Class<?> returnType, Class<?>... parameterTypes) {
     mv.visitMethodInsn(
-      INVOKEINTERFACE, internalName(ownerClass), methodName, methodDesc(returnType, parameterTypes), true);
+      INVOKEINTERFACE, internalName(ownerClass), methodName, methodDesc(returnType, parameterTypes));
   }
 
   private void invokeVirtual(
     Class<?> ownerClass, String methodName, Class<?> returnType, Class<?>... parameterTypes) {
     mv.visitMethodInsn(
-      INVOKEVIRTUAL, internalName(ownerClass), methodName, methodDesc(returnType, parameterTypes), false);
+      INVOKEVIRTUAL, internalName(ownerClass), methodName, methodDesc(returnType, parameterTypes));
   }
 
   private void construct(
     Class<?> ownerClass, Class<?>... parameterTypes) {
     mv.visitMethodInsn(
-      INVOKESPECIAL, internalName(ownerClass), "<init>", methodDesc(void.class, parameterTypes), false);
+      INVOKESPECIAL, internalName(ownerClass), "<init>", methodDesc(void.class, parameterTypes));
   }
 
   private static String internalName(Class<?> clazz) {
