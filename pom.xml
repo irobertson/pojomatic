@@ -226,4 +226,16 @@
   <properties>
     <surefire.version>2.17</surefire.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>test-modularity</id>
+      <activation>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <modules>
+        <module>modular-test-project</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

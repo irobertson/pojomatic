@@ -3,6 +3,7 @@ package org.pojomatic;
 import static org.testng.Assert.*;
 
 import java.io.FilePermission;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.ReflectPermission;
 import java.net.SocketPermission;
 import java.security.AccessControlException;
@@ -101,7 +102,7 @@ public class SecurityTest {
       requestedPermissions,
       ImmutableSet.of(
         new FilePermission(testClassPath + simplePojoPath, "read"),
-        new RuntimePermission("accessDeclaredMembers"),
+        new RuntimePermission(haveLookupDefineClass() ? "defineClass" : "accessDeclaredMembers"),
         new ReflectPermission("suppressAccessChecks")));
   }
 
@@ -164,6 +165,16 @@ public class SecurityTest {
     }
     finally {
       restorePolicy();
+    }
+  }
+
+  private static boolean haveLookupDefineClass() {
+    try {
+      MethodHandles.Lookup.class.getMethod("defineClass", new Class<?>[] { byte[].class });
+      return true;
+    }
+    catch (Throwable t) {
+      return false;
     }
   }
 }

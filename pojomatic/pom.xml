@@ -73,6 +73,24 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <!-- defaults for compile and testCompile -->
+        <configuration>
+          <excludes>
+            <exclude>module-info.java</exclude>
+            <exclude>org/pojomatic/internal/LookupClassDefiner.java</exclude>
+          </excludes>
+          <!-- jdkToolchain required when JAVA_HOME is JDK 9 or above -->
+          <jdkToolchain>
+            <version>[1.7,9)</version>
+          </jdkToolchain>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -108,6 +126,40 @@
     </plugins>
   </reporting>
   <profiles>
+    <profile>
+      <id>java9</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>module-info-compile</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+                <inherited>false</inherited>
+                <configuration>
+                  <source>1.9</source>
+                  <target>1.9</target>
+                  <includes>
+                    <include>module-info.java</include>
+                    <include>org/pojomatic/internal/LookupClassDefiner.java</include>
+                  </includes>
+                  <excludes combine.self="override"/>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <!-- If we are running under java8, then test both with java7 and java8 targets for test classes -->
       <id>java8</id>

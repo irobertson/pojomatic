@@ -235,8 +235,12 @@ Taking all of this together, a Customer POJO using Pojomatic might look like:
  &nbsp;&nbsp;permission {@link java.io.FilePermission} "/path/to/jar/with/pojos.jar", "read"<br>
  &nbsp;&nbsp;permission {@link java.io.FilePermission} "/path/to/dir/with/pojos/classes/-", "read"<br>
  &nbsp;&nbsp;permission {@link java.lang.RuntimePermission} "accessDeclaredMembers"<br>
+ &nbsp;&nbsp;permission {@link java.lang.RuntimePermission} "defineClass"<br>
  &nbsp;&nbsp;permission {@link java.lang.reflect.ReflectPermission} "suppressAccessChecks"<br>
  };<br>
  </code>
+
+ Note that in fact only one of the two RuntimePermissions above is needed; if running under Java 7 or 8,
+ "accessDeclaredMembers" is needed, while if running under Java 9 or later, "defineClass" is needed.
 </body>
 </html>
