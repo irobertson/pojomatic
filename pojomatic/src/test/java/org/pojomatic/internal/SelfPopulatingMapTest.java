@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SelfPopulatingMapTest {
   /**
    * Test case which exposes a subtle threading bug
+   * @throws Exception
    */
   @Test public void testThreading() throws Exception {
     final String token = "token";

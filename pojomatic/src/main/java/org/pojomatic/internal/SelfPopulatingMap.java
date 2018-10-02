@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentMap;
  * A thread-safe "map" which generates values on demand, with the guarantee that no more than one
  * value will be auto-created for a given key.
  * Classes extending this class should override {@link #create(Object)}.
+ * @param <K> the key type
+ * @param <V> the value type
  */
 public abstract class SelfPopulatingMap<K, V> {
 

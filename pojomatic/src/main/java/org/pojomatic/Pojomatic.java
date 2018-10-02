@@ -5,29 +5,26 @@ import org.pojomatic.internal.PojomatorFactory;
 import org.pojomatic.internal.SelfPopulatingMap;
 
 /**
- * <style>
- *   .java { margin-left: 2em; }
- * </style>
  * Static methods for implementing the {@link java.lang.Object#equals(Object)},
  * {@link java.lang.Object#hashCode()} and {@link java.lang.Object#toString()} methods on a
  * annotated POJO.  The actual work for a given class is done by a {@link Pojomator} created for
  * that class.  This class is careful to create only a single {@code Pojomator} per POJO class.
  * The overhead for looking up the {@code Pojomator} by POJO class is light, so a typical use in a
  * POJO class would be
- * <p class="java">
+ * <p style="margin-left: 2em">
  * <code>
- * &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font><font color="#000000">hashCode() {</font><br>
- * &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">Pojomatic.hashCode(</font><font color="#7f0055"><b>this</b></font><font color="#000000">);</font><br />
- * &nbsp;&nbsp;<font color="#000000">}</font><br>
- * <br/>
- * &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font><font color="#000000">equals(Object other) {</font><br>
- * &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">Pojomatic.equals(</font><font color="#7f0055"><b>this</b></font><font color="#000000">, other);</font><br />
- * &nbsp;&nbsp;<font color="#000000">}</font><br>
- * <br/>
- * &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#000000">String toString() {</font><br>
- * &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font><font color="#000000">Pojomatic.toString(</font><font color="#7f0055"><b>this</b></font><font color="#000000">);</font><br />
- * &nbsp;&nbsp;<font color="#000000">}</font><br>
- * <br/>
+ * &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>int&nbsp;</b></span><span style="color:#000000">hashCode() {</span><br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span><span style="color:#000000">Pojomatic.hashCode(</span><span style="color:#7f0055"><b>this</b></span><span style="color:#000000">);</span><br>
+ * &nbsp;&nbsp;<span style="color:#000000">}</span><br>
+ * <br>
+ * &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>boolean&nbsp;</b></span><span style="color:#000000">equals(Object other) {</span><br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span><span style="color:#000000">Pojomatic.equals(</span><span style="color:#7f0055"><b>this</b></span><span style="color:#000000">, other);</span><br>
+ * &nbsp;&nbsp;<span style="color:#000000">}</span><br>
+ * <br>
+ * &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#000000">String toString() {</span><br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span><span style="color:#000000">Pojomatic.toString(</span><span style="color:#7f0055"><b>this</b></span><span style="color:#000000">);</span><br>
+ * &nbsp;&nbsp;<span style="color:#000000">}</span><br>
+ * <br>
  * </code>
  * </p>
  * Under the covers, these methods are referencing a {@link org.pojomatic.Pojomator Pojomator} instance
@@ -36,34 +33,34 @@ import org.pojomatic.internal.SelfPopulatingMap;
  * is required, since the {@code Pojomator} for a class will only reference properties in the class
  * and it's superclasses, but not any implemented interfaces.  To do this, first define a static
  * constant {@code POJOMATOR} in the interface:
- * <p class="java">
+ * <p style="margin-left: 2em">
  * <code>
- *   <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.annotations.AutoProperty;<br />
- *   <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.Pojomator;<br />
- *   <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.Pojomatic;<br />
- *   <br />
- *   <font color="#646464">@AutoProperty</font><br />
- *   <font color="#7f0055"><b>public&nbsp;interface&nbsp;</b></font>Interface&nbsp;{<br />
- *   &nbsp;&nbsp;<font color="#7f0055"><b>static&nbsp;</b></font>Pojomator&lt;Interface&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator(Interface.<font color="#7f0055"><b>class</b></font>);<br />
- *   &nbsp;&nbsp;...<br />
+ *   <span style="color:#7f0055"><b>import&nbsp;</b></span>org.pojomatic.annotations.AutoProperty;<br>
+ *   <span style="color:#7f0055"><b>import&nbsp;</b></span>org.pojomatic.Pojomator;<br>
+ *   <span style="color:#7f0055"><b>import&nbsp;</b></span>org.pojomatic.Pojomatic;<br>
+ *   <br>
+ *   <span style="color:#646464">@AutoProperty</span><br>
+ *   <span style="color:#7f0055"><b>public&nbsp;interface&nbsp;</b></span>Interface&nbsp;{<br>
+ *   &nbsp;&nbsp;<span style="color:#7f0055"><b>static&nbsp;</b></span>Pojomator&lt;Interface&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator(Interface.<span style="color:#7f0055"><b>class</b></span>);<br>
+ *   &nbsp;&nbsp;...<br>
  * }</code>
  * </p>
  * and then delegate to {@code POJOMATOR} in the implementing classes:
- * <p class="java">
+ * <p style="margin-left: 2em">
  * <code>
- *   <font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Implementation&nbsp;<font color="#7f0055"><b>implements&nbsp;</b></font>Interface&nbsp;{<br />
- *   &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font>hashCode()&nbsp;{<br />
- *   &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doHashCode(<font color="#7f0055"><b>this</b></font>);<br />
- *   &nbsp;&nbsp;}<br />
- *   <br />
- *   &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font>equals(Object&nbsp;other)&nbsp;{<br />
- *   &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doEquals(this,&nbsp;other);<br />
- *   &nbsp;&nbsp;}<br />
- *   <br />
- *   &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;toString()&nbsp;{<br />
- *   &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doToString(<font color="#7f0055"><b>this</b></font>);<br />
- *   &nbsp;&nbsp;}<br />
- *   &nbsp;&nbsp;...<br />
+ *   <span style="color:#7f0055"><b>public&nbsp;class&nbsp;</b></span>Implementation&nbsp;<span style="color:#7f0055"><b>implements&nbsp;</b></span>Interface&nbsp;{<br>
+ *   &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>int&nbsp;</b></span>hashCode()&nbsp;{<br>
+ *   &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doHashCode(<span style="color:#7f0055"><b>this</b></span>);<br>
+ *   &nbsp;&nbsp;}<br>
+ *   <br>
+ *   &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>boolean&nbsp;</b></span>equals(Object&nbsp;other)&nbsp;{<br>
+ *   &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doEquals(this,&nbsp;other);<br>
+ *   &nbsp;&nbsp;}<br>
+ *   <br>
+ *   &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;toString()&nbsp;{<br>
+ *   &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doToString(<span style="color:#7f0055"><b>this</b></span>);<br>
+ *   &nbsp;&nbsp;}<br>
+ *   &nbsp;&nbsp;...<br>
  *   }</code>
  * </p>
  *

@@ -22,6 +22,7 @@ public @interface Property {
   /**
    * Which sets of {@link Pojomatic} operations ({@code equals}, {@code hashCode} and
    * {@code toString}) should use a property.
+   * @return Which operations should use the annotated property
    */
   public PojomaticPolicy policy() default PojomaticPolicy.DEFAULT;
 
@@ -33,6 +34,8 @@ public @interface Property {
    * referenced by a method whose name is of the form {@code isSomeField}, the name
    * {@code someField} will be used.  For any other property referenced by a method, the name of
    * the method is used.
+   *
+   * @return the name used to identify the property in the standard {@code toString} representation.
    */
   public String name() default "";
 }

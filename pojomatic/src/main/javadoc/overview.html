@@ -51,16 +51,16 @@ and delegate to the static methods in
 {@link org.pojomatic.Pojomatic Pojomatic}:
 <p class="java">
 <code>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font>hashCode()&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.hashCode(<font color="#7f0055"><b>this</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>int&nbsp;</b></span>hashCode()&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>Pojomatic.hashCode(<span style="color:#7f0055"><b>this</b></span>);<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;toString()&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.toString(<font color="#7f0055"><b>this</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;toString()&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>Pojomatic.toString(<span style="color:#7f0055"><b>this</b></span>);<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font>equals(Object&nbsp;o)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.equals(this,&nbsp;o);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>boolean&nbsp;</b></span>equals(Object&nbsp;o)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>Pojomatic.equals(this,&nbsp;o);<br>
 &nbsp;&nbsp;}</code>
 </p>
 <p>
@@ -71,18 +71,18 @@ and delegate to the static methods in
 
 <p class="java">
 <code>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;static&nbsp;</b></font>Pojomator&lt;Manual&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator(Manual.<font color="#7f0055"><b>class</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;final&nbsp;static&nbsp;</b></span>Pojomator&lt;Manual&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator(Manual.<span style="color:#7f0055"><b>class</b></span>);<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font>equals(Object&nbsp;other)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doEquals(this,&nbsp;other);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>boolean&nbsp;</b></span>equals(Object&nbsp;other)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doEquals(this,&nbsp;other);<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font>hashCode()&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doHashCode(<font color="#7f0055"><b>this</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>int&nbsp;</b></span>hashCode()&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doHashCode(<span style="color:#7f0055"><b>this</b></span>);<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;toString()&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doToString(<font color="#7f0055"><b>this</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;toString()&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doToString(<span style="color:#7f0055"><b>this</b></span>);<br>
 &nbsp;&nbsp;}</code>
 </p>
 
@@ -91,30 +91,30 @@ To implement {@code equals}, {@code hashCode} and {@code toString} for an interf
 pojomation (see below) and define a static constant {@code POJOMATOR} in the interface:
 <p class="java">
 <code>
-  <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.annotations.AutoProperty;<br>
-  <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.Pojomator;<br>
-  <font color="#7f0055"><b>import&nbsp;</b></font>org.pojomatic.Pojomatic;<br>
+  <span style="color:#7f0055"><b>import&nbsp;</b></span>org.pojomatic.annotations.AutoProperty;<br>
+  <span style="color:#7f0055"><b>import&nbsp;</b></span>org.pojomatic.Pojomator;<br>
+  <span style="color:#7f0055"><b>import&nbsp;</b></span>org.pojomatic.Pojomatic;<br>
   <br>
-  <font color="#646464">@AutoProperty</font><br>
-  <font color="#7f0055"><b>public&nbsp;interface&nbsp;</b></font>Interface&nbsp;{<br>
-  &nbsp;&nbsp;<font color="#7f0055"><b>static&nbsp;</b></font>Pojomator&lt;Interface&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator(Interface.<font color="#7f0055"><b>class</b></font>);<br>
+  <span style="color:#646464">@AutoProperty</span><br>
+  <span style="color:#7f0055"><b>public&nbsp;interface&nbsp;</b></span>Interface&nbsp;{<br>
+  &nbsp;&nbsp;<span style="color:#7f0055"><b>static&nbsp;</b></span>Pojomator&lt;Interface&gt;&nbsp;POJOMATOR&nbsp;=&nbsp;Pojomatic.pojomator(Interface.<span style="color:#7f0055"><b>class</b></span>);<br>
   &nbsp;&nbsp;...<br>
 }</code>
 </p>
 and then delegate to {@code POJOMATOR} in the implementing classes:
 <p class="java">
 <code>
-  <font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Implementation&nbsp;<font color="#7f0055"><b>implements&nbsp;</b></font>Interface&nbsp;{<br>
-  &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font>hashCode()&nbsp;{<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doHashCode(<font color="#7f0055"><b>this</b></font>);<br>
+  <span style="color:#7f0055"><b>public&nbsp;class&nbsp;</b></span>Implementation&nbsp;<span style="color:#7f0055"><b>implements&nbsp;</b></span>Interface&nbsp;{<br>
+  &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>int&nbsp;</b></span>hashCode()&nbsp;{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doHashCode(<span style="color:#7f0055"><b>this</b></span>);<br>
   &nbsp;&nbsp;}<br>
   <br>
-  &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font>equals(Object&nbsp;other)&nbsp;{<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doEquals(this,&nbsp;other);<br>
+  &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>boolean&nbsp;</b></span>equals(Object&nbsp;other)&nbsp;{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doEquals(this,&nbsp;other);<br>
   &nbsp;&nbsp;}<br>
   <br>
-  &nbsp;&nbsp;<font color="#646464">@Override</font>&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;toString()&nbsp;{<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>POJOMATOR.doToString(<font color="#7f0055"><b>this</b></font>);<br>
+  &nbsp;&nbsp;<span style="color:#646464">@Override</span>&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;toString()&nbsp;{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>POJOMATOR.doToString(<span style="color:#7f0055"><b>this</b></span>);<br>
   &nbsp;&nbsp;}<br>
   &nbsp;&nbsp;...<br>
   }</code>
@@ -125,8 +125,8 @@ The simplest way to annotate a class for pojomation is to add a single {@code Au
 
 <p class="java">
 <code>
-<font color="#646464">@AutoProperty&nbsp;</font><font color="#3f7f5f">//all&nbsp;fields&nbsp;are&nbsp;included&nbsp;by&nbsp;default</font><br>
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Common&nbsp;{<br>
+<span style="color:#646464">@AutoProperty&nbsp;</span><span style="color:#3f7f5f">//all&nbsp;fields&nbsp;are&nbsp;included&nbsp;by&nbsp;default</span><br>
+<span style="color:#7f0055"><b>public&nbsp;class&nbsp;</b></span>Common&nbsp;{<br>
 &nbsp;&nbsp;...<br>
 }<br>
 </code>
@@ -146,13 +146,13 @@ in the {@code hashCode} calculation, you can accomplish this via:
 
 <p class="java">
 <code>
-<font color="#646464">@AutoProperty</font><br>
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Employee&nbsp;{<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font>String&nbsp;firstName;<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font>String&nbsp;lastName;<br>
+<span style="color:#646464">@AutoProperty</span><br>
+<span style="color:#7f0055"><b>public&nbsp;class&nbsp;</b></span>Employee&nbsp;{<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;final&nbsp;</b></span>String&nbsp;firstName;<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;final&nbsp;</b></span>String&nbsp;lastName;<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Property</font>(policy=PojomaticPolicy.EQUALS_TO_STRING)<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;</b></font>String&nbsp;securityLevel;<br>
+&nbsp;&nbsp;<span style="color:#646464">@Property</span>(policy=PojomaticPolicy.EQUALS_TO_STRING)<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;</b></span>String&nbsp;securityLevel;<br>
 &nbsp;&nbsp;...<br>
 }<br>
 </code>
@@ -171,22 +171,23 @@ implement EnhancedPropertyFormatter is to extend
 as an IP address, one could have:
 
 <p class="java">
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>IpAddressFormatter&nbsp;<font color="#7f0055"><b>extends&nbsp;</b></font>DefaultEnhancedPropertyFormatter&nbsp;{<br>
-&nbsp;&nbsp;<font color="#646464">@Override</font><br>
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>void&nbsp;</b></font>appendFormatted(StringBuilder&nbsp;builder,&nbsp;<font color="#7f0055"><b>byte</b></font>[]&nbsp;array)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>if&nbsp;</b></font>(array&nbsp;==&nbsp;<font color="#7f0055"><b>null</b></font>)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>super</b></font>.appendFormatted(builder,&nbsp;array);<br>
+<code>
+<span style="color:#7f0055"><b>public&nbsp;class&nbsp;</b></span>IpAddressFormatter&nbsp;<span style="color:#7f0055"><b>extends&nbsp;</b></span>DefaultEnhancedPropertyFormatter&nbsp;{<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override</span><br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>void&nbsp;</b></span>appendFormatted(StringBuilder&nbsp;builder,&nbsp;<span style="color:#7f0055"><b>byte</b></span>[]&nbsp;array)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>if&nbsp;</b></span>(array&nbsp;==&nbsp;<span style="color:#7f0055"><b>null</b></span>)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>super</b></span>.appendFormatted(builder,&nbsp;array);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>else&nbsp;</b></font>{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>boolean&nbsp;</b></font>first&nbsp;=&nbsp;<font color="#7f0055"><b>true</b></font>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>for&nbsp;</b></font>(<font color="#7f0055"><b>byte&nbsp;</b></font>b:&nbsp;array)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>if&nbsp;</b></font>(first)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;=&nbsp;<font color="#7f0055"><b>false</b></font>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>else&nbsp;</b></span>{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>boolean&nbsp;</b></span>first&nbsp;=&nbsp;<span style="color:#7f0055"><b>true</b></span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>for&nbsp;</b></span>(<span style="color:#7f0055"><b>byte&nbsp;</b></span>b:&nbsp;array)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>if&nbsp;</b></span>(first)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;=&nbsp;<span style="color:#7f0055"><b>false</b></span>;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>else&nbsp;</b></font>{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder.append(<font color="#990000">'.'</font>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>else&nbsp;</b></span>{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder.append(<span style="color:#990000">'.'</span>);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder.append(((<font color="#7f0055"><b>int</b></font>)&nbsp;b)&nbsp;&amp;&nbsp;<font color="#990000">0xff</font>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;builder.append(((<span style="color:#7f0055"><b>int</b></span>)&nbsp;b)&nbsp;&amp;&nbsp;<span style="color:#990000">0xff</span>);<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
 &nbsp;&nbsp;&nbsp;&nbsp;}<br>
 &nbsp;&nbsp;}<br>
@@ -197,35 +198,35 @@ Taking all of this together, a Customer POJO using Pojomatic might look like:
 
 <p class="java">
 <code>
-<font color="#646464">@AutoProperty</font><br>
-<font color="#7f0055"><b>public&nbsp;class&nbsp;</b></font>Customer&nbsp;{<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font>String&nbsp;firstName;<br>
+<span style="color:#646464">@AutoProperty</span><br>
+<span style="color:#7f0055"><b>public&nbsp;class&nbsp;</b></span>Customer&nbsp;{<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;final&nbsp;</b></span>String&nbsp;firstName;<br>
 <br>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font>String&nbsp;lastName;<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;final&nbsp;</b></span>String&nbsp;lastName;<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@PropertyFormat</font>(IpAddressFormatter.<font color="#7f0055"><b>class</b></font>)<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>private&nbsp;final&nbsp;</b></font><font color="#7f0055"><b>byte</b></font>[]&nbsp;ipAddress;<br>
+&nbsp;&nbsp;<span style="color:#646464">@PropertyFormat</span>(IpAddressFormatter.<span style="color:#7f0055"><b>class</b></span>)<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>private&nbsp;final&nbsp;</b></span><span style="color:#7f0055"><b>byte</b></span>[]&nbsp;ipAddress;<br>
 <br>
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>Customer(String&nbsp;firstName,&nbsp;String&nbsp;lastName,&nbsp;<font color="#7f0055"><b>byte</b></font>[]&nbsp;ipAddress)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.firstName&nbsp;=&nbsp;firstName;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.lastName&nbsp;=&nbsp;lastName;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>this</b></font>.ipAddress&nbsp;=&nbsp;ipAddress;<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span>Customer(String&nbsp;firstName,&nbsp;String&nbsp;lastName,&nbsp;<span style="color:#7f0055"><b>byte</b></span>[]&nbsp;ipAddress)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>this</b></span>.firstName&nbsp;=&nbsp;firstName;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>this</b></span>.lastName&nbsp;=&nbsp;lastName;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>this</b></span>.ipAddress&nbsp;=&nbsp;ipAddress;<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;getFirstName()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>firstName;&nbsp;}<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;getLastName()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>lastName;&nbsp;}<br>
-&nbsp;&nbsp;<font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>byte</b></font>[]&nbsp;getIpAddress()&nbsp;{&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>ipAddress;&nbsp;}<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;getFirstName()&nbsp;{&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>firstName;&nbsp;}<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;getLastName()&nbsp;{&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>lastName;&nbsp;}<br>
+&nbsp;&nbsp;<span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>byte</b></span>[]&nbsp;getIpAddress()&nbsp;{&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>ipAddress;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>int&nbsp;</b></font>hashCode()&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.hashCode(<font color="#7f0055"><b>this</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>int&nbsp;</b></span>hashCode()&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>Pojomatic.hashCode(<span style="color:#7f0055"><b>this</b></span>);<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font>String&nbsp;toString()&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.toString(<font color="#7f0055"><b>this</b></font>);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span>String&nbsp;toString()&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>Pojomatic.toString(<span style="color:#7f0055"><b>this</b></span>);<br>
 &nbsp;&nbsp;}<br>
 <br>
-&nbsp;&nbsp;<font color="#646464">@Override&nbsp;</font><font color="#7f0055"><b>public&nbsp;</b></font><font color="#7f0055"><b>boolean&nbsp;</b></font>equals(Object&nbsp;o)&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<font color="#7f0055"><b>return&nbsp;</b></font>Pojomatic.equals(this,&nbsp;o);<br>
+&nbsp;&nbsp;<span style="color:#646464">@Override&nbsp;</span><span style="color:#7f0055"><b>public&nbsp;</b></span><span style="color:#7f0055"><b>boolean&nbsp;</b></span>equals(Object&nbsp;o)&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#7f0055"><b>return&nbsp;</b></span>Pojomatic.equals(this,&nbsp;o);<br>
 &nbsp;&nbsp;}<br>
 }</code>
 </p>

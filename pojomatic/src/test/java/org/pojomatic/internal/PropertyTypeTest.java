@@ -167,10 +167,9 @@ public class PropertyTypeTest {
   }
 
   /**
-   * Verify that doEquals honors the {@link DeepArray} annotation on properties of type {@link Object}.
+   * Verify that doEquals honors the {@link SkipArrayCheck} annotation on properties of type {@link Object}.
    * @param type
-   * @param canBeArray
-   * @param deepArray
+   * @param skipArrayCheck
    */
   @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
   public void testDeepArrayAsObjectEqualsAndDiff(Type type, boolean skipArrayCheck) {
@@ -190,10 +189,9 @@ public class PropertyTypeTest {
   }
 
   /**
-   * Verify that doEquals honors the {@link DeepArray} annotation on properties of array type
+   * Verify that doEquals honors the {@link SkipArrayCheck} annotation on properties of array type
    * @param type
-   * @param canBeArray - this should have no impact
-   * @param deepArray - likewise - deep arrays should be detected
+   * @param skipArrayCheck
    */
   @Test(dataProvider = "deepArrayTypes", dataProviderClass = TypeProviders.class)
   public void testDeepArrayAsArrayEquals(Type type, boolean skipArrayCheck) {

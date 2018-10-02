@@ -68,9 +68,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    *   or method
    * @param pojomatorClass the type of the pojomator class
    * @return a CallSite which invokes the method or gets the field value.
-   * @throws NoSuchMethodException
-   * @throws NoSuchFieldException
-   * @throws IllegalAccessException
+   * @throws Throwable if there are reflection issues
    */
   protected static CallSite bootstrap(
       MethodHandles.Lookup caller, String name, MethodType methodType, Class<?> pojomatorClass)
@@ -177,7 +175,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
   /**
    * Given an object which is of array type, compute it's hashCode by calling the appropriate signature of
    * {@link Arrays}{@code .hashCode()}
-   * @param array
+   * @param array the array
    * @param deepArray whether to do a deep hashCode for Object arrays.
    * @return the hashCode
    */
@@ -270,8 +268,6 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
    * run inside of a {@link AccessController#doPrivileged(PrivilegedExceptionAction)} block, hence should make sure to
    * not run untrusted code.
    * @param pojomatorClass the type of the pojomator class
-   * @return the MethodHandle
-   * @param pojomatorClass
    * @return the MethodHandle
    * @throws NoSuchFieldException
    * @throws IllegalAccessException

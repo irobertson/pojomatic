@@ -24,7 +24,8 @@ import org.pojomatic.formatter.PropertyFormatter;
 public @interface PropertyFormat {
 
   /**
-   *  The formatter to use for creating a {@code String} representation.
+   * The formatter to use for creating a {@code String} representation.
+   * @return the formatter to use for creating a {@code String} representation.
    */
   public Class<? extends PropertyFormatter> value();
 }

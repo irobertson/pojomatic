@@ -19,12 +19,15 @@ import org.pojomatic.Pojomatic;
 @Documented
 public @interface AutoProperty {
   /**
-   *    Include properties in everything by default (unless otherwise stated by {@link Property}).
+   * Which sets of {@link Pojomatic} operations ({@code equals}, {@code hashCode} and
+   * {@code toString}) should use properties, unless otherwise stated by {@link Property @Property}.
+   * @return Which operations should properties by default.
    */
   public DefaultPojomaticPolicy policy() default DefaultPojomaticPolicy.ALL;
 
   /**
-   *    Specifies whether to auto-detect properties by their fields, getters or not at all.
+   * Specifies whether to auto-detect properties by their fields, getters or not at all.
+   * @return whether to auto-detect properties by their fields, getters or not at all.
    */
   public AutoDetectPolicy autoDetect() default AutoDetectPolicy.FIELD;
 }

@@ -59,7 +59,6 @@ public interface Pojomator<T> {
    * {@code ageFormatter}, respectively).  Let {@code nameProperty} and
    * {@code ageProperty} refer to the instances of {@link PropertyElement} referring to the
    * properties {@code name} and {@code age} respectively.
-   * </p>
    * <p>
    * For a non-null {@code Person} instance, the {@code String} representation will be created by
    * creating an instance of {@code DefaultEnhancedPojoFormatter} for the {@code Person} class (referred to
@@ -76,7 +75,6 @@ public interface Pojomator<T> {
    *   <li>{@link DefaultEnhancedPojoFormatter#appendToStringSuffix(StringBuilder, Class) personFormatter.appendToStringSuffix(builder, Person.class)}</li>
    *   <li>builder.toString()</li>
    * </ul>
-   * </p>
    *
    * @param instance the instance to compute the {@code toString} representation for - must not be {@code null}
    * @return the {@code toString} representation of {@code instance}
@@ -91,7 +89,6 @@ public interface Pojomator<T> {
    * {@code Object}'s {@link Object#equals(Object) equals} method. For two instances to be
    * considered equal, the first requirement is that their classes must be compatible for equality,
    * as described in the documentation for {@link #isCompatibleForEquality(Class)}.
-   * </p>
    * <p>
    * More precisely, if {@code other} is null, this method returns {@code false}.  Otherwise, if
    * {@link #isCompatibleForEquality(Class) isCompatibleForEquals(other.getClass())} would return
@@ -115,14 +112,12 @@ public interface Pojomator<T> {
    *   <li>Recursively, each element of {@code instanceP} is equal to the corresponding element of {@code otherP}.</li>
    * </ul></li>
    * </ul>
-   * </p>
    * <p>
    * Note that Pojomator's treatment of multi-dimensional arrays can differ from
    * {@link Arrays#deepEquals(Object[], Object[])}, in that the latter only looks at array length and element-wise
    * equality, but not array type. For example, {@code Arrays.deepEquals()} would consider {@code new Integer[0]} and
    * {@code new boolean[0][][])} to be equal, where as Pojomatic does not. Version 1.0 of Pojomatic simply delegated to
    * {@code Arrays.deepEquals()}, and hence would have considered those two arrays to be equal.
-   * </p>
    * @param instance the instance to test against - must not be {@code null}
    * @param other the instance to test
    * @return {@code true} if {@code instance} should be considered equal to {@code other}, and

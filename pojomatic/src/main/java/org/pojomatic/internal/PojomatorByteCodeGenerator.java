@@ -298,7 +298,6 @@ class PojomatorByteCodeGenerator {
    * @param notEqualLabel where to jump if the property values are not equal
    * @param propertyElement the property being compared
    * @param stackAdjustments adjustments to be made to the max stack size, based on property type
-   * @return {@code true} if the value of the property will take two positions on the stack (i.e. is a long or double)
    */
   private void compareProperties(
       MethodVisitor mv, Label notEqualLabel, PropertyElement propertyElement, StackAdjustments stackAdjustments) {
@@ -656,7 +655,7 @@ class PojomatorByteCodeGenerator {
   }
 
   /**
-   * Generate {@link Pojomator#doDiff(Object, Object)
+   * Generate {@link Pojomator#doDiff(Object, Object)}
    * @param cw
    */
   private void makeDoDiff(ClassVisitor cw) {

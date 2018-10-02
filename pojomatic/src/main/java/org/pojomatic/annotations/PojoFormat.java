@@ -20,7 +20,8 @@ import org.pojomatic.formatter.PojoFormatter;
 public @interface PojoFormat {
 
   /**
-   *    The formatter to use for creating a {@code String} representation.
+   * The formatter to use for creating a {@code String} representation.
+   * @return the formatter to use for creating a {@code String} representation.
    */
   public Class<? extends PojoFormatter> value();
 }
