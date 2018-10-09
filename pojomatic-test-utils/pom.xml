@@ -29,25 +29,53 @@
      </dependency>
   </dependencies>
 
-  <reporting>
+  <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <configuration>
-          <targetJdk>1.5</targetJdk>
-          <rulesets>
-            <ruleset>${project.basedir}/src/pmd.xml</ruleset>
-          </rulesets>
-          <includeTests>true</includeTests>
-        </configuration>
-      </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <links>
-            <link>http://kentbeck.github.com/junit/javadoc/latest/</link>
-            <link>http://testng.org/javadoc/</link>
+            <link>https://junit.org/junit4/javadoc/latest</link>
+            <link>https://jitpack.io/com/github/cbeust/testng/6.10/javadoc</link>
           </links>
+          <additionalDependencies>
+            <additionalDependency>
+              <groupId>junit</groupId>
+              <artifactId>junit</artifactId>
+              <version>4.12</version>
+            </additionalDependency>
+            <additionalDependency>
+              <groupId>org.testng</groupId>
+              <artifactId>testng</artifactId>
+              <version>6.9.10</version>
+            </additionalDependency>
+          </additionalDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>https://junit.org/junit4/javadoc/latest</link>
+            <link>https://jitpack.io/com/github/cbeust/testng/6.10/javadoc</link>
+          </links>
+          <additionalDependencies>
+            <additionalDependency>
+              <groupId>junit</groupId>
+              <artifactId>junit</artifactId>
+              <version>4.12</version>
+            </additionalDependency>
+            <additionalDependency>
+              <groupId>org.testng</groupId>
+              <artifactId>testng</artifactId>
+              <version>6.9.10</version>
+            </additionalDependency>
+          </additionalDependencies>
         </configuration>
       </plugin>
     </plugins>
