@@ -73,9 +73,7 @@ class PropertyClassVisitor extends ClassVisitor {
     Set<PropertyElement> expectedProperties = new LinkedHashSet<>();
     expectedProperties.addAll(fields.values());
     expectedProperties.addAll(methods.values());
-    for (PropertyElement property: sortedProperties) {
-      expectedProperties.remove(property);
-    }
+    expectedProperties.removeAll(sortedProperties);
     StringBuilder message = new StringBuilder("In class ").append(clazz.getName()).append(", properties ");
     boolean seenOne = false;
     for (PropertyElement property: expectedProperties) {

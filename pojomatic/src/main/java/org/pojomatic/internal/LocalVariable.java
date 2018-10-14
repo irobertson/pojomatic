@@ -58,8 +58,4 @@ class LocalVariable {
   public void acceptLoad(MethodVisitor mv) {
     mv.visitVarInsn(type.getOpcode(Opcodes.ILOAD), position);
   }
-
-  public int getPosition() {
-    return position;
-  }
 }

@@ -26,12 +26,7 @@ class Primitives {
   }
 
   static Integer getOpcode(Class<?> primitiveClass) {
-    Integer retval = OPCODES.get(primitiveClass);
-    if (retval == null) {
-      System.err.println("null for " + primitiveClass);
-      Thread.dumpStack();
-    }
-    return retval;
+    return OPCODES.get(primitiveClass);
   }
 
   private static <T> void register(Class<T> clazz, Class<? extends T> wrapperClass, Integer opcode) {
