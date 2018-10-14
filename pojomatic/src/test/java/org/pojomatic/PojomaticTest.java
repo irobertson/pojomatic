@@ -4,6 +4,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 import org.pojomatic.annotations.Property;
+import org.pojomatic.annotations.SkipArrayCheck;
 import org.pojomatic.diff.NoDifferences;
 import org.pojomatic.internal.PojomatorFactory;
 
@@ -70,4 +71,48 @@ public class PojomaticTest {
     assertFalse(Pojomatic.areCompatibleForEquals(Bean.class, BeanWithExtraData.class));
     assertFalse(Pojomatic.areCompatibleForEquals(BeanWithExtraData.class, Bean.class));
   }
+
+  @Test
+  public void testSkipArrayCheck() {
+    class Box {
+      @Property
+      @SkipArrayCheck
+      Object o;
+
+      Box(Object o) { this.o = o; }
+    }
+    assertFalse(Pojomatic.equals(new Box(new String[] { "x" }), new Box(new String[] { "x" })));
+    assertNotEquals(Pojomatic.hashCode(new Box(new String[] { "x" })), Pojomatic.hashCode(new Box(new String[] { "x" })));
+
+    String[] array = new String[] { "y" };
+    assertTrue(Pojomatic.equals(new Box(array),  new Box(array)));
+    assertEquals(Pojomatic.hashCode(new Box(array)), Pojomatic.hashCode(new Box(array)));
+  }
+
+  @Test
+  public void testNoSkipArrayCheck() {
+    class Box {
+      @Property
+      Object o;
+
+      Box(Object o) { this.o = o; }
+    }
+    assertTrue(Pojomatic.equals(new Box(new String[] { "x" }), new Box(new String[] { "x" })));
+    assertEquals(Pojomatic.hashCode(new Box(new String[] { "x" })), Pojomatic.hashCode(new Box(new String[] { "x" })));
+  }
+
+  @Test
+  public void testSkipArrayCheckIgnoredForArrayType() {
+    class Box {
+      @Property
+      @SkipArrayCheck
+      Object[] os;
+
+      Box(Object o) { this.os = new Object[] { o }; }
+    }
+    assertTrue(Pojomatic.equals(new Box(new String[] { "x" }), new Box(new String[] { "x" })));
+    assertEquals(Pojomatic.hashCode(new Box(new String[] { "x" })), Pojomatic.hashCode(new Box(new String[] { "x" })));
+  }
+
+
 }

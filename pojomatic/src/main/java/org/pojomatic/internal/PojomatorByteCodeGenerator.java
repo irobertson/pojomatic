@@ -434,11 +434,11 @@ class PojomatorByteCodeGenerator {
         if(propertyType.isArray()) {
           visitLineNumber(28, propertyElement);
 
-         invokeStatic(
-           Arrays.class,
-           isDeepArray(propertyElement) ? "deepHashCode" : "hashCode",
-           int.class,
-           propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class);
+          invokeStatic(
+            Arrays.class,
+            isDeepArray(propertyType) ? "deepHashCode" : "hashCode",
+              int.class,
+              propertyType.getComponentType().isPrimitive() ? propertyType : Object[].class);
         }
         else if (isObjectPossiblyHoldingArray(propertyElement)) {
           // it *could* be an array; if so, we want to do an array hashCode.
@@ -813,7 +813,7 @@ class PojomatorByteCodeGenerator {
   }
 
   /**
-   * Determine if the given propertyElement should be treated as possibly containing a multi-level array.
+   * Determine if the given propertyElement of array type should be treated as possibly containing a multi-level array.
    * This will be the case if it is:
    * <ul>
    *   <li>of type Object and is not annotated with @{@link SkipArrayCheck}</li>
@@ -824,13 +824,8 @@ class PojomatorByteCodeGenerator {
    * @return {@code true} if the given propertyElement should be treated as possibly containing a multi-level array,
    * or {@code false} otherwise.
    */
-  private boolean isDeepArray(PropertyElement propertyElement) {
-    Class<?> propertyType = propertyElement.getPropertyType();
-    return
-      propertyType.equals(Object[].class)
-      || (propertyType.isArray() && propertyType.getComponentType().isArray())
-      || ((propertyType.equals(Object.class) || propertyType.equals(Object[].class))
-          && !propertyElement.getElement().isAnnotationPresent(SkipArrayCheck.class));
+  private boolean isDeepArray(Class<?> propertyType) {
+    return propertyType.equals(Object[].class) || propertyType.getComponentType().isArray();
   }
 
   /**
