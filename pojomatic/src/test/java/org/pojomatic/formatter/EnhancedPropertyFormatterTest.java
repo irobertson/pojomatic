@@ -50,6 +50,18 @@ public class EnhancedPropertyFormatterTest {
   }
 
   @Test(dataProvider="types", dataProviderClass=TypeProviders.class)
+  public void testAppendArraysAsPossibleArray(Type type) throws ReflectiveOperationException {
+    Type arrayType = new ArrayType(type);
+    EnhancedPropertyFormatter wrapper = new EnhancedPropertyFormatterWrapper(new DefaultPropertyFormatter());
+    Method m = EnhancedPropertyFormatter.class.getDeclaredMethod("appendFormattedPossibleArray", StringBuilder.class, Object.class);
+    for (Object value: arrayType.getSampleValues()) {
+      StringBuilder builder = new StringBuilder();
+      m.invoke(wrapper, builder, value);
+      assertEquals(builder.toString(), new DefaultPropertyFormatter().format(value));
+    }
+  }
+
+  @Test(dataProvider="types", dataProviderClass=TypeProviders.class)
   public void testFormat(Type type) throws ReflectiveOperationException {
     DefaultPropertyFormatter formatter = new DefaultPropertyFormatter();
     EnhancedPropertyFormatter wrapper = new EnhancedPropertyFormatterWrapper(formatter);
