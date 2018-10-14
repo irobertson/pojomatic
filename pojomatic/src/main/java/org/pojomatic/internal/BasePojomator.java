@@ -126,17 +126,7 @@ public abstract class BasePojomator<T> implements Pojomator<T> {
     final Class<?> instanceComponentClass = instanceValue.getClass().getComponentType();
 
     if (!instanceComponentClass.isPrimitive()) {
-      Object[] instanceArray = (Object[]) instanceValue;
-      Object[] otherArray = (Object[]) otherValue;
-      if (instanceArray.length != otherArray.length) {
-        return false;
-      }
-      for (int i = 0; i < instanceArray.length; i++) {
-        if (!areObjectValuesEqual(instanceArray[i], otherArray[i])) {
-          return false;
-        }
-      }
-      return true;
+      return Arrays.deepEquals((Object[]) instanceValue, (Object[]) otherValue);
     }
     else { // instanceComponentClass is primitive
       if (Boolean.TYPE == instanceComponentClass) {
