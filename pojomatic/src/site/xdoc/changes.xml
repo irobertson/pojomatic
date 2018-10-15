@@ -7,6 +7,26 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 2.1.0 (2018-10-14)">
+        <ul>
+          <li>
+            Pojomatic now relies on ASM directly, instead of the repacked org.kohsuke:asm5 library.
+            In particular, this means it is now compatible with Java versions 7 through
+            11. Moreover, as newer Java releases come out, it should be possible to upgrade to a
+            newer ASM version without a new release of pojomatic. Fixes
+            <a href="https://github.com/irobertson/pojomatic/issues/10">GitHub issue #10</a>.
+          </li>
+          <li>
+            Pojomatic has been modularized under the name org.pojomatic. It can of course continue
+            to be used as a jar, as well as now using it as a module.
+            <a href="https://github.com/irobertson/pojomatic/issues/13">GitHub issue #13</a>.
+          </li>
+          <li>
+            Fix <a href="https://github.com/irobertson/pojomatic/issues/11">GitHub issue #11</a> -
+            generated doEquals method only considers properties also selected for hashCode.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 2.0.1 (2014-07-12)">
         <ul>
           <li>
