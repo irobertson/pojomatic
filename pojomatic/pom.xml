@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>pojomatic</artifactId>
-  <version>2.1.0</version>
+  <version>master-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Pojomatic</name>
   <description>
@@ -18,7 +18,7 @@
     <connection>scm:git:git@github.com:irobertson/pojomatic</connection>
     <developerConnection>scm:git:git@github.com:irobertson/pojomatic</developerConnection>
     <url>https://github.com/irobertson/pojomatic</url>
-    <tag>pojomatic-2.1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
