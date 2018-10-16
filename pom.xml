@@ -166,6 +166,7 @@
         <configuration>
           <ignorePathsToDelete>
             <ignorePathsToDelete>old</ignorePathsToDelete>
+            <ignorePathsToDelete>CNAME</ignorePathsToDelete>
           </ignorePathsToDelete>
         </configuration>
       </plugin>
