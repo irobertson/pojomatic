@@ -25,7 +25,7 @@ class PropertyClassVisitor extends ClassVisitor {
   PropertyClassVisitor(
       Map<PropertyRole, Map<String, PropertyElement>> fieldsMap,
       Map<PropertyRole, Map<String, PropertyElement>> methodsMap) {
-    super(Opcodes.ASM4);
+    super(Opcodes.ASM7);
     this.fieldsMap = fieldsMap;
     this.methodsMap = methodsMap;
 

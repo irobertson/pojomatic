@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
-      <version>6.2.1</version>
+      <version>7.0</version>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
@@ -197,16 +197,16 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <executions>
               <execution>
-            <id>java-8-test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <testClassesDirectory>${java8.build.dir}</testClassesDirectory>
-              <reportsDirectory>${project.build.directory}/java8-surefire-reports</reportsDirectory>
-            </configuration>
-          </execution>
+                <id>java-8-test</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <configuration>
+                  <testClassesDirectory>${java8.build.dir}</testClassesDirectory>
+                  <reportsDirectory>${project.build.directory}/java8-surefire-reports</reportsDirectory>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
         </plugins>

@@ -4,6 +4,7 @@ import static org.testng.Assert.*;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeMethod;
+
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,10 +14,14 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.tools.ToolProvider;
+
 import org.pojomatic.PropertyElement;
+import org.pojomatic.internal.compile.Compiler;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
+
 
 public class PropertyClassVisitorTest {
   static class FieldsAndGetters {
@@ -117,8 +122,35 @@ public class PropertyClassVisitorTest {
     }
   }
 
+  @Test
+  public void testNestMates() throws Exception {
+    // Need to compile in the unit test since we're targeting 1.7 for most of our compiled byte code, and this is an
+    // issue under Java 11.
+    Compiler compiler = new Compiler(ToolProvider.getSystemJavaCompiler());
+    compiler.compile(
+      "Pojo",
+      "public class Pojo {",
+      "  @org.pojomatic.annotations.Property",
+      "  int i;",
+      "",
+      "  public static class NestedPojo {}",
+      "}");
+    Class<?> clazz = compiler.getClassLoader().loadClass("Pojo");
+    Field field = clazz.getDeclaredField("i");
+    List<PropertyElement> fields = Arrays.<PropertyElement>asList(new PropertyField(field, "i"));
+    PropertyClassVisitor propertyClassVisitor = PropertyClassVisitor.visitClass(
+      clazz,
+      makeRoleMaps(fields, fields, fields),
+      makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES));
+    assertEquals( // verify that visitClass was successful
+      propertyClassVisitor.getSortedProperties().get(PropertyRole.EQUALS),
+      fields);
+  }
+
   private static Map<PropertyRole, Map<String, PropertyElement>> makeRoleMaps(
-      List<PropertyElement> forEquals, List<PropertyElement> forHashCode, List<PropertyElement> forToString) {
+      List<PropertyElement> forEquals,
+      List<PropertyElement> forHashCode,
+      List<PropertyElement> forToString) {
     EnumMap<PropertyRole, Map<String, PropertyElement>> enumMap = new EnumMap<>(PropertyRole.class);
     enumMap.put(PropertyRole.EQUALS, Maps.uniqueIndex(forEquals, NameExtractor.INSTANCE));
     enumMap.put(PropertyRole.HASH_CODE, Maps.uniqueIndex(forHashCode, NameExtractor.INSTANCE));
