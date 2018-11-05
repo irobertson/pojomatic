@@ -14,10 +14,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.tools.ToolProvider;
-
 import org.pojomatic.PropertyElement;
-import org.pojomatic.internal.compile.Compiler;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -124,22 +121,10 @@ public class PropertyClassVisitorTest {
 
   @Test
   public void testNestMates() throws Exception {
-    // Need to compile in the unit test since we're targeting 1.7 for most of our compiled byte code, and this is an
-    // issue under Java 11.
-    Compiler compiler = new Compiler(ToolProvider.getSystemJavaCompiler());
-    compiler.compile(
-      "Pojo",
-      "public class Pojo {",
-      "  @org.pojomatic.annotations.Property",
-      "  int i;",
-      "",
-      "  public static class NestedPojo {}",
-      "}");
-    Class<?> clazz = compiler.getClassLoader().loadClass("Pojo");
-    Field field = clazz.getDeclaredField("i");
+    Field field = NestParent.class.getDeclaredField("i");
     List<PropertyElement> fields = Arrays.<PropertyElement>asList(new PropertyField(field, "i"));
     PropertyClassVisitor propertyClassVisitor = PropertyClassVisitor.visitClass(
-      clazz,
+      NestParent.class,
       makeRoleMaps(fields, fields, fields),
       makeRoleMaps(NO_PROPERTIES, NO_PROPERTIES, NO_PROPERTIES));
     assertEquals( // verify that visitClass was successful

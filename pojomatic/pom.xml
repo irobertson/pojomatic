@@ -22,7 +22,7 @@
   </scm>
 
   <properties>
-    <java8.build.dir>${project.build.directory}/java8-test-classes</java8.build.dir>
+    <java.current.build.dir>${project.build.directory}/java-current-test-classes</java.current.build.dir>
   </properties>
 
   <dependencies>
@@ -90,6 +90,7 @@
           </jdkToolchain>
           <source>1.7</source>
           <target>1.7</target>
+          <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
     </plugins>
@@ -111,7 +112,7 @@
   </reporting>
   <profiles>
     <profile>
-      <id>java9</id>
+      <id>module-compile</id>
       <activation>
         <activeByDefault>false</activeByDefault>
         <jdk>[1.9,)</jdk>
@@ -144,12 +145,54 @@
         </plugins>
       </build>
     </profile>
+    <!-- determine the java version (as passed to the compiler plugin) via profile -->
     <profile>
-      <!-- If we are running under java8, then test both with java7 and java8 targets for test classes -->
-      <id>java8</id>
+      <id>java-1.8</id>
       <activation>
         <activeByDefault>false</activeByDefault>
         <jdk>1.8</jdk>
+      </activation>
+      <properties>
+        <java.current.version>1.8</java.current.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>java-1.9</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <jdk>9</jdk>
+      </activation>
+      <properties>
+        <java.current.version>1.8</java.current.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>java-1.10</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <jdk>10</jdk>
+      </activation>
+      <properties>
+        <java.current.version>1.10</java.current.version>
+      </properties>
+    </profile>
+    <profile>
+      <id>java-1.11</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <jdk>11</jdk>
+      </activation>
+      <properties>
+        <java.current.version>11</java.current.version>
+      </properties>
+    </profile>
+
+    <profile>
+      <!-- If we are running under java 8 or later, then test both with java7 the running java version as targets for test classes -->
+      <id>java-current</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <jdk>[1.8,)</jdk>
       </activation>
       <build>
         <plugins>
@@ -162,7 +205,7 @@
                 <phase>process-resources</phase>
                 <configuration>
                   <tasks>
-                    <mkdir dir="${java8.build.dir}" />
+                    <mkdir dir="${java.current.build.dir}" />
                   </tasks>
                 </configuration>
                 <goals>
@@ -176,17 +219,18 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <executions>
               <execution>
-                <id>java-8-compile</id>
+                <id>java-current-compile</id>
                 <phase>test-compile</phase>
                 <goals>
                   <goal>testCompile</goal>
                 </goals>
                 <configuration>
-                  <source>1.8</source>
-                  <target>1.8</target>
-                  <compilerArguments>
-                    <d>${java8.build.dir}</d>
-                  </compilerArguments>
+                  <source>${java.current.version}</source>
+                  <target>${java.current.version}</target>
+                  <compilerArgs>
+                    <arg>-d</arg>
+                    <arg>${java.current.build.dir}</arg>
+                  </compilerArgs>
                   <useIncrementalCompilation>true</useIncrementalCompilation>
                 </configuration>
               </execution>
@@ -197,14 +241,14 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <executions>
               <execution>
-                <id>java-8-test</id>
+                <id>java-current-test</id>
                 <phase>test</phase>
                 <goals>
                   <goal>test</goal>
                 </goals>
                 <configuration>
-                  <testClassesDirectory>${java8.build.dir}</testClassesDirectory>
-                  <reportsDirectory>${project.build.directory}/java8-surefire-reports</reportsDirectory>
+                  <testClassesDirectory>${java.current.build.dir}</testClassesDirectory>
+                  <reportsDirectory>${project.build.directory}/java-${java.current.version}-surefire-reports</reportsDirectory>
                 </configuration>
               </execution>
             </executions>
