@@ -165,8 +165,8 @@
         <version>3.0.0</version>
         <configuration>
           <ignorePathsToDelete>
-            <ignorePathsToDelete>old</ignorePathsToDelete>
-            <ignorePathsToDelete>CNAME</ignorePathsToDelete>
+            <ignorePathToDelete>old</ignorePathToDelete>
+            <ignorePathToDelete>CNAME</ignorePathToDelete>
           </ignorePathsToDelete>
         </configuration>
       </plugin>
