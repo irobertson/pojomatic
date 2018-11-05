@@ -7,6 +7,15 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 2.2.0 (2018-11-04)">
+        <ul>
+          <li>
+            Move to using ASM 7, so that classes with nested classes compiled under JDK 11 or later
+            can still be processed. Fixes
+            <a href="https://github.com/irobertson/pojomatic/issues/14">GitHub issue #14</a>.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 2.1.0 (2018-10-14)">
         <ul>
           <li>

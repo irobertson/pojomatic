@@ -3,7 +3,7 @@
   <groupId>org.pojomatic</groupId>
   <artifactId>pojomatic-all</artifactId>
   <packaging>pom</packaging>
-  <version>master-SNAPSHOT</version>
+  <version>2.2.0</version>
   <name>Pojomatic Project</name>
   <description>
     Parent and aggregator for all artifacts related to the Pojomatic project.
@@ -14,7 +14,7 @@
     <connection>scm:git:git@github.com:irobertson/pojomatic</connection>
     <developerConnection>scm:git:git@github.com:irobertson/pojomatic</developerConnection>
     <url>https://github.com/irobertson/pojomatic</url>
-    <tag>HEAD</tag>
+    <tag>2.2.0</tag>
   </scm>
 
   <distributionManagement>
