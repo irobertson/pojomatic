@@ -1,0 +1,17 @@
+To release:
+
+*) edit pom files to reflect new versions. pojomatic-test-utils should
+   go to 1.0 (unless a new version is released), and both children
+   should point to the new parent.
+*) commit, and tag with pojomatic-all-x.y.z
+*) Run maven with jdk 9 or later; it seems the deploy operation for
+   pojomatic may need jdk 11 (bugs in 9 and 10)
+*) in root:
+  *) mvn clean site site:stage scm-publish:publish-scm
+  *) mvn -N deploy
+*) in pojomatic:
+  *) mvn clean deploy
+*) log into https://oss.sonatype.org/, check the staging repositories,
+   and release them
+*) edit poms back to snapshot status.
+*) push
