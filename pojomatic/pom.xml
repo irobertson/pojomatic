@@ -200,16 +200,5 @@
         <java.current.version>11</java.current.version>
       </properties>
     </profile>
-
-    <profile>
-      <id>oldAsm</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm</artifactId>
-          <version>4.0</version>
-        </dependency>
-      </dependencies>
-    </profile>
   </profiles>
 </project>
