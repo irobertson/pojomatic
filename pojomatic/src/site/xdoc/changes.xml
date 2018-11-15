@@ -7,6 +7,14 @@
   </properties>
   <body>
     <section name="Changes in Pojomatic">
+      <subsection name="Release 2.2.1 (2018-11-15)">
+        <ul>
+          <li>
+            Fix <a href="https://github.com/irobertson/pojomatic/issues/16">GitHub issue #16</a>, which prevented Pojomatic
+            from running on Java versions earlier than 9.
+          </li>
+        </ul>
+      </subsection>
       <subsection name="Release 2.2.0 (2018-11-04)">
         <ul>
           <li>
