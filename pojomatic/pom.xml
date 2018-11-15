@@ -22,7 +22,7 @@
   </scm>
 
   <properties>
-    <java.current.version>1.7</java.current.version>
+    <java.test.version>7</java.test.version>
   </properties>
 
   <dependencies>
@@ -100,9 +100,11 @@
               <goal>testCompile</goal>
             </goals>
             <configuration>
-              <source>${java.current.version}</source>
-              <target>${java.current.version}</target>
+              <source>${java.test.version}</source>
+              <target>${java.test.version}</target>
               <useIncrementalCompilation>true</useIncrementalCompilation>
+              <executable>${testJavac}</executable>
+              <release>${java.test.version}</release>
             </configuration>
           </execution>
         </executions>
@@ -158,47 +160,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <!-- determine the java version (as passed to the compiler plugin) via profile -->
-    <profile>
-      <id>java-1.8</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <jdk>1.8</jdk>
-      </activation>
-      <properties>
-        <java.current.version>1.8</java.current.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>java-1.9</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <jdk>9</jdk>
-      </activation>
-      <properties>
-        <java.current.version>1.8</java.current.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>java-1.10</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <jdk>10</jdk>
-      </activation>
-      <properties>
-        <java.current.version>1.10</java.current.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>java-1.11</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-        <jdk>11</jdk>
-      </activation>
-      <properties>
-        <java.current.version>11</java.current.version>
-      </properties>
     </profile>
   </profiles>
 </project>

@@ -21,7 +21,7 @@ public class ClassDefinerFactory {
       return (ClassDefiner) ClassDefiner.class.getClassLoader().loadClass("org.pojomatic.internal.LookupClassDefiner")
         .getConstructor()
         .newInstance();
-    } catch (ReflectiveOperationException e) {
+    } catch (ReflectiveOperationException | UnsupportedClassVersionError e) {
       return new ClassLoaderClassDefiner();
     }
   }
